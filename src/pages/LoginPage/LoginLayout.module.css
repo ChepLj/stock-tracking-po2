@@ -1,0 +1,112 @@
+.mainContainer {
+  background-color: white;
+  width: 100%;
+  height: 100%;
+}
+.header {
+  width: 100%;
+  height: 40px;
+  background-color: aliceblue;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.headerItem {
+  font-size: 16px;
+  font-weight: 500;
+}
+.contentContainer {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: column;
+}
+.icon {
+  width: 100px;
+  height: 100px;
+  margin: 30px;
+  border-radius: 50%;
+}
+.inputContainer {
+  width: 90%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  border: 1px solid gray;
+  padding: 20px 30px;
+  border-radius: 5px;
+  /* margin-top: 100px; */
+  margin-bottom: 20px;
+  box-sizing: border-box;
+  /* background-color: aliceblue; */
+}
+.item {
+  width: 100%;
+  /* padding:10px; */
+  border-bottom: 1px solid gray;
+}
+.itemLabel {
+  width: 100%;
+  font-size: 12px;
+  font-weight: 400;
+  text-align: start;
+  padding: 10px 0;
+  display: inline-block;
+  font-style: italic;
+}
+.itemInput {
+  font-size: 14px;
+  font-weight: 400;
+  width: 100%;
+  min-height: 20px;
+  border: none;
+  padding: 3px;
+  background-color: white;
+  color: black;
+}
+
+.button {
+  width: 90%;
+  max-width: 400px;
+  background-color: #3880ff;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  color: white;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.button:active {
+  opacity: 0.5;
+}
+
+.toast {
+  min-width: 300px;
+  max-width: 800px;
+  padding: 6px;
+  background-color: rgb(228, 114, 114);
+  color: white;
+  position: absolute;
+  top: 60px;
+  left: 10px;
+  border-radius: 5px;
+}
+
+.showPassWord {
+  /* width: 100%; */
+  text-align: end;
+  font-size: 12px;
+  font-style: italic;
+  color: gray;
+  padding-top: 5px;
+  cursor: pointer;
+  user-select: none;
+  margin-left: auto;
+}

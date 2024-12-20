@@ -11,7 +11,7 @@ import { encryptCrypto } from "../../components/function/crypto";
 
 
 const LoginPage = () => {
-  const { setAuthorLogin } = useContext<any>(AuthContext);
+  const { authorLogin, setAuthorLogin } = useContext<any>(AuthContext);
   const [isToastOpen, setIsToastOpen] = useState<{ isOpen: boolean; messenger?: string }>({ isOpen: false });
 
   //TODO: handle toast

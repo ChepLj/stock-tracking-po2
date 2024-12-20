@@ -7,7 +7,7 @@ const exportFileFix = () => {
   const elt = tableViewStyle!.getElementsByTagName("TABLE")[0];
   const wb = utils.table_to_book(elt);
   const date = new Date();
-  writeFileXLSX(wb, `ManagerEquipment-${date.toDateString()}.xlsx`);
+  writeFileXLSX(wb, `Pomina3 Stock Tracking-${date.toDateString()}.xlsx`);
 };
 
 //TODO_END: handle export fix

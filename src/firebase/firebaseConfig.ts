@@ -10,14 +10,14 @@ import { getAuth, GoogleAuthProvider } from 'firebase/auth'
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyAKMO_XIHMmbHoQYGNcpyVJDHQSlQmwaRg",
-  authDomain: "btdbf-equipment-manager.firebaseapp.com",
-  projectId: "btdbf-equipment-manager",
-  storageBucket: "btdbf-equipment-manager.appspot.com",
-  messagingSenderId: "165677631800",
-  appId: "1:165677631800:web:94db349dfe35fe69ffd9cd",
-  measurementId: "G-637C6WDGFG",
-  databaseURL:'https://btdbf-equipment-manager-default-rtdb.asia-southeast1.firebasedatabase.app' 
+  apiKey: "AIzaSyDPK03wzNUr0f3kC6PWdpo8WWPYYedLA-U",
+  authDomain: "stock-tracking-3d5f0.firebaseapp.com",
+  projectId: "stock-tracking-3d5f0",
+  storageBucket: "stock-tracking-3d5f0.firebasestorage.app",
+  messagingSenderId: "302903306907",
+  appId: "1:302903306907:web:b86049cce489b99b9f743e",
+  measurementId: "G-0HZGY2TG53",
+  databaseURL:'https://stock-tracking-3d5f0-default-rtdb.asia-southeast1.firebasedatabase.app/' 
 };
 
 // Initialize Firebase

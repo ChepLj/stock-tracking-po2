@@ -119,3 +119,24 @@ ion-split-pane {
   --side-max-width: 300px;
   --side-min-width: 160px;
 }
+
+
+.menu-logout{
+  position: absolute;
+  bottom: 5px;
+  right: 0;
+  margin: 0;
+  font-size:medium;
+  color: dodgerblue;
+  cursor: pointer;
+}
+
+.menu-bottom{
+  font-size: 10px;
+  font-style: italic;
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  color: #616e7e;
+
+}

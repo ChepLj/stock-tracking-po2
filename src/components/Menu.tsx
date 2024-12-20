@@ -30,14 +30,20 @@ interface AppPage {
 
 const appPages: AppPage[] = [
   {
-    title: "Main",
+    title: "OverView",
     url: "/page/Main",
     iosIcon: mailOutline,
     mdIcon: mailSharp,
   },
   {
-    title: "Create",
-    url: "/page/Create",
+    title: "Inbound ",
+    url: "/page/Inbound",
+    iosIcon: paperPlaneOutline,
+    mdIcon: paperPlaneSharp,
+  },
+  {
+    title: "Outbound ",
+    url: "/page/Outbound",
     iosIcon: paperPlaneOutline,
     mdIcon: paperPlaneSharp,
   },
@@ -95,7 +101,7 @@ const Menu = ({ dispatch }: { dispatch: Function }) => {
   };
 
   const routerDirection = (appPage: AppPage) => {
-    if (appPage.title == "Main") {
+    if (appPage.title == "OverView") {
       history.push({
         pathname: "/page/Redirect",
       });
@@ -150,7 +156,7 @@ const Menu = ({ dispatch }: { dispatch: Function }) => {
         <p style={{ color: "gray", fontStyle: "italic", fontSize: "10px", width: "100%", textAlign: "center" }}>- - - - - -Other App- - - - - - </p>
         
         <div className="menu-bottom">
-          <div>Application made for BTĐ BF</div>
+          <div>App made for BTĐ Pomina</div>
           <div>Author Mr.Sỹ</div>
         </div>
       </IonContent>

@@ -1,16 +1,22 @@
-import { IonButtons, IonContent, IonHeader, IonMenuButton, IonPage, IonTitle, IonToolbar } from "@ionic/react";
+import { IonButtons, IonContent, IonFab, IonFabButton, IonHeader, IonIcon, IonMenuButton, IonPage, IonTitle, IonToolbar } from "@ionic/react";
 import { useParams } from "react-router";
-import ExploreContainer from "../components/ExploreContainer";
+
 import "./Main.css";
-import Header from "../components/Header/Header";
-import { useContext, useEffect, useRef, useState } from "react";
-import { ITF_FilterResult } from "../interface/mainInterface";
-import firebaseGetMainData from "../firebase/api/getData";
-import conditionFilter from "../components/function/conditionFilter";
-import conditionSearch from "../components/function/conditionSearch";
-import { AuxiliaryDataContext } from "../context/auxiliaryDataContext";
-import { MainContext } from "../context/mainDataContext";
-import { AuthContext } from "../context/loginContext";
+import { useContext, useState, useRef, useEffect } from "react";
+import ExploreContainer from "../../components/ExploreContainer";
+import conditionFilter from "../../components/function/conditionFilter";
+import conditionSearch from "../../components/function/conditionSearch";
+import Header from "../../components/Header/HeaderMain";
+import { AuxiliaryDataContext } from "../../context/auxiliaryDataContext";
+import { AuthContext } from "../../context/loginContext";
+import { MainContext } from "../../context/mainDataContext";
+import firebaseGetMainData from "../../firebase/api/getData";
+import { ITF_FilterResult } from "../../interface/mainInterface";
+import { refreshOutline } from "ionicons/icons";
+import ModalFilter from "../../components/ModalFilter/ModalFilter";
+import TableView from "../../components/ViewStyle/TableView";
+import ExcelToJson from "../../components/ExcelToJson/ExcelToJson";
+
 
 const Main: React.FC = () => {
   const { name } = useParams<{ name: string }>();
@@ -25,7 +31,7 @@ const Main: React.FC = () => {
   const [modalFilterOpen, setModalFilterOpen] = useState<any>(false);
   const isFilter = useRef(false);
   let searchTargetValue = useRef("");
-  const [viewStyle, setViewStyle] = useState("Card");
+  const [viewStyle, setViewStyle] = useState("Stock");
 
   let keyOfDataRaw: Array<string> = [];
   if (searchState.type) {
@@ -146,8 +152,16 @@ const Main: React.FC = () => {
             <IonTitle size="large">{name}</IonTitle>
           </IonToolbar>
         </IonHeader>
-        <ExploreContainer name={name} />
+
+        {viewStyle === "Stock" && <TableView data={data} keyOfDataRaw={keyOfDataRaw} disPatch={disPatch} ionItemSlidingRef={ionItemSlidingRef} authorLogin={authorLogin} virtuoso={virtuoso} />}
+        {viewStyle === "Inbound" && <ExcelToJson/>}
       </IonContent>
+      <IonFab slot="fixed" vertical="bottom" horizontal="end">
+        <IonFabButton size="small" onClick={handelRefresh}>
+          <IonIcon icon={refreshOutline}></IonIcon>
+        </IonFabButton>
+      </IonFab>
+      <ModalFilter modalFilterOpen={modalFilterOpen} setModalFilterOpen={setModalFilterOpen} handleFilter={handleFilter} isFilter={isFilter.current} />
     </IonPage>
   );
 };

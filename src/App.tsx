@@ -30,7 +30,9 @@ import { AuthContext } from "./context/loginContext";
 import MainDataContext from "./context/mainDataContext";
 import LoginPage from "./pages/LoginPage/LoginPage";
 import Menu from "./components/Menu";
-import Main from "./pages/Main";
+
+import LoadingPage from "./pages/LoadingPage/LoadingPage";
+import Main from "./pages/StockPage/Main";
 
 
 //! end
@@ -113,7 +115,9 @@ const App: React.FC = () => {
                   <Route path="/page/Main" exact={true}>
                     <Main />
                   </Route>
-                 
+                  <Route path="/page/Redirect" exact={true}>
+                    <LoadingPage />
+                  </Route>
                 </IonRouterOutlet>
               </IonSplitPane>
             )}

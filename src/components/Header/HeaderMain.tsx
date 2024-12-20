@@ -43,27 +43,27 @@ const HeaderMain = ({
         <IonCol>
           <div>
             <IonButtons>
-              <IonButton fill="outline" color={viewStyle === "List" ? "primary" : "medium"} onClick={() => handleViewStyle("List")}>
-                List
+              <IonButton fill="outline" color={viewStyle === "Stock" ? "primary" : "medium"} onClick={() => handleViewStyle("Stock")}>
+                Stock
               </IonButton>
-              <IonButton fill="outline" color={viewStyle === "Card" ? "primary" : "medium"} onClick={() => handleViewStyle("Card")}>
-                Card
+              <IonButton fill="outline" color={viewStyle === "Inbound" ? "primary" : "medium"} onClick={() => handleViewStyle("Inbound")}>
+                Inbound
               </IonButton>
-              <IonButton fill="outline" color={viewStyle === "Table" ? "primary" : "medium"} onClick={() => handleViewStyle("Table")}>
-                Table
+              <IonButton fill="outline" color={viewStyle === "Outbound" ? "primary" : "medium"} onClick={() => handleViewStyle("Outbound")}>
+                Outbound
               </IonButton>
             </IonButtons>
           </div>
         </IonCol>
-        {viewStyle === "Table" && (
+        {true && (
           <IonCol size="auto">
             <IonButtons>
-              <IonButton style={{ fontSize: "10px" }} onClick={() => exportFileRaw(data, keyOfDataRaw)}>
+              {/* <IonButton style={{ fontSize: "10px" }} onClick={() => exportFileRaw(data, keyOfDataRaw)}>
                 Export Raw
                 <IonIcon icon={downloadOutline} style={{ paddingLeft: "4px" }} />
-              </IonButton>
+              </IonButton> */}
               <IonButton style={{ fontSize: "10px" }} onClick={exportFileFix}>
-                Export Fix
+                Export Excel
                 <IonIcon icon={downloadOutline} style={{ paddingLeft: "4px" }} />
               </IonButton>
               <IonButton style={{ fontSize: "10px" }} color="medium">
@@ -79,7 +79,7 @@ const HeaderMain = ({
             <div style={{ fontSize: "8px", fontStyle: "italic", padding: "2px", color: "gray" }}>
               {countSearch[0]}/{countSearch[1]} item
             </div>
-            <IonSearchbar style={{ padding: "0 5px 0 0", height: "30px" }} debounce={500} onIonChange={(ev) => callbackResultSearch!(ev)} value={value}></IonSearchbar>
+            <IonSearchbar style={{ padding: "0 5px 0 0", height: "30px" }} debounce={500}  showClearButton="never" onIonChange={(ev) => callbackResultSearch!(ev)} value={value}></IonSearchbar>
             <IonIcon icon={filterCircleOutline} slot="end" size="large" color={isFilter ? "danger" : "medium"} onClick={() => setModalFilterOpen!(!modalFilterOpen)} />
           </div>
         </IonCol>

@@ -8,6 +8,7 @@ import { ActionSheet, ActionSheetButtonStyle } from "@capacitor/action-sheet";
 function ModalInboundHand({ isModalOpen, setIsModalOpen }: { isModalOpen: any; setIsModalOpen: Function }) {
   const { disPatch } = useContext<any>(MainContext);
   const [state, setState] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
   const unit = ["Hộp", "Cái", "Bộ", "Mét", "Thanh", "Kg", "Tấm", "Bịch", "Đơn vị khác"];
   const batch = ["none", "C1", "C2", "C3"];
   //TODO: Assign value when action is Edit
@@ -96,11 +97,11 @@ function ModalInboundHand({ isModalOpen, setIsModalOpen }: { isModalOpen: any; s
         data: batchElm.value,
       });
     }
-    const timeStamp = Date.now()
+    const timeStamp = Date.now();
     uploadContainer.push({
-        ref: `MainData/${isModalOpen.key}/lastUpdate/`,
-        data: timeStamp
-    })
+      ref: `MainData/${isModalOpen.key}/lastUpdate/`,
+      data: timeStamp,
+    });
 
     //////////////////////////////
     const handelRefresh = () => {
@@ -112,7 +113,6 @@ function ModalInboundHand({ isModalOpen, setIsModalOpen }: { isModalOpen: any; s
     //////////////////////////////
     console.log("🚀 ~ handelUploadData ~ uploadContainer:", uploadContainer);
     if (uploadContainer.length) {
-
       firebasePostData(uploadContainer, handelRefresh);
     } else {
       alert("Cập nhật bị từ chối vì dữ liệu không thay đổi !");
@@ -123,51 +123,47 @@ function ModalInboundHand({ isModalOpen, setIsModalOpen }: { isModalOpen: any; s
   //TODO: Xóa đối tượng
   const handelPreDelete = async () => {
     const userConfirmed = confirm(`Are you sure you want to delete ${isModalOpen.key}?`);
- 
+
     if (userConfirmed) {
-        const key = Date.now()
-        const uploadContainer: ITF_UploadContainer[] = [
-            {
-                ref: `MainData/${isModalOpen.key}/logs/${key}/`,
-                data: {
-                    behavior: "pre-delete",  
-                    timeStamp: key
-                  },
-            },
-            {
-                ref: `Logs/${key}`,
-                data: {
-                  behavior: "pre-delete",
-                  detail: "pre-delete",
-                  item: JSON.stringify(isModalOpen.value),
-                  timeStamp: key
-                },
-            },
-            {
-                ref: `MainData/${isModalOpen.key}/status/`,
-                data: {
-                    value: 'pre-delete',
-                    timeStamp : key
-                }
-                
-            }
-        ];
+      const key = Date.now();
+      const uploadContainer: ITF_UploadContainer[] = [
+        {
+          ref: `MainData/${isModalOpen.key}/logs/${key}/`,
+          data: {
+            behavior: "pre-delete",
+            timeStamp: key,
+          },
+        },
+        {
+          ref: `Logs/${key}`,
+          data: {
+            behavior: "pre-delete",
+            detail: "pre-delete",
+            item: JSON.stringify(isModalOpen.value),
+            timeStamp: key,
+          },
+        },
+        {
+          ref: `MainData/${isModalOpen.key}/status/`,
+          data: {
+            value: "pre-delete",
+            timeStamp: key,
+          },
+        },
+      ];
 
-        
-    
-        //////////////////////////////
-        const handelRefresh = () => {
-          //: lấy data từ firebase sao đó dispatch đê render lại
-          const childRef = "MainData/";
-          firebaseGetMainData(childRef, disPatch);
-          setIsModalOpen({ isOpen: false, value: "" });
-        };
-        //////////////////////////////
-
-        if (uploadContainer.length) {
-          firebasePostData(uploadContainer, handelRefresh);
-       
+      //////////////////////////////
+      const handelRefresh = () => {
+        //: lấy data từ firebase sao đó dispatch đê render lại
+        const childRef = "MainData/";
+        firebaseGetMainData(childRef, disPatch);
+        setIsModalOpen({ isOpen: false, value: "" });
       };
+      //////////////////////////////
+
+      if (uploadContainer.length) {
+        firebasePostData(uploadContainer, handelRefresh);
+      }
     }
   };
   //TODO_END:
@@ -177,7 +173,7 @@ function ModalInboundHand({ isModalOpen, setIsModalOpen }: { isModalOpen: any; s
       <IonHeader>
         <IonToolbar>
           <IonTitle>
-            <i>Inbound</i> 
+            <i>Nhập Kho </i>
           </IonTitle>
           <IonButtons slot="end">
             <IonButton onClick={() => setIsModalOpen({ isOpen: false, value: "" })}>Close</IonButton>
@@ -185,57 +181,83 @@ function ModalInboundHand({ isModalOpen, setIsModalOpen }: { isModalOpen: any; s
         </IonToolbar>
       </IonHeader>
       <IonContent className="ion-padding">
-        <IonList>
-          <IonItem>
-            <IonLabel color="tertiary">Description</IonLabel>
-            <IonInput name="edit-stockModal-description" style={{ textAlign: "end", marginLeft: "10px" }}></IonInput>
-          </IonItem>
-          <IonItem>
-            <IonLabel color="tertiary">Quantity</IonLabel>
-            <IonInput type="number" name="editStockModal-quantity" style={{ textAlign: "end", marginLeft: "10px" }}></IonInput>
-          </IonItem>
-          <IonItem>
-            <IonLabel color="tertiary">Unit:</IonLabel>
-            <IonSelect slot="end" name="editStockModal-unit" style={{ textAlign: "end", marginLeft: "10px" }} interface="popover" placeholder="Select">
-              {unit.map((crr, index) => {
-                return (
-                  <IonSelectOption value={crr} key={index}>
-                    {crr}
-                  </IonSelectOption>
-                );
-              })}
-            </IonSelect>
-          </IonItem>
-          <IonItem>
-            <IonLabel color="tertiary">Price</IonLabel>
-            <IonInput type="number" name="editStockModal-price" style={{ textAlign: "end", marginLeft: "10px", marginRight: "2px" }}></IonInput>
-            <span> VNĐ</span>
-          </IonItem>
-          <IonItem>
-            <IonLabel color="tertiary">Batch</IonLabel>
-
-            <IonSelect slot="end" name="editStockModal-batch" style={{ textAlign: "end", marginLeft: "10px" }} interface="popover" placeholder="Select">
-              {batch.map((crr, index) => {
-                return (
-                  <IonSelectOption value={crr} key={index}>
-                    {crr}
-                  </IonSelectOption>
-                );
-              })}
-            </IonSelect>
-          </IonItem>
-          <IonItem>
-            <IonLabel color="tertiary">Note</IonLabel>
-            <IonTextarea autoGrow={true} name="editStockModal-note" style={{ textAlign: "end", marginLeft: "10px" }}></IonTextarea>
-          </IonItem>
-        </IonList>
-        <IonToolbar>
+        {!searchValue ? (
+          <>
+           
+            <IonItem>
+              <IonInput label="Nhập mã vật tư " labelPlacement="stacked" placeholder="Enter text" style={{ marginLeft: "10px", maxWidth: "60%" }}></IonInput>
+              <IonLabel>Lưu kho:</IonLabel>
+              <IonSelect name="editStockModal-unit" style={{ textAlign: "end", marginLeft: "10px" }} interface="popover" placeholder="Select">
+                {unit.map((crr, index) => {
+                  return (
+                    <IonSelectOption value={crr} key={index}>
+                      {crr}
+                    </IonSelectOption>
+                  );
+                })}
+              </IonSelect>
+            </IonItem>
+            <br />
+            <IonButton expand="block">Search</IonButton>
+          </>
+        ) : (
+          <>
           
+            <IonList>
+              <IonItem>
+                <IonLabel color="tertiary">Description</IonLabel>
+                <IonInput name="edit-stockModal-description" style={{ textAlign: "end", marginLeft: "10px" }}></IonInput>
+              </IonItem>
+              <IonItem>
+                <IonLabel color="tertiary">Quantity</IonLabel>
+                <IonInput type="number" name="editStockModal-quantity" style={{ textAlign: "end", marginLeft: "10px" }}></IonInput>
+              </IonItem>
+              <IonItem>
+                <IonLabel color="tertiary">Unit:</IonLabel>
+                <IonSelect slot="end" name="editStockModal-unit" style={{ textAlign: "end", marginLeft: "10px" }} interface="popover" placeholder="Select">
+                  {unit.map((crr, index) => {
+                    return (
+                      <IonSelectOption value={crr} key={index}>
+                        {crr}
+                      </IonSelectOption>
+                    );
+                  })}
+                </IonSelect>
+              </IonItem>
+              <IonItem>
+                <IonLabel color="tertiary">Price</IonLabel>
+                <IonInput type="number" name="editStockModal-price" style={{ textAlign: "end", marginLeft: "10px", marginRight: "2px" }}></IonInput>
+                <span> VNĐ</span>
+              </IonItem>
+              <IonItem>
+                <IonLabel color="tertiary">Batch</IonLabel>
+
+                <IonSelect slot="end" name="editStockModal-batch" style={{ textAlign: "end", marginLeft: "10px" }} interface="popover" placeholder="Select">
+                  {batch.map((crr, index) => {
+                    return (
+                      <IonSelectOption value={crr} key={index}>
+                        {crr}
+                      </IonSelectOption>
+                    );
+                  })}
+                </IonSelect>
+              </IonItem>
+              <IonItem>
+                <IonLabel color="tertiary">Note</IonLabel>
+                <IonTextarea autoGrow={true} name="editStockModal-note" style={{ textAlign: "end", marginLeft: "10px" }}></IonTextarea>
+              </IonItem>
+            </IonList>
+            <br />
+            <IonToolbar>
           <IonButton slot="end" color="success" onClick={handelUploadData}>
             Tạo Lệnh Nhập Kho
           </IonButton>
         </IonToolbar>
-        <br />
+        
+          </>
+        )}
+
+        
       </IonContent>
     </IonModal>
   );

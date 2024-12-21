@@ -47,10 +47,10 @@ const HeaderMain = ({
                 Stock
               </IonButton>
               <IonButton fill="outline" color={viewStyle === "Inbound" ? "primary" : "medium"} onClick={() => handleViewStyle("Inbound")}>
-                Inbound
+                Nhập Kho
               </IonButton>
               <IonButton fill="outline" color={viewStyle === "Outbound" ? "primary" : "medium"} onClick={() => handleViewStyle("Outbound")}>
-                Outbound
+                Xuất Kho
               </IonButton>
             </IonButtons>
           </div>

@@ -25,7 +25,7 @@ const MainDataContext = ({ children }: any) => {
   const [data, disPatch]: [data: any, disPatch: Function] = useReducer<any>(handelData, initData);
   const keyOfDataShow = [];
   for (const key in data) {
-    if (data[key]?.status !== "pre-delete") {
+    if (data[key]?.status?.value !== "pre-delete") {
       keyOfDataShow.push(key);
     }
   }

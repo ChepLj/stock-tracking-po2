@@ -1,6 +1,8 @@
 import { IonAvatar, IonContent, IonIcon, IonImg, IonItem, IonLabel, IonList, IonListHeader, IonMenu, IonMenuToggle, IonNote, useIonRouter } from "@ionic/react";
 
 import {
+  fileTrayFullOutline,
+  fileTrayFullSharp,
   informationCircleOutline,
   informationCircleSharp,
   mailOutline,
@@ -36,23 +38,12 @@ const appPages: AppPage[] = [
     mdIcon: mailSharp,
   },
   {
-    title: "Inbound ",
-    url: "/page/Inbound",
-    iosIcon: paperPlaneOutline,
-    mdIcon: paperPlaneSharp,
+    title: "Auxiliary ",
+    url: "/page/Auxiliary",
+    iosIcon: fileTrayFullOutline,
+    mdIcon: fileTrayFullSharp,
   },
-  {
-    title: "Outbound ",
-    url: "/page/Outbound",
-    iosIcon: paperPlaneOutline,
-    mdIcon: paperPlaneSharp,
-  },
-  {
-    title: "QRScan",
-    url: "/page/QRScan",
-    iosIcon: qrCodeOutline,
-    mdIcon: qrCodeSharp,
-  },
+ 
 
   {
     title: "Logs",

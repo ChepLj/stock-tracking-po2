@@ -14,8 +14,11 @@ import firebaseGetMainData from "../../firebase/api/getData";
 import { ITF_FilterResult } from "../../interface/mainInterface";
 import { refreshOutline } from "ionicons/icons";
 import ModalFilter from "../../components/ModalFilter/ModalFilter";
-import TableView from "../../components/ViewStyle/TableView";
+import TableView from "../../components/ViewStyle/StockView";
 import ExcelToJson from "../../components/ExcelToJson/ExcelToJson";
+import InboundView from "../../components/ViewStyle/InboundView";
+import OutboundView from "../../components/ViewStyle/OutboundView";
+import StockView from "../../components/ViewStyle/StockView";
 
 
 const Main: React.FC = () => {
@@ -153,14 +156,12 @@ const Main: React.FC = () => {
           </IonToolbar>
         </IonHeader>
 
-        {viewStyle === "Stock" && <TableView data={data} keyOfDataRaw={keyOfDataRaw} disPatch={disPatch} ionItemSlidingRef={ionItemSlidingRef} authorLogin={authorLogin} virtuoso={virtuoso} />}
-        {viewStyle === "Inbound" && <ExcelToJson/>}
+        {viewStyle === "Stock" && <StockView data={data} keyOfDataRaw={keyOfDataRaw} disPatch={disPatch} ionItemSlidingRef={ionItemSlidingRef} authorLogin={authorLogin} virtuoso={virtuoso} handelRefresh={handelRefresh} />}
+        {viewStyle === "Inbound" && <InboundView data={data} keyOfDataRaw={keyOfDataRaw} disPatch={disPatch} ionItemSlidingRef={ionItemSlidingRef} authorLogin={authorLogin} virtuoso={virtuoso} />}
+        {viewStyle === "Outbound" && <OutboundView data={data} keyOfDataRaw={keyOfDataRaw} disPatch={disPatch} ionItemSlidingRef={ionItemSlidingRef} authorLogin={authorLogin} virtuoso={virtuoso} />}
+       
       </IonContent>
-      <IonFab slot="fixed" vertical="bottom" horizontal="end">
-        <IonFabButton size="small" onClick={handelRefresh}>
-          <IonIcon icon={refreshOutline}></IonIcon>
-        </IonFabButton>
-      </IonFab>
+     
       <ModalFilter modalFilterOpen={modalFilterOpen} setModalFilterOpen={setModalFilterOpen} handleFilter={handleFilter} isFilter={isFilter.current} />
     </IonPage>
   );

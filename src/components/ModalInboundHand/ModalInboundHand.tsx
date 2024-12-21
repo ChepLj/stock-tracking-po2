@@ -5,7 +5,7 @@ import firebasePostData from "../../firebase/api/postData";
 import { MainContext } from "../../context/mainDataContext";
 import firebaseGetMainData from "../../firebase/api/getData";
 import { ActionSheet, ActionSheetButtonStyle } from "@capacitor/action-sheet";
-function ModalEditStock({ isModalOpen, setIsModalOpen }: { isModalOpen: any; setIsModalOpen: Function }) {
+function ModalInboundHand({ isModalOpen, setIsModalOpen }: { isModalOpen: any; setIsModalOpen: Function }) {
   const { disPatch } = useContext<any>(MainContext);
   const [state, setState] = useState(false);
   const unit = ["Hộp", "Cái", "Bộ", "Mét", "Thanh", "Kg", "Tấm", "Bịch", "Đơn vị khác"];
@@ -177,7 +177,7 @@ function ModalEditStock({ isModalOpen, setIsModalOpen }: { isModalOpen: any; set
       <IonHeader>
         <IonToolbar>
           <IonTitle>
-            <i>Edit</i> <strong>{isModalOpen?.value?.material}</strong> <i>Stock</i> <strong>{isModalOpen?.value?.sLoc}</strong>
+            <i>Inbound</i> 
           </IonTitle>
           <IonButtons slot="end">
             <IonButton onClick={() => setIsModalOpen({ isOpen: false, value: "" })}>Close</IonButton>
@@ -230,17 +230,15 @@ function ModalEditStock({ isModalOpen, setIsModalOpen }: { isModalOpen: any; set
           </IonItem>
         </IonList>
         <IonToolbar>
-          <IonButton color="danger" onClick={handelPreDelete}>Xóa vật tư này</IonButton>
-          {/* <IonButton color='medium' fill='outline'>Hủy bỏ</IonButton> */}
+          
           <IonButton slot="end" color="success" onClick={handelUploadData}>
-            Cập Nhật
+            Tạo Lệnh Nhập Kho
           </IonButton>
         </IonToolbar>
         <br />
-        <IonNote>ở tác vụ xóa, vật tư sẽ không được xóa hoàn toàn mà sẽ chuyển vào thùng rác !!!</IonNote>
       </IonContent>
     </IonModal>
   );
 }
 
-export default ModalEditStock;
+export default ModalInboundHand;

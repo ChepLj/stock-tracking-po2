@@ -99,7 +99,8 @@ export interface ITF_Logs {
     author: string;
     authorId: string | number;
     detail: string;
-    item: string;
+    item?: string;
+    timeStamp?: string| number;
   };
 }
 

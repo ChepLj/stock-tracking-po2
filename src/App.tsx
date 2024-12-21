@@ -33,6 +33,9 @@ import Menu from "./components/Menu";
 
 import LoadingPage from "./pages/LoadingPage/LoadingPage";
 import Main from "./pages/StockPage/Main";
+import TrashPage from "./pages/TrashPage/TrashPage";
+import HelpsPage from "./pages/HelpsPage/HelpsPage";
+import LogsPage from "./pages/LogsPage/LogsPage";
 
 
 //! end
@@ -117,6 +120,15 @@ const App: React.FC = () => {
                   </Route>
                   <Route path="/page/Redirect" exact={true}>
                     <LoadingPage />
+                  </Route>
+                  <Route path="/page/Trash" exact={true}>
+                    <TrashPage />
+                  </Route>
+                  <Route path="/page/Info" exact={true}>
+                    <HelpsPage />
+                  </Route>
+                  <Route path="/page/Logs" exact={true}>
+                    <LogsPage />
                   </Route>
                 </IonRouterOutlet>
               </IonSplitPane>

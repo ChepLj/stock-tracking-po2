@@ -68,14 +68,14 @@ const Main: React.FC = () => {
 
   //TODO_END:Lấy Main Data khi load Page lần đầu
 
-  //TODO: Lấy StockList khi load Page lần đầu
-  useEffect(() => {
-    //: lấy data từ firebase sao đó dispatch đê render lại
-    const childRef = "AuxiliaryData/";
-    firebaseGetMainData(childRef, disPatchAuxiliaryData);
-  }, []);
+  // //TODO: Lấy StockList khi load Page lần đầu
+  // useEffect(() => {
+  //   //: lấy data từ firebase sao đó dispatch đê render lại
+  //   const childRef = "AuxiliaryData/";
+  //   firebaseGetMainData(childRef, disPatchAuxiliaryData);
+  // }, []);
 
-  //TODO_END:Lấy StockList khi load Page lần đầu
+  // //TODO_END:Lấy StockList khi load Page lần đầu
 
   //TODO: refresh Data
   const handelRefresh = () => {
@@ -158,7 +158,7 @@ const Main: React.FC = () => {
 
         {viewStyle === "Stock" && <StockView data={data} keyOfDataRaw={keyOfDataRaw} disPatch={disPatch} ionItemSlidingRef={ionItemSlidingRef} authorLogin={authorLogin} virtuoso={virtuoso} handelRefresh={handelRefresh} />}
         {viewStyle === "Inbound" && <InboundView data={data} keyOfDataRaw={keyOfDataRaw} disPatch={disPatch} ionItemSlidingRef={ionItemSlidingRef} authorLogin={authorLogin} virtuoso={virtuoso} />}
-        {viewStyle === "Outbound" && <OutboundView data={data} keyOfDataRaw={keyOfDataRaw} disPatch={disPatch} ionItemSlidingRef={ionItemSlidingRef} authorLogin={authorLogin} virtuoso={virtuoso} />}
+        {viewStyle === "Outbound" && <ExcelToJson/>}
        
       </IonContent>
      

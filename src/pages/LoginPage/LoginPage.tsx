@@ -1,6 +1,6 @@
 import { useContext, useState } from "react";
 
-import documentIcon from "../../source/img/icon.png";
+import documentIcon from "../../source/img/favicon.png";
 import style from "./LoginLayout.module.css";
 import checkAppPermission from "./function/checkAppPermission";
 import getAuthorFromAccountDB from "./function/getAuthorFromAccountDB";

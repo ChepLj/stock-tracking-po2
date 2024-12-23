@@ -9,6 +9,7 @@ function firebaseGetMainData (childRef:any, disPatch?:any){
       disPatch({type: "SUCCESSFUL", payload: snapshot.val()}) //: disPatch đẻ render lại
     } else {
       console.log("No data available");
+      disPatch({type: "ERROR", payload: ''}) //: disPatch đẻ render lại
     }
   }).catch((error) => {
     console.error(error);

@@ -1,173 +1,226 @@
-import React, { useContext, useEffect, useState } from "react";
-import { IonButtons, IonButton, IonModal, IonHeader, IonContent, IonToolbar, IonTitle, IonPage, IonItem, IonLabel, IonList, IonText, IonNote, IonInput, IonTextarea, IonSelect, IonSelectOption } from "@ionic/react";
-import { ITF_AuthorLogin, ITF_UploadContainer } from "../../interface/mainInterface";
-import firebasePostData from "../../firebase/api/postData";
+import { IonButton, IonButtons, IonContent, IonHeader, IonInput, IonItem, IonLabel, IonList, IonModal, IonNote, IonSelect, IonSelectOption, IonText, IonTextarea, IonTitle, IonToolbar } from "@ionic/react";
+import { useContext, useEffect, useState } from "react";
 import { MainContext } from "../../context/mainDataContext";
 import firebaseGetMainData from "../../firebase/api/getData";
-import { ActionSheet, ActionSheetButtonStyle } from "@capacitor/action-sheet";
+import firebasePostData from "../../firebase/api/postData";
+import { ITF_UploadContainer } from "../../interface/mainInterface";
 function ModalInboundHand({ isModalOpen, setIsModalOpen }: { isModalOpen: any; setIsModalOpen: Function }) {
-  const { disPatch } = useContext<any>(MainContext);
+  const { data, keyOfDataShow, disPatch } = useContext<any>(MainContext);
   const [state, setState] = useState(false);
-  const [searchValue, setSearchValue] = useState("");
-  const unit = ["Hộp", "Cái", "Bộ", "Mét", "Thanh", "Kg", "Tấm", "Bịch", "Đơn vị khác"];
+  const [searchValue, setSearchValue] = useState<any>({});
+  const unit = ["BT", "EA", "G", "KG", "L", "M", "M2", "M3", "ML", "PAA", "PC", "Set", "TON", "Other"];
   const batch = ["none", "C1", "C2", "C3"];
+  const [stockList, setStockList] = useState<any>([]);
+  const [error, setError] = useState<any>("");
+  //TODO: Lấy StockList khi load Page lần đầu
+  useEffect(() => {
+    const callback = (data: any) => {
+      setStockList(data.payload);
+    };
+    //: lấy data từ firebase sao đó dispatch đê render lại
+    const childRef = "AuxiliaryData/StockList/";
+    firebaseGetMainData(childRef, callback);
+  }, []);
+
+  //TODO_END:Lấy StockList khi load Page lần đầu
+
   //TODO: Assign value when action is Edit
   useEffect(() => {
     setState((pre) => !pre);
   }, [isModalOpen.isOpen]);
 
   useEffect(() => {
-    if (isModalOpen.value) {
-      const descriptionElm = document.querySelector('[name="edit-stockModal-description"]') as HTMLInputElement;
-      const quantityElm = document.querySelector('[name="editStockModal-quantity"]') as HTMLInputElement;
-      const unitElm = document.querySelector('[name="editStockModal-unit"]') as HTMLInputElement;
-      const priceElm = document.querySelector('[name="editStockModal-price"]') as HTMLInputElement;
-      const batchElm = document.querySelector('[name="editStockModal-batch"]') as HTMLInputElement;
-      const noteElm = document.querySelector('[name="editStockModal-note"]') as HTMLInputElement;
+    if (searchValue?.value?.material) {
+      const materialElm = document.querySelector('[name="inbound-Modal-material"]') as HTMLInputElement;
+      const stockElm = document.querySelector('[name="inbound-Modal-stock"]') as HTMLInputElement;
+      const descriptionElm = document.querySelector('[name="inbound-Modal-description"]') as HTMLInputElement;
+      const quantityElm = document.querySelector('[name="inbound-Modal-quantity"]') as HTMLInputElement;
+      const unitElm = document.querySelector('[name="inbound-Modal-unit"]') as HTMLInputElement;
+      const priceElm = document.querySelector('[name="inbound-Modal-price"]') as HTMLInputElement;
+      const batchElm = document.querySelector('[name="inbound-Modal-batch"]') as HTMLInputElement;
+      const noteElm = document.querySelector('[name="inbound-Modal-note"]') as HTMLInputElement;
       // Ensure elements exist before accessing properties
+      const dataTemp = searchValue.value;
+      console.log("🚀 ~ useEffect ~ dataTemp:", dataTemp);
       if (descriptionElm) {
-        descriptionElm.value = isModalOpen.value?.description || "";
+        descriptionElm.value = dataTemp?.description || "";
+      }
+      if (materialElm) {
+        materialElm.value = dataTemp?.material || "";
+      }
+      if (stockElm) {
+        stockElm.value = dataTemp?.sLoc || "";
       }
       if (quantityElm) {
-        quantityElm.value = isModalOpen.value?.quantity || "";
+        // quantityElm.value = dataTemp?.quantity || "";
       }
       if (unitElm) {
-        unitElm.value = isModalOpen.value?.unit || "";
+        unitElm.value = dataTemp?.unit || "";
       }
       if (priceElm) {
-        priceElm.value = isModalOpen.value?.price || "";
+        priceElm.value = dataTemp?.price || 1;
       }
       if (batchElm) {
-        batchElm.value = isModalOpen.value?.batch || "";
+        batchElm.value = dataTemp?.batch || "";
       }
       if (noteElm) {
-        noteElm.value = isModalOpen.value?.note || "";
+        noteElm.value = dataTemp?.note || "";
       }
     }
   }, [state]);
+
   //TODO_END: Assign value when action is Edit
+
+  //TODO: Search Stock
+
+  const handelSearch = () => {
+    const searchElm = (document.querySelector('[name="inbound-stockModal-materialSearch"]') as HTMLInputElement).value;
+    const stockElm = (document.querySelector('[name="inbound-stockModal-stockSearch"]') as HTMLInputElement).value;
+    if (searchElm && stockElm && searchElm.length == 9) {
+      const key = `${searchElm}-${stockElm}`;
+
+      if (data[key]) {
+        console.log("🚀 ~ handelSearch ~ data[key]):", data[key]);
+        setSearchValue({ value: data[key], messenger: "" });
+        setState((pre) => !pre);
+        setError("");
+      } else {
+        const callback = (result: any) => {
+          if (result.payload) {
+            const dataTemp = {
+              material: searchElm,
+              sLoc: stockElm,
+              description: result.payload.description,
+              unit: result.payload.unit,
+              isNew: true,
+            };
+            setSearchValue({ value: dataTemp, messenger: "Không tìm thấy Vật tư cùng Kho này trong Stock . Hành động sẽ là thêm mới !" });
+            setState((pre) => !pre);
+            setError("");
+          } else {
+            const dataTemp = {
+              material: searchElm,
+              sLoc: stockElm,
+              isNew: true,
+            };
+            setSearchValue({ value: dataTemp, messenger: "Không tồn tại vật tư này trên hệ thống. Kiểm tra lại mã vật tư trước khi tạo lệnh nhập !" });
+            setState((pre) => !pre);
+            setError("");
+          }
+        };
+        const childRef = `AuxiliaryData/MaterialList/${searchElm}/`;
+        firebaseGetMainData(childRef, callback);
+      }
+    } else {
+      setError("Điền đầy đủ Mã Vật Tư và Kho ! (MVT = 9 ký tự)");
+    }
+  };
+  //TODO_END: Search Stock
 
   //TODO: Update data
   const handelUploadData = () => {
-    const descriptionElm = document.querySelector('[name="edit-stockModal-description"]') as HTMLInputElement;
-    const quantityElm = document.querySelector('[name="editStockModal-quantity"]') as HTMLInputElement;
-    const unitElm = document.querySelector('[name="editStockModal-unit"]') as HTMLInputElement;
+    const searchElm = (document.querySelector('[name="inbound-Modal-material"]') as HTMLInputElement).value;
+    const stockElm = (document.querySelector('[name="inbound-Modal-stock"]') as HTMLInputElement).value;
+    const descriptionElm = document.querySelector('[name="inbound-Modal-description"]') as HTMLInputElement;
+    const quantityElm = document.querySelector('[name="inbound-Modal-quantity"]') as HTMLInputElement;
+    const unitElm = document.querySelector('[name="inbound-Modal-unit"]') as HTMLInputElement;
 
-    const priceElm = document.querySelector('[name="editStockModal-price"]') as HTMLInputElement;
-    const batchElm = document.querySelector('[name="editStockModal-batch"]') as HTMLInputElement;
-    console.log("🚀 ~ handelUploadData ~ batchElm:", batchElm.value);
-    console.log("🚀 ~ handelUploadData ~ batchElm:", isModalOpen?.value?.batch);
-    const noteElm = document.querySelector('[name="editStockModal-note"]') as HTMLInputElement;
-
+    const priceElm = document.querySelector('[name="inbound-Modal-price"]') as HTMLInputElement;
+    const batchElm = document.querySelector('[name="inbound-Modal-batch"]') as HTMLInputElement;
+    const noteElm = document.querySelector('[name="inbound-Modal-note"]') as HTMLInputElement;
+    const key = `${searchElm}-${stockElm}`;
     const uploadContainer: ITF_UploadContainer[] = [];
 
-    if (descriptionElm?.value !== isModalOpen?.value?.description) {
-      uploadContainer.push({
-        ref: `MainData/${isModalOpen.key}/description/`,
-        data: descriptionElm.value,
-      });
-    }
-    if (quantityElm?.value !== isModalOpen?.value?.quantity) {
-      uploadContainer.push({
-        ref: `MainData/${isModalOpen.key}/quantity/`,
-        data: quantityElm.value,
-      });
-    }
-    if (priceElm?.value !== isModalOpen?.value?.price) {
-      uploadContainer.push({
-        ref: `MainData/${isModalOpen.key}/price/`,
-        data: priceElm.value,
-      });
-    }
-    if (noteElm?.value !== isModalOpen?.value?.note) {
-      uploadContainer.push({
-        ref: `MainData/${isModalOpen.key}/note/`,
-        data: noteElm.value,
-      });
-    }
-    if (unitElm?.value !== isModalOpen?.value?.unit) {
-      uploadContainer.push({
-        ref: `MainData/${isModalOpen.key}/unit/`,
-        data: unitElm.value,
-      });
-    }
-    if (batchElm?.value && batchElm?.value !== isModalOpen?.value?.batch && batchElm?.value !== "none") {
-      uploadContainer.push({
-        ref: `MainData/${isModalOpen.key}/batch/`,
-        data: batchElm.value,
-      });
-    }
-    const timeStamp = Date.now();
-    uploadContainer.push({
-      ref: `MainData/${isModalOpen.key}/lastUpdate/`,
-      data: timeStamp,
-    });
+    try {
+      const dataTemp = searchValue.value;
+      console.log("🚀 ~ handelUploadData ~ dataTemp:", dataTemp);
+      if (dataTemp.isNew) {
+        uploadContainer.push({
+          ref: `MainData/${key}/material/`,
+          data: searchElm,
+        });
+        uploadContainer.push({
+          ref: `MainData/${key}/sLoc/`,
+          data: stockElm,
+        });
+      }
 
-    //////////////////////////////
-    const handelRefresh = () => {
-      //: lấy data từ firebase sao đó dispatch đê render lại
-      const childRef = "MainData/";
-      firebaseGetMainData(childRef, disPatch);
-      setIsModalOpen({ isOpen: false, value: "" });
-    };
-    //////////////////////////////
-    console.log("🚀 ~ handelUploadData ~ uploadContainer:", uploadContainer);
-    if (uploadContainer.length) {
-      firebasePostData(uploadContainer, handelRefresh);
-    } else {
-      alert("Cập nhật bị từ chối vì dữ liệu không thay đổi !");
-    }
-  };
-  //TODO_END: Update data
+      if (descriptionElm?.value !== dataTemp?.description || dataTemp.isNew) {
+        console.log(descriptionElm.value.length);
+        if (!descriptionElm.value || descriptionElm.value.length < 10) {
+          throw new Error(`Tên vật tư >10 ký tự !`);
+        }
+        uploadContainer.push({
+          ref: `MainData/${key}/description/`,
+          data: descriptionElm.value,
+        });
+      }
+      if (+quantityElm?.value > 0) {
+        uploadContainer.push({
+          ref: `MainData/${key}/quantity/`,
+          data: Number(quantityElm.value) + (Number(dataTemp?.quantity) || 0),
+        });
+      } else {
+        throw new Error(`Số lượng không hợp lệ !`);
+      }
+      if (+priceElm?.value <= 0) {
+        throw new Error("Giá không hợp lệ !");
+      }
+      if (priceElm?.value !== dataTemp?.price) {
+        uploadContainer.push({
+          ref: `MainData/${key}/price/`,
+          data: priceElm.value,
+        });
+      }
+      if (noteElm?.value !== dataTemp?.note) {
+        uploadContainer.push({
+          ref: `MainData/${key}/note/`,
+          data: noteElm.value,
+        });
+      }
 
-  //TODO: Xóa đối tượng
-  const handelPreDelete = async () => {
-    const userConfirmed = confirm(`Are you sure you want to delete ${isModalOpen.key}?`);
-
-    if (userConfirmed) {
-      const key = Date.now();
-      const uploadContainer: ITF_UploadContainer[] = [
-        {
-          ref: `MainData/${isModalOpen.key}/logs/${key}/`,
-          data: {
-            behavior: "pre-delete",
-            timeStamp: key,
-          },
-        },
-        {
-          ref: `Logs/${key}`,
-          data: {
-            behavior: "pre-delete",
-            detail: "pre-delete",
-            item: JSON.stringify(isModalOpen.value),
-            timeStamp: key,
-          },
-        },
-        {
-          ref: `MainData/${isModalOpen.key}/status/`,
-          data: {
-            value: "pre-delete",
-            timeStamp: key,
-          },
-        },
-      ];
+      if (!unitElm?.value) {
+        throw new Error("Chưa chọn đơn vị !");
+      }
+      if (unitElm?.value !== dataTemp?.unit || dataTemp.isNew) {
+        uploadContainer.push({
+          ref: `MainData/${key}/unit/`,
+          data: unitElm.value,
+        });
+      }
+      if (batchElm?.value && batchElm?.value !== dataTemp?.batch) {
+        uploadContainer.push({
+          ref: `MainData/${key}/batch/`,
+          data: batchElm.value == "none" ? "" : batchElm.value,
+        });
+      }
+      const timeStamp = Date.now();
+      uploadContainer.push({
+        ref: `MainData/${key}/lastUpdate/`,
+        data: timeStamp,
+      });
 
       //////////////////////////////
       const handelRefresh = () => {
         //: lấy data từ firebase sao đó dispatch đê render lại
         const childRef = "MainData/";
         firebaseGetMainData(childRef, disPatch);
-        setIsModalOpen({ isOpen: false, value: "" });
+        // setIsModalOpen({ isOpen: false, value: "" });
+        setSearchValue({ value: "", messenger: "" });
+        setError("");
       };
       //////////////////////////////
-
+      console.log("🚀 ~ handelUploadData ~ uploadContainer:", uploadContainer);
       if (uploadContainer.length) {
         firebasePostData(uploadContainer, handelRefresh);
+      } else {
+        alert("Cập nhật bị từ chối vì dữ liệu không thay đổi !");
       }
+    } catch (error: any) {
+      setError(error?.message);
     }
   };
-  //TODO_END:
-
+  //TODO_END: Update data
   return (
     <IonModal isOpen={isModalOpen.isOpen} onWillDismiss={() => setIsModalOpen({ isOpen: false, value: "" })}>
       <IonHeader>
@@ -181,40 +234,52 @@ function ModalInboundHand({ isModalOpen, setIsModalOpen }: { isModalOpen: any; s
         </IonToolbar>
       </IonHeader>
       <IonContent className="ion-padding">
-        {!searchValue ? (
+        {!searchValue?.value?.material ? (
           <>
-           
-            <IonItem>
-              <IonInput label="Nhập mã vật tư " labelPlacement="stacked" placeholder="Enter text" style={{ marginLeft: "10px", maxWidth: "60%" }}></IonInput>
-              <IonLabel>Lưu kho:</IonLabel>
-              <IonSelect name="editStockModal-unit" style={{ textAlign: "end", marginLeft: "10px" }} interface="popover" placeholder="Select">
-                {unit.map((crr, index) => {
-                  return (
-                    <IonSelectOption value={crr} key={index}>
-                      {crr}
-                    </IonSelectOption>
-                  );
-                })}
-              </IonSelect>
-            </IonItem>
-            <br />
-            <IonButton expand="block">Search</IonButton>
+            <IonList>
+              <IonItem>
+                <IonInput name="inbound-stockModal-materialSearch" label="Nhập Mã Vật Tư :" type="number" placeholder="Enter text" color="success" style={{ fontSize: "20px", color: "red" }}></IonInput>
+              </IonItem>
+              <IonItem>
+                <IonLabel>Lưu kho:</IonLabel>
+                <IonSelect name="inbound-stockModal-stockSearch" style={{ textAlign: "end", marginLeft: "10px" }} interface="popover" placeholder="Select">
+                  {stockList.map((crr: any, index: number) => {
+                    return (
+                      <IonSelectOption value={crr?.Kho} key={index}>
+                        {crr?.Kho} - {crr?.[`Diễn Giải`]}
+                      </IonSelectOption>
+                    );
+                  })}
+                </IonSelect>
+              </IonItem>
+              <br />
+              <IonButton expand="block" onClick={handelSearch}>
+                Search
+              </IonButton>
+            </IonList>
+            {error && <IonText color="danger">{error}</IonText>}
           </>
         ) : (
           <>
-          
+            {" "}
+            <IonText color="danger">{searchValue.messenger}</IonText>
             <IonList>
               <IonItem>
-                <IonLabel color="tertiary">Description</IonLabel>
-                <IonInput name="edit-stockModal-description" style={{ textAlign: "end", marginLeft: "10px" }}></IonInput>
+                <IonLabel color="tertiary">Material</IonLabel>
+                <IonInput name="inbound-Modal-material" style={{ textAlign: "end", marginLeft: "10px", fontWeight: "500", fontSize: "20px", color: "red" }} readonly></IonInput>
               </IonItem>
               <IonItem>
-                <IonLabel color="tertiary">Quantity</IonLabel>
-                <IonInput type="number" name="editStockModal-quantity" style={{ textAlign: "end", marginLeft: "10px" }}></IonInput>
+                <IonLabel color="tertiary">Stock</IonLabel>
+                <IonInput name="inbound-Modal-stock" style={{ textAlign: "end", marginLeft: "10px", fontWeight: "500", fontSize: "20px", color: "green" }} readonly></IonInput>
               </IonItem>
+              <IonItem>
+                <IonLabel color="tertiary">Description</IonLabel>
+                <IonInput name="inbound-Modal-description" placeholder="Enter text" style={{ textAlign: "end", marginLeft: "10px" }} readonly={searchValue.value.isNew ? false : true}></IonInput>
+              </IonItem>
+
               <IonItem>
                 <IonLabel color="tertiary">Unit:</IonLabel>
-                <IonSelect slot="end" name="editStockModal-unit" style={{ textAlign: "end", marginLeft: "10px" }} interface="popover" placeholder="Select">
+                <IonSelect slot="end" name="inbound-Modal-unit" style={{ textAlign: "end", marginLeft: "10px" }} interface="popover" placeholder="Select">
                   {unit.map((crr, index) => {
                     return (
                       <IonSelectOption value={crr} key={index}>
@@ -226,13 +291,13 @@ function ModalInboundHand({ isModalOpen, setIsModalOpen }: { isModalOpen: any; s
               </IonItem>
               <IonItem>
                 <IonLabel color="tertiary">Price</IonLabel>
-                <IonInput type="number" name="editStockModal-price" style={{ textAlign: "end", marginLeft: "10px", marginRight: "2px" }}></IonInput>
+                <IonInput type="number" name="inbound-Modal-price" style={{ textAlign: "end", marginLeft: "10px", marginRight: "2px" }}></IonInput>
                 <span> VNĐ</span>
               </IonItem>
               <IonItem>
                 <IonLabel color="tertiary">Batch</IonLabel>
 
-                <IonSelect slot="end" name="editStockModal-batch" style={{ textAlign: "end", marginLeft: "10px" }} interface="popover" placeholder="Select">
+                <IonSelect slot="end" name="inbound-Modal-batch" style={{ textAlign: "end", marginLeft: "10px" }} interface="popover" placeholder="Select">
                   {batch.map((crr, index) => {
                     return (
                       <IonSelectOption value={crr} key={index}>
@@ -244,20 +309,35 @@ function ModalInboundHand({ isModalOpen, setIsModalOpen }: { isModalOpen: any; s
               </IonItem>
               <IonItem>
                 <IonLabel color="tertiary">Note</IonLabel>
-                <IonTextarea autoGrow={true} name="editStockModal-note" style={{ textAlign: "end", marginLeft: "10px" }}></IonTextarea>
+                <IonTextarea autoGrow={true} name="inbound-Modal-note" style={{ textAlign: "end", marginLeft: "10px" }}></IonTextarea>
+              </IonItem>
+              <IonItem>
+                <IonLabel style={{ fontSize: "20px" }} color="danger">
+                  Quantity<i style={{ color: "gray", fontSize: "smaller" }}>({searchValue?.value.quantity})</i>
+                </IonLabel>
+                <IonInput type="number" name="inbound-Modal-quantity" placeholder="Enter value" style={{ textAlign: "end", marginLeft: "10px", fontSize: "28px", color: "green" }}></IonInput>
               </IonItem>
             </IonList>
+            {error && <IonNote style={{ textAlign: "end", width: "100%", color: "red" }}>{error}</IonNote>}
             <br />
             <IonToolbar>
-          <IonButton slot="end" color="success" onClick={handelUploadData}>
-            Tạo Lệnh Nhập Kho
-          </IonButton>
-        </IonToolbar>
-        
+              <IonButton
+                fill="outline"
+                slot="end"
+                color="medium"
+                onClick={() => {
+                  setSearchValue({});
+                  setError("");
+                }}
+              >
+                Reset
+              </IonButton>
+              <IonButton slot="end" color="success" onClick={handelUploadData}>
+                Tạo Lệnh Nhập Kho
+              </IonButton>
+            </IonToolbar>
           </>
         )}
-
-        
       </IonContent>
     </IonModal>
   );

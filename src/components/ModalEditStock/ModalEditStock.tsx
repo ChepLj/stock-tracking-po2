@@ -8,7 +8,7 @@ import { ActionSheet, ActionSheetButtonStyle } from "@capacitor/action-sheet";
 function ModalEditStock({ isModalOpen, setIsModalOpen }: { isModalOpen: any; setIsModalOpen: Function }) {
   const { disPatch } = useContext<any>(MainContext);
   const [state, setState] = useState(false);
-  const unit = ["Hộp", "Cái", "Bộ", "Mét", "Thanh", "Kg", "Tấm", "Bịch", "Đơn vị khác"];
+  const unit = ["BT",'EA','G','KG','L','M','M2','M3','ML','PAA','PC','Set','TON', 'Other'];
   const batch = ["none", "C1", "C2", "C3"];
   //TODO: Assign value when action is Edit
   useEffect(() => {

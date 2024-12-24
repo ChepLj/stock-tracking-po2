@@ -1,8 +1,8 @@
 import { IonButton, IonContent, IonHeader, IonItem, IonItemDivider, IonItemGroup, IonLabel, IonList, IonModal, IonTitle, IonToolbar } from "@ionic/react";
 import { memo, useContext, useEffect, useState } from "react";
 import { ITF_FilterResult } from "../../interface/mainInterface";
-import { AuxiliaryDataContext } from "../../context/auxiliaryDataContext";
 
+import firebaseGetMainData from "../../firebase/api/getData";
 
 function ModalFilter({ modalFilterOpen, setModalFilterOpen, handleFilter, isFilter }: { modalFilterOpen: boolean; setModalFilterOpen: Function; handleFilter: Function; isFilter: boolean }) {
   console.log("%cModalFilter  Render", "color:green");
@@ -12,6 +12,10 @@ function ModalFilter({ modalFilterOpen, setModalFilterOpen, handleFilter, isFilt
       console.log("%cModalFilter Page Unmount", "color:red");
     };
   }, []);
+
+  // //TODO: Lấy StockList khi load Page lần đầu
+
+  // //TODO_END:Lấy StockList khi load Page lần đầu
   const initResult: ITF_FilterResult = {
     user: [],
     stock: [],
@@ -19,14 +23,28 @@ function ModalFilter({ modalFilterOpen, setModalFilterOpen, handleFilter, isFilt
     field: [],
     personal: [],
   };
-  const { AuxiliaryData } = useContext<any>(AuxiliaryDataContext);
+
   const [resultObj, setResultObj] = useState(initResult);
-  const userList = [...AuxiliaryData.UserList];
-  const stockList = [...AuxiliaryData.StockList];
-  const tagList = [...AuxiliaryData.TagList];
-  const fieldList = ["Equipment name", "Equipment code", "Progress Tag", "Equipment description", "Equipment note"];
+
+  interface ITF_StockList {
+    Kho: string;
+    "Diễn Giải": string;
+    KTV: string;
+  }
+  const [stockList, setStockList] = useState<ITF_StockList[]>([]);
+
   const personalList = ["Favorite", "Important", "Private"];
 
+  useEffect(() => {
+    const callback = (result: any) => {
+      if (result.payload) {
+        setStockList(result.payload);
+      }
+    };
+    //: lấy data từ firebase sao đó dispatch đê render lại
+    const childRef = "AuxiliaryData/StockList/";
+    firebaseGetMainData(childRef, callback);
+  }, []);
   //TODO: handle toggle select
   const handleToggleSelect = (item: string, group: string) => {
     const key = group as keyof ITF_FilterResult;
@@ -93,22 +111,6 @@ function ModalFilter({ modalFilterOpen, setModalFilterOpen, handleFilter, isFilt
         <IonList>
           <IonItemGroup>
             <IonItemDivider>
-              <IonLabel>User</IonLabel>
-            </IonItemDivider>
-            {userList.map((crr, index) => (
-              <IonItem
-                style={{ cursor: "pointer" }}
-                key={index}
-                onClick={() => {
-                  handleToggleSelect(crr, "user");
-                }}
-              >
-                <IonLabel color={resultObj.user.includes(crr) ? "secondary" : ""}>{crr}</IonLabel>
-              </IonItem>
-            ))}
-          </IonItemGroup>
-          <IonItemGroup>
-            <IonItemDivider>
               <IonLabel>Stock</IonLabel>
             </IonItemDivider>
             {stockList.map((crr, index) => (
@@ -116,27 +118,12 @@ function ModalFilter({ modalFilterOpen, setModalFilterOpen, handleFilter, isFilt
                 style={{ cursor: "pointer" }}
                 key={index}
                 onClick={() => {
-                  handleToggleSelect(crr, "stock");
+                  handleToggleSelect(crr.Kho, "stock");
                 }}
               >
-                <IonLabel color={resultObj.stock.includes(crr) ? "secondary" : ""}>{crr}</IonLabel>
-              </IonItem>
-            ))}
-          </IonItemGroup>
-
-          <IonItemGroup>
-            <IonItemDivider>
-              <IonLabel>Group</IonLabel>
-            </IonItemDivider>
-            {tagList.map((crr, index) => (
-              <IonItem
-                style={{ cursor: "pointer" }}
-                key={index}
-                onClick={() => {
-                  handleToggleSelect(crr, "tag");
-                }}
-              >
-                <IonLabel color={resultObj.tag.includes(crr) ? "secondary" : ""}>{crr}</IonLabel>
+                <IonLabel color={resultObj.stock.includes(crr.Kho) ? "secondary" : ""}>
+                  {crr.Kho} - {crr?.["Diễn Giải"]}
+                </IonLabel>
               </IonItem>
             ))}
           </IonItemGroup>
@@ -157,23 +144,7 @@ function ModalFilter({ modalFilterOpen, setModalFilterOpen, handleFilter, isFilt
               </IonItem>
             ))}
           </IonItemGroup>
-          <IonItemGroup>
-            <IonItemDivider>
-              <IonLabel>Field</IonLabel>
-            </IonItemDivider>
-            {fieldList.map((crr, index) => (
-              <IonItem
-                style={{ cursor: "pointer" }}
-                disabled={true}
-                key={index}
-                onClick={() => {
-                  handleToggleSelect(crr, "field");
-                }}
-              >
-                <IonLabel color={resultObj.field.includes(crr) ? "secondary" : ""}>{crr}</IonLabel>
-              </IonItem>
-            ))}
-          </IonItemGroup>
+
           <IonItemGroup>
             <IonItemDivider>
               <IonLabel></IonLabel>

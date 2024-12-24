@@ -25,7 +25,7 @@ import "./theme/variables.css";
 import { useContext, useEffect, useState } from "react";
 import "./App.css";
 import { decryptCrypto } from "./components/function/crypto";
-import { AuxiliaryDataProvider } from "./context/auxiliaryDataContext";
+import { InboundDataProvider } from "./context/inboundDataContext";
 import { AuthContext } from "./context/loginContext";
 import MainDataContext from "./context/mainDataContext";
 import LoginPage from "./pages/LoginPage/LoginPage";
@@ -90,7 +90,7 @@ const App: React.FC = () => {
   }, [authorLogin]);
   return (
     <MainDataContext>
-      <AuxiliaryDataProvider>
+      <InboundDataProvider>
         <IonApp>
           <IonReactRouter>
             {loading === "loading" && <h3 style={{ textAlign: "center", height: "100%", paddingTop: "90%" }}>Loading ...</h3>}
@@ -135,7 +135,7 @@ const App: React.FC = () => {
             )}
           </IonReactRouter>
         </IonApp>
-      </AuxiliaryDataProvider>
+      </InboundDataProvider>
     </MainDataContext>
   );
 };

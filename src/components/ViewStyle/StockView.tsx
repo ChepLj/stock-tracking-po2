@@ -7,6 +7,7 @@ import { IonFab, IonFabButton, IonIcon } from "@ionic/react";
 import { createOutline, refreshOutline } from "ionicons/icons";
 import timestampToTime from "../function/timestampToTime";
 import ModalEditStock from "../ModalEditStock/ModalEditStock";
+import firebaseGetMainData from "../../firebase/api/getData";
 
 function StockView({
   data,
@@ -15,7 +16,7 @@ function StockView({
   ionItemSlidingRef,
   authorLogin,
   virtuoso,
-  handelRefresh,
+  isFilter,
 }: {
   data: any;
   keyOfDataRaw: string[];
@@ -23,11 +24,26 @@ function StockView({
   ionItemSlidingRef: any;
   authorLogin: any;
   virtuoso: any;
-  handelRefresh: Function;
+  isFilter: any
 }) {
   const [isModalOpen, setIsModalOpen] = useState<{ isOpen: boolean; value: any; key: string }>({ isOpen: false, value: {}, key: "" });
 
-  
+   //TODO: refresh Data
+   const handelRefresh = () => {
+    //: lấy data từ firebase sao đó dispatch đê render lại
+    const childRef = "MainData/";
+    firebaseGetMainData(childRef, disPatch);
+    isFilter.current = false;
+    const align = "start";
+    const behavior = "smooth";
+    virtuoso.current.scrollToIndex({
+      //: scroll to top
+      index: 0,
+      align,
+      behavior,
+    });
+  };
+
   return (
     <>
       {!keyOfDataRaw.includes("A000000") ? (
@@ -77,8 +93,8 @@ function StockView({
       )}
 
       <IonFab slot="fixed" vertical="bottom" horizontal="end">
-        <IonFabButton size="small" onClick={handelRefresh}>
-          <IonIcon icon={refreshOutline}></IonIcon>
+        <IonFabButton size="small" >
+          <IonIcon icon={refreshOutline} onClick={handelRefresh}></IonIcon>
         </IonFabButton>
       </IonFab>
       <ModalEditStock isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />

@@ -1,17 +1,41 @@
-import { IonButton, IonButtons, IonContent, IonHeader, IonInput, IonItem, IonLabel, IonList, IonModal, IonNote, IonSelect, IonSelectOption, IonText, IonTextarea, IonTitle, IonToolbar } from "@ionic/react";
+import {
+  IonButton,
+  IonButtons,
+  IonContent,
+  IonDatetime,
+  IonDatetimeButton,
+  IonHeader,
+  IonInput,
+  IonItem,
+  IonLabel,
+  IonList,
+  IonModal,
+  IonNote,
+  IonSelect,
+  IonSelectOption,
+  IonText,
+  IonTextarea,
+  IonTitle,
+  IonToolbar,
+} from "@ionic/react";
 import { useContext, useEffect, useState } from "react";
 import { MainContext } from "../../context/mainDataContext";
 import firebaseGetMainData from "../../firebase/api/getData";
 import firebasePostData from "../../firebase/api/postData";
 import { ITF_UploadContainer } from "../../interface/mainInterface";
+import { InboundDataContext } from "../../context/inboundDataContext";
 function ModalInboundHand({ isModalOpen, setIsModalOpen }: { isModalOpen: any; setIsModalOpen: Function }) {
   const { data, keyOfDataShow, disPatch } = useContext<any>(MainContext);
+  const { InboundData, disPatchInboundData } = useContext<any>(InboundDataContext);
   const [state, setState] = useState(false);
   const [searchValue, setSearchValue] = useState<any>({});
   const unit = ["BT", "EA", "G", "KG", "L", "M", "M2", "M3", "ML", "PAA", "PC", "Set", "TON", "Other"];
   const batch = ["none", "C1", "C2", "C3"];
   const [stockList, setStockList] = useState<any>([]);
   const [error, setError] = useState<any>("");
+  // Get today's date in "YYYY-MM" format
+  const today = new Date().toISOString().slice(0, 7);
+
   //TODO: Lấy StockList khi load Page lần đầu
   useEffect(() => {
     const callback = (data: any) => {
@@ -39,6 +63,7 @@ function ModalInboundHand({ isModalOpen, setIsModalOpen }: { isModalOpen: any; s
       const priceElm = document.querySelector('[name="inbound-Modal-price"]') as HTMLInputElement;
       const batchElm = document.querySelector('[name="inbound-Modal-batch"]') as HTMLInputElement;
       const noteElm = document.querySelector('[name="inbound-Modal-note"]') as HTMLInputElement;
+
       // Ensure elements exist before accessing properties
       const dataTemp = searchValue.value;
       console.log("🚀 ~ useEffect ~ dataTemp:", dataTemp);
@@ -92,7 +117,7 @@ function ModalInboundHand({ isModalOpen, setIsModalOpen }: { isModalOpen: any; s
               sLoc: stockElm,
               description: result.payload.description,
               unit: result.payload.unit,
-              isNew: true,
+              isHad: true,
             };
             setSearchValue({ value: dataTemp, messenger: "Không tìm thấy Vật tư cùng Kho này trong Stock . Hành động sẽ là thêm mới !" });
             setState((pre) => !pre);
@@ -124,7 +149,7 @@ function ModalInboundHand({ isModalOpen, setIsModalOpen }: { isModalOpen: any; s
     const descriptionElm = document.querySelector('[name="inbound-Modal-description"]') as HTMLInputElement;
     const quantityElm = document.querySelector('[name="inbound-Modal-quantity"]') as HTMLInputElement;
     const unitElm = document.querySelector('[name="inbound-Modal-unit"]') as HTMLInputElement;
-
+    const dateElm = document.getElementById('datetime-inbound-hand') as HTMLInputElement;
     const priceElm = document.querySelector('[name="inbound-Modal-price"]') as HTMLInputElement;
     const batchElm = document.querySelector('[name="inbound-Modal-batch"]') as HTMLInputElement;
     const noteElm = document.querySelector('[name="inbound-Modal-note"]') as HTMLInputElement;
@@ -134,7 +159,7 @@ function ModalInboundHand({ isModalOpen, setIsModalOpen }: { isModalOpen: any; s
     try {
       const dataTemp = searchValue.value;
       console.log("🚀 ~ handelUploadData ~ dataTemp:", dataTemp);
-      if (dataTemp.isNew) {
+      if (dataTemp.isNew || dataTemp.isHad) {
         uploadContainer.push({
           ref: `MainData/${key}/material/`,
           data: searchElm,
@@ -145,8 +170,7 @@ function ModalInboundHand({ isModalOpen, setIsModalOpen }: { isModalOpen: any; s
         });
       }
 
-      if (descriptionElm?.value !== dataTemp?.description || dataTemp.isNew) {
-        console.log(descriptionElm.value.length);
+      if (descriptionElm?.value !== dataTemp?.description || dataTemp.isNew || dataTemp.isHad) {
         if (!descriptionElm.value || descriptionElm.value.length < 10) {
           throw new Error(`Tên vật tư >10 ký tự !`);
         }
@@ -182,7 +206,7 @@ function ModalInboundHand({ isModalOpen, setIsModalOpen }: { isModalOpen: any; s
       if (!unitElm?.value) {
         throw new Error("Chưa chọn đơn vị !");
       }
-      if (unitElm?.value !== dataTemp?.unit || dataTemp.isNew) {
+      if (unitElm?.value !== dataTemp?.unit || dataTemp.isNew || dataTemp.isHad) {
         uploadContainer.push({
           ref: `MainData/${key}/unit/`,
           data: unitElm.value,
@@ -194,10 +218,52 @@ function ModalInboundHand({ isModalOpen, setIsModalOpen }: { isModalOpen: any; s
           data: batchElm.value == "none" ? "" : batchElm.value,
         });
       }
-      const timeStamp = Date.now();
+
+      const timeStamp = Date.now(); // Current timestamp in milliseconds
+  
+      uploadContainer.push(
+        {
+          ref: `MainData/${key}/lastUpdate/`,
+          data: timeStamp,
+        },
+        {
+          ref: `MainData/${key}/logs/${timeStamp}/`,
+          data: {
+            behavior: "Inbound",
+            detail: dataTemp.isNew ? "Mã vật tư không có trong cơ sở dữ liệu" : dataTemp.isHad ? "Vật tư không có sẵn nhưng có trong cơ sở dữ liệu" : "Nhập kho vật tư có sẵn",
+            timeStamp: timeStamp,
+          },
+        },
+        {
+          ref: `Logs/${timeStamp}`,
+          data: {
+            key: key,
+            behavior: "Inbound",
+            description: descriptionElm.value,
+            detail: dataTemp.isNew ? "Mã vật tư không có trong cơ sở dữ liệu" : dataTemp.isHad ? "Vật tư không có sẵn nhưng có trong cơ sở dữ liệu" : "Nhập kho vật tư có sẵn",
+            timeStamp: timeStamp,
+          },
+        }
+      );
+      ///////////////////////
+      const monthYear = dateElm.value.split('-')
+
       uploadContainer.push({
-        ref: `MainData/${key}/lastUpdate/`,
-        data: timeStamp,
+        ref: `InboundData/${key}/`,
+        data: {
+          material: searchElm,
+          description: descriptionElm.value,
+          sLoc: stockElm,
+          quantity: quantityElm.value,
+          unit: unitElm.value,
+          price: priceElm.value,
+          note: noteElm.value,
+          batch: batchElm.value,
+          lastUpdate: timeStamp,
+          logs: "",
+          year: monthYear[0],
+          month: monthYear[1],
+        },
       });
 
       //////////////////////////////
@@ -205,9 +271,12 @@ function ModalInboundHand({ isModalOpen, setIsModalOpen }: { isModalOpen: any; s
         //: lấy data từ firebase sao đó dispatch đê render lại
         const childRef = "MainData/";
         firebaseGetMainData(childRef, disPatch);
+        const childInboundRef = "InboundData/";
+        firebaseGetMainData(childInboundRef, disPatchInboundData);
         // setIsModalOpen({ isOpen: false, value: "" });
         setSearchValue({ value: "", messenger: "" });
         setError("");
+        alert(`Nhập thành công Vật tư ${searchElm} vào Kho ${stockElm}`);
       };
       //////////////////////////////
       console.log("🚀 ~ handelUploadData ~ uploadContainer:", uploadContainer);
@@ -221,6 +290,7 @@ function ModalInboundHand({ isModalOpen, setIsModalOpen }: { isModalOpen: any; s
     }
   };
   //TODO_END: Update data
+
   return (
     <IonModal isOpen={isModalOpen.isOpen} onWillDismiss={() => setIsModalOpen({ isOpen: false, value: "" })}>
       <IonHeader>
@@ -307,6 +377,14 @@ function ModalInboundHand({ isModalOpen, setIsModalOpen }: { isModalOpen: any; s
                   })}
                 </IonSelect>
               </IonItem>
+              <IonItem>
+                <IonLabel color="tertiary">Date</IonLabel>
+                <IonDatetimeButton datetime="datetime-inbound-hand"></IonDatetimeButton>
+                <IonModal keepContentsMounted={true}>
+                  <IonDatetime id="datetime-inbound-hand" presentation="month-year" value={today} yearValues="2024,2025,2026,2027,2028,2029,2030,2031,2032,2033"></IonDatetime>
+                </IonModal>
+              </IonItem>
+
               <IonItem>
                 <IonLabel color="tertiary">Note</IonLabel>
                 <IonTextarea autoGrow={true} name="inbound-Modal-note" style={{ textAlign: "end", marginLeft: "10px" }}></IonTextarea>

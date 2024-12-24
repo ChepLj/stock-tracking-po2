@@ -18,12 +18,13 @@ function conditionFilter(dataRaw: any, keyOfDataShow: Array<string>, filterList:
     //:stock check
     const conditionStockCheck = () => {
       if (filterList.stock.length) {
-        return objectNew.store?.reduce((result: boolean, crr: { local: string }) => {
-          if (filterList.stock?.includes(crr?.local)) {
-            return true;
-          }
-          return result;
-        }, false);
+        
+        if (filterList.stock?.includes(objectNew?.sLoc)) {
+          return true;
+        }
+        else {
+          return false
+        }
       }
       return true;
     };

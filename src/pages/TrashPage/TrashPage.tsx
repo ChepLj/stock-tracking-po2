@@ -59,18 +59,20 @@ const TrashPage: React.FC = () => {
         author: authorLogin.displayName,
         authorId: authorLogin.userName,
         detail: "restore",
-        item: item,
+   
         timeStamp: currentTime,
       },
     };
     const logsMain: ITF_Logs = {
       ref: `Logs/${currentTime}`,
       data: {
+        key: item,
+        description: data[item]?.description || '',
         behavior: "restore",
         author: authorLogin.displayName,
         authorId: authorLogin.userName,
         detail: "restore",
-        item: item,
+ 
         timeStamp: currentTime,
       },
     };
@@ -105,7 +107,8 @@ const TrashPage: React.FC = () => {
               author: authorLogin.displayName,
               authorId: authorLogin.userName,
               detail: "remove",
-              item: item,
+              key: item,
+              description: data[item]?.description || '',
               timeStamp: currentTime
             },
           };

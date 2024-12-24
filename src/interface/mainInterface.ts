@@ -95,12 +95,14 @@ export interface ITF_Status {
 export interface ITF_Logs {
   ref: string;
   data: {
+    key?: string;
+    description?: string;
     behavior: string;
-    author: string;
-    authorId: string | number;
+    author?: string;
+    authorId?: string | number;
     detail: string;
-    item?: string;
-    timeStamp?: string| number;
+
+    timeStamp: string| number;
   };
 }
 

@@ -8,7 +8,7 @@ import { ActionSheet, ActionSheetButtonStyle } from "@capacitor/action-sheet";
 function ModalEditStock({ isModalOpen, setIsModalOpen }: { isModalOpen: any; setIsModalOpen: Function }) {
   const { disPatch } = useContext<any>(MainContext);
   const [state, setState] = useState(false);
-  const unit = ["BT",'EA','G','KG','L','M','M2','M3','ML','PAA','PC','Set','TON', 'Other'];
+  const unit = ["BT", "EA", "G", "KG", "L", "M", "M2", "M3", "ML", "PAA", "PC", "Set", "TON", "Other"];
   const batch = ["none", "C1", "C2", "C3"];
   //TODO: Assign value when action is Edit
   useEffect(() => {
@@ -96,11 +96,31 @@ function ModalEditStock({ isModalOpen, setIsModalOpen }: { isModalOpen: any; set
         data: batchElm.value,
       });
     }
-    const timeStamp = Date.now()
-    uploadContainer.push({
+    const timeStamp = Date.now();
+    uploadContainer.push(
+      {
         ref: `MainData/${isModalOpen.key}/lastUpdate/`,
-        data: timeStamp
-    })
+        data: timeStamp,
+      },
+      {
+        ref: `MainData/${isModalOpen.key}/logs/${timeStamp}/`,
+        data: {
+          behavior: "Stock Edit",
+          detail: `Old Data : ${JSON.stringify(isModalOpen?.value)}`,
+          timeStamp: timeStamp,
+        },
+      },
+      {
+        ref: `Logs/${timeStamp}`,
+        data: {
+          key: isModalOpen.key,
+          behavior: "Stock Edit",
+          description: descriptionElm.value,
+          detail: "Stock Edit",
+          timeStamp: timeStamp,
+        },
+      }
+    );
 
     //////////////////////////////
     const handelRefresh = () => {
@@ -112,7 +132,6 @@ function ModalEditStock({ isModalOpen, setIsModalOpen }: { isModalOpen: any; set
     //////////////////////////////
     console.log("🚀 ~ handelUploadData ~ uploadContainer:", uploadContainer);
     if (uploadContainer.length) {
-
       firebasePostData(uploadContainer, handelRefresh);
     } else {
       alert("Cập nhật bị từ chối vì dữ liệu không thay đổi !");
@@ -123,51 +142,47 @@ function ModalEditStock({ isModalOpen, setIsModalOpen }: { isModalOpen: any; set
   //TODO: Xóa đối tượng
   const handelPreDelete = async () => {
     const userConfirmed = confirm(`Are you sure you want to delete ${isModalOpen.key}?`);
- 
+
     if (userConfirmed) {
-        const key = Date.now()
-        const uploadContainer: ITF_UploadContainer[] = [
-            {
-                ref: `MainData/${isModalOpen.key}/logs/${key}/`,
-                data: {
-                    behavior: "pre-delete",  
-                    timeStamp: key
-                  },
-            },
-            {
-                ref: `Logs/${key}`,
-                data: {
-                  behavior: "pre-delete",
-                  detail: "pre-delete",
-                  item: JSON.stringify(isModalOpen.value),
-                  timeStamp: key
-                },
-            },
-            {
-                ref: `MainData/${isModalOpen.key}/status/`,
-                data: {
-                    value: 'pre-delete',
-                    timeStamp : key
-                }
-                
-            }
-        ];
+      const key = Date.now();
+      const uploadContainer: ITF_UploadContainer[] = [
+        {
+          ref: `MainData/${isModalOpen.key}/logs/${key}/`,
+          data: {
+            behavior: "pre-delete",
+            timeStamp: key,
+          },
+        },
+        {
+          ref: `Logs/${key}`,
+          data: {
+            behavior: "pre-delete",
+            detail: "pre-delete",
+            item: JSON.stringify(isModalOpen.value),
+            timeStamp: key,
+          },
+        },
+        {
+          ref: `MainData/${isModalOpen.key}/status/`,
+          data: {
+            value: "pre-delete",
+            timeStamp: key,
+          },
+        },
+      ];
 
-        
-    
-        //////////////////////////////
-        const handelRefresh = () => {
-          //: lấy data từ firebase sao đó dispatch đê render lại
-          const childRef = "MainData/";
-          firebaseGetMainData(childRef, disPatch);
-          setIsModalOpen({ isOpen: false, value: "" });
-        };
-        //////////////////////////////
-
-        if (uploadContainer.length) {
-          firebasePostData(uploadContainer, handelRefresh);
-       
+      //////////////////////////////
+      const handelRefresh = () => {
+        //: lấy data từ firebase sao đó dispatch đê render lại
+        const childRef = "MainData/";
+        firebaseGetMainData(childRef, disPatch);
+        setIsModalOpen({ isOpen: false, value: "" });
       };
+      //////////////////////////////
+
+      if (uploadContainer.length) {
+        firebasePostData(uploadContainer, handelRefresh);
+      }
     }
   };
   //TODO_END:
@@ -230,7 +245,9 @@ function ModalEditStock({ isModalOpen, setIsModalOpen }: { isModalOpen: any; set
           </IonItem>
         </IonList>
         <IonToolbar>
-          <IonButton color="danger" onClick={handelPreDelete}>Xóa vật tư này</IonButton>
+          <IonButton color="danger" onClick={handelPreDelete}>
+            Xóa vật tư này
+          </IonButton>
           {/* <IonButton color='medium' fill='outline'>Hủy bỏ</IonButton> */}
           <IonButton slot="end" color="success" onClick={handelUploadData}>
             Cập Nhật

@@ -1,24 +1,21 @@
-import { IonButtons, IonContent, IonFab, IonFabButton, IonHeader, IonIcon, IonMenuButton, IonPage, IonTitle, IonToolbar } from "@ionic/react";
+import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from "@ionic/react";
 import { useParams } from "react-router";
 
-import "./Main.css";
-import { useContext, useState, useRef, useEffect } from "react";
-import ExploreContainer from "../../components/ExploreContainer";
+import { useContext, useEffect, useRef, useState } from "react";
 import conditionFilter from "../../components/function/conditionFilter";
 import conditionSearch from "../../components/function/conditionSearch";
 import Header from "../../components/Header/HeaderMain";
-import { AuxiliaryDataContext } from "../../context/auxiliaryDataContext";
+import "./Main.css";
+
+import ExcelToJson from "../../components/ExcelToJson/ExcelToJson";
+import ModalFilter from "../../components/ModalFilter/ModalFilter";
+import InboundView from "../../components/ViewStyle/InboundView";
+import StockView from "../../components/ViewStyle/StockView";
+import { InboundDataContext } from "../../context/inboundDataContext";
 import { AuthContext } from "../../context/loginContext";
 import { MainContext } from "../../context/mainDataContext";
 import firebaseGetMainData from "../../firebase/api/getData";
 import { ITF_FilterResult } from "../../interface/mainInterface";
-import { refreshOutline } from "ionicons/icons";
-import ModalFilter from "../../components/ModalFilter/ModalFilter";
-import TableView from "../../components/ViewStyle/StockView";
-import ExcelToJson from "../../components/ExcelToJson/ExcelToJson";
-import InboundView from "../../components/ViewStyle/InboundView";
-import OutboundView from "../../components/ViewStyle/OutboundView";
-import StockView from "../../components/ViewStyle/StockView";
 
 
 const Main: React.FC = () => {
@@ -27,9 +24,9 @@ const Main: React.FC = () => {
 
   const { data, keyOfDataShow, disPatch } = useContext<any>(MainContext);
   const [KeyOfDataShowFilter, setKeyOfDataShowFilter] = useState<any>(keyOfDataShow|| []);
-  const { AuxiliaryData, disPatchAuxiliaryData } = useContext<any>(AuxiliaryDataContext);
+  const { InboundData, disPatchInboundData } = useContext<any>(InboundDataContext);
   const { authorLogin } = useContext<any>(AuthContext);
-
+  const [title, setTitle] =useState('')
   const [searchState, setSearchState] = useState<any>({ type: false, payload: [] });
   const [modalFilterOpen, setModalFilterOpen] = useState<any>(false);
   const isFilter = useRef(false);
@@ -49,7 +46,7 @@ const Main: React.FC = () => {
   useEffect(() => {
     if (window.screen.width < 600) {
       authorLogin.isPhone = true;
-      setViewStyle("Mobile");
+      // setViewStyle("Mobile");
     }
   }, []);
   //TODO_END: Check Mobile Screen
@@ -68,31 +65,9 @@ const Main: React.FC = () => {
 
   //TODO_END:Lấy Main Data khi load Page lần đầu
 
-  // //TODO: Lấy StockList khi load Page lần đầu
-  // useEffect(() => {
-  //   //: lấy data từ firebase sao đó dispatch đê render lại
-  //   const childRef = "AuxiliaryData/";
-  //   firebaseGetMainData(childRef, disPatchAuxiliaryData);
-  // }, []);
 
-  // //TODO_END:Lấy StockList khi load Page lần đầu
 
-  //TODO: refresh Data
-  const handelRefresh = () => {
-    //: lấy data từ firebase sao đó dispatch đê render lại
-    const childRef = "MainData/";
-    firebaseGetMainData(childRef, disPatch);
-    isFilter.current = false;
-    const align = "start";
-    const behavior = "smooth";
-    virtuoso.current.scrollToIndex({
-      //: scroll to top
-      index: 0,
-      align,
-      behavior,
-    });
-  };
-
+ 
   //TODO_end: refresh Data
 
   //TODO: Search Result
@@ -113,6 +88,7 @@ const Main: React.FC = () => {
   //TODO_END: Search Result
   //TODO:  handel filter
   const handleFilter = (filterList: ITF_FilterResult) => {
+
     const isFilterFC = () => {
       for (const key in filterList) {
         const newKey = key as keyof ITF_FilterResult;
@@ -147,17 +123,19 @@ const Main: React.FC = () => {
         setViewStyle={setViewStyle}
         data={data}
         keyOfDataRaw={keyOfDataRaw}
+        isPhone = {authorLogin.isPhone || false}
+        setTitle={setTitle}
       />
 
       <IonContent fullscreen>
         <IonHeader collapse="condense">
           <IonToolbar>
-            <IonTitle size="large">{name}</IonTitle>
+            <h3 style={{color: 'green', width: '100%', textAlign: 'center', marginTop: '4px', marginBottom: '0px'}}>{title}</h3>
           </IonToolbar>
         </IonHeader>
 
-        {viewStyle === "Stock" && <StockView data={data} keyOfDataRaw={keyOfDataRaw} disPatch={disPatch} ionItemSlidingRef={ionItemSlidingRef} authorLogin={authorLogin} virtuoso={virtuoso} handelRefresh={handelRefresh} />}
-        {viewStyle === "Inbound" && <InboundView data={data} keyOfDataRaw={keyOfDataRaw} disPatch={disPatch} ionItemSlidingRef={ionItemSlidingRef} authorLogin={authorLogin} virtuoso={virtuoso} />}
+        {viewStyle === "Stock" && <StockView data={data} keyOfDataRaw={keyOfDataRaw} disPatch={disPatch} ionItemSlidingRef={ionItemSlidingRef} authorLogin={authorLogin} virtuoso={virtuoso} isFilter={isFilter}/>}
+        {viewStyle === "Inbound" && <InboundView data={data} keyOfDataRaw={keyOfDataRaw} disPatch={disPatch} ionItemSlidingRef={ionItemSlidingRef} authorLogin={authorLogin} virtuoso={virtuoso} setTitle={setTitle}/>}
         {viewStyle === "Outbound" && <ExcelToJson/>}
        
       </IonContent>

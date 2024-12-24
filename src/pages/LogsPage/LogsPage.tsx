@@ -3,7 +3,6 @@ import { memo, useEffect, useState } from "react";
 import timestampToTime from "../../components/function/timestampToTime";
 import firebaseGetMainData from "../../firebase/api/getData";
 
-
 const LogsPage: React.FC = () => {
   //* Check Render and Unmount
   console.log("%cLogs Page Render", "color:green");
@@ -15,7 +14,7 @@ const LogsPage: React.FC = () => {
   //TODO: get data from sever
   useEffect(() => {
     const callback = (content: any) => {
-      console.log("🚀 ~ callback ~ content:", content)
+      console.log("🚀 ~ callback ~ content:", content);
       if (content.type === "SUCCESSFUL") {
         setState(content.payload);
       }
@@ -44,20 +43,20 @@ const LogsPage: React.FC = () => {
               .reverse()
               .map((crr, index) => {
                 return (
-                  <IonItem key={index}>
-                     <div style={{marginRight: '10px'}}>
-                    <IonLabel className="fontSize-normal" color="primary">
-                      {state[+crr]?.item}
+                  <IonItem key={index}  id={`log-detail-${crr}`}>
+                    <div style={{ marginRight: "10px" }}>
+                      <IonLabel className="fontSize-normal" color="primary">
+                        {state[+crr]?.key}
+                      </IonLabel>
+                      <IonLabel style={{ fontSize: "10px" }} color="warning">
+                        {state[+crr]?.behavior}
+                      </IonLabel>
+                    </div>
+                    <IonText >{state[+crr]?.description}</IonText>
+                    <IonLabel  className="fontSize-normal no-margin-top-bottom">
+                     
                     </IonLabel>
-                    <IonLabel style={{fontSize: '10px'}} color="warning">
-                      {timestampToTime(state[+crr]?.status?.timeStamp)}
-                    </IonLabel>
-                  </div>
-                  <IonText>{state[+crr].description}</IonText>
-                    <IonLabel id={`log-detail-${crr}`} className="fontSize-normal no-margin-top-bottom">
-                      {state[+crr]?.detail}
-                    </IonLabel>
-                    <div className="fontStyle-italic fontSize-small alight-right"  style={{fontSize: '10px'}}>
+                    <div className="fontStyle-italic fontSize-small alight-right" style={{ fontSize: "10px" }}>
                       <IonText>{state[+crr]?.author}</IonText>
                       <IonLabel>{timestampToTime(+crr)}</IonLabel>
                     </div>

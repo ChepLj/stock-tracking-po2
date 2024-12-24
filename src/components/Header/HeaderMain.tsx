@@ -3,7 +3,6 @@ import { downloadOutline, filterCircleOutline } from "ionicons/icons";
 import { ITF_Data } from "../../interface/mainInterface";
 import { exportFileFix, exportFileRaw } from "../function/exportFileExcel";
 
-
 const HeaderMain = ({
   modalFilterOpen,
   setModalFilterOpen,
@@ -15,6 +14,8 @@ const HeaderMain = ({
   setViewStyle,
   data,
   keyOfDataRaw,
+  isPhone,
+  setTitle,
 }: {
   modalFilterOpen?: boolean;
   setModalFilterOpen?: Function;
@@ -26,6 +27,8 @@ const HeaderMain = ({
   setViewStyle: Function;
   data: ITF_Data;
   keyOfDataRaw: string[];
+  isPhone: boolean;
+  setTitle: Function;
 }) => {
   console.log("%cHeader  Render", "color:green");
 
@@ -36,26 +39,47 @@ const HeaderMain = ({
   //TODO_END: handle view style
   return (
     <IonToolbar>
-       <IonButtons slot="start">
-          <IonMenuButton />
-        </IonButtons>
+      <IonButtons slot="start">
+        <IonMenuButton />
+      </IonButtons>
       <IonRow style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <IonCol>
           <div>
             <IonButtons>
-              <IonButton fill="outline" color={viewStyle === "Stock" ? "primary" : "medium"} onClick={() => handleViewStyle("Stock")}>
+              <IonButton
+                fill="outline"
+                color={viewStyle === "Stock" ? "primary" : "medium"}
+                onClick={() => {
+                  handleViewStyle("Stock");
+                  setTitle("Danh sách Vật tư tồn thực tế theo Kho");
+                }}
+              >
                 Stock
               </IonButton>
-              <IonButton fill="outline" color={viewStyle === "Inbound" ? "primary" : "medium"} onClick={() => handleViewStyle("Inbound")}>
+              <IonButton
+                fill="outline"
+                color={viewStyle === "Inbound" ? "primary" : "medium"}
+                onClick={() => {
+                  handleViewStyle("Inbound");
+                  setTitle("Danh sách Vật tư Nhập Kho");
+                }}
+              >
                 Nhập Kho
               </IonButton>
-              <IonButton fill="outline" color={viewStyle === "Outbound" ? "primary" : "medium"} onClick={() => handleViewStyle("Outbound")}>
+              <IonButton
+                fill="outline"
+                color={viewStyle === "Outbound" ? "primary" : "medium"}
+                onClick={() => {
+                  handleViewStyle("Outbound");
+                  setTitle("Danh sách Vật tư Xuất Kho");
+                }}
+              >
                 Xuất Kho
               </IonButton>
             </IonButtons>
           </div>
         </IonCol>
-        {true && (
+        {!isPhone && (
           <IonCol size="auto">
             <IonButtons>
               {/* <IonButton style={{ fontSize: "10px" }} onClick={() => exportFileRaw(data, keyOfDataRaw)}>
@@ -74,12 +98,12 @@ const HeaderMain = ({
           </IonCol>
         )}
 
-        <IonCol size="4">
+        <IonCol>
           <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minWidth: "100px" }}>
             <div style={{ fontSize: "8px", fontStyle: "italic", padding: "2px", color: "gray" }}>
               {countSearch[0]}/{countSearch[1]} item
             </div>
-            <IonSearchbar style={{ padding: "0 5px 0 0", height: "30px" }} debounce={500}  showClearButton="never" onIonChange={(ev) => callbackResultSearch!(ev)} value={value}></IonSearchbar>
+            <IonSearchbar style={{ padding: "0 5px 0 0", height: "30px" }} debounce={500} showClearButton="never" onIonChange={(ev) => callbackResultSearch!(ev)} value={value}></IonSearchbar>
             <IonIcon icon={filterCircleOutline} slot="end" size="large" color={isFilter ? "danger" : "medium"} onClick={() => setModalFilterOpen!(!modalFilterOpen)} />
           </div>
         </IonCol>

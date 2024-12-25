@@ -29,7 +29,7 @@ function ModalInboundHand({ isModalOpen, setIsModalOpen }: { isModalOpen: any; s
   const { InboundData, disPatchInboundData } = useContext<any>(InboundDataContext);
   const [state, setState] = useState(false);
   const [searchValue, setSearchValue] = useState<any>({});
-  const unit = ["BT", "EA", "G", "KG", "L", "M", "M2", "M3", "ML", "PAA", "PC", "Set", "TON", "Other"];
+  const unit = [ "PC", "Set", "BT", "EA", "G", "KG", "L", "M", "M2", "M3", "ML", "PAA","TON", "Other"];
   const batch = ["none", "C1", "C2", "C3"];
   const [stockList, setStockList] = useState<any>([]);
   const [error, setError] = useState<any>("");

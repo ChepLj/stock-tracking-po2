@@ -9,24 +9,24 @@ import "./Main.css";
 
 import ExcelToJson from "../../components/ExcelToJson/ExcelToJson";
 import ModalFilter from "../../components/ModalFilter/ModalFilter";
-import InboundView from "../../components/ViewStyle/InboundView";
+import InboundView from "../../components/ViewStyle/Inbound/InboundView";
 import StockView from "../../components/ViewStyle/StockView";
 import { InboundDataContext } from "../../context/inboundDataContext";
 import { AuthContext } from "../../context/loginContext";
 import { MainContext } from "../../context/mainDataContext";
 import firebaseGetMainData from "../../firebase/api/getData";
 import { ITF_FilterResult } from "../../interface/mainInterface";
-
+import InboundExcelImport from "../../components/ViewStyle/Inbound/InboundExcelImport";
 
 const Main: React.FC = () => {
   const { name } = useParams<{ name: string }>();
   console.log("%cMain Page Render", "color:green");
 
   const { data, keyOfDataShow, disPatch } = useContext<any>(MainContext);
-  const [KeyOfDataShowFilter, setKeyOfDataShowFilter] = useState<any>(keyOfDataShow|| []);
+  const [KeyOfDataShowFilter, setKeyOfDataShowFilter] = useState<any>(keyOfDataShow || []);
   const { InboundData, disPatchInboundData } = useContext<any>(InboundDataContext);
   const { authorLogin } = useContext<any>(AuthContext);
-  const [title, setTitle] =useState('')
+  const [title, setTitle] = useState("Danh sách Vật tư tồn thực tế theo Kho");
   const [searchState, setSearchState] = useState<any>({ type: false, payload: [] });
   const [modalFilterOpen, setModalFilterOpen] = useState<any>(false);
   const isFilter = useRef(false);
@@ -65,9 +65,6 @@ const Main: React.FC = () => {
 
   //TODO_END:Lấy Main Data khi load Page lần đầu
 
-
-
- 
   //TODO_end: refresh Data
 
   //TODO: Search Result
@@ -88,7 +85,6 @@ const Main: React.FC = () => {
   //TODO_END: Search Result
   //TODO:  handel filter
   const handleFilter = (filterList: ITF_FilterResult) => {
-
     const isFilterFC = () => {
       for (const key in filterList) {
         const newKey = key as keyof ITF_FilterResult;
@@ -112,34 +108,38 @@ const Main: React.FC = () => {
   //TODO_END:  handel filter
   return (
     <IonPage>
-      <Header
-        callbackResultSearch={handelSearch}
-        modalFilterOpen={modalFilterOpen}
-        setModalFilterOpen={setModalFilterOpen}
-        isFilter={isFilter.current}
-        value={searchTargetValue.current}
-        countSearch={[keyOfDataRaw?.length, keyOfDataShow?.length]}
-        viewStyle={viewStyle}
-        setViewStyle={setViewStyle}
-        data={data}
-        keyOfDataRaw={keyOfDataRaw}
-        isPhone = {authorLogin.isPhone || false}
-        setTitle={setTitle}
-      />
+      {viewStyle !== "InboundExcelImport" && (
+        <Header
+          callbackResultSearch={handelSearch}
+          modalFilterOpen={modalFilterOpen}
+          setModalFilterOpen={setModalFilterOpen}
+          isFilter={isFilter.current}
+          value={searchTargetValue.current}
+          countSearch={[keyOfDataRaw?.length, keyOfDataShow?.length]}
+          viewStyle={viewStyle}
+          setViewStyle={setViewStyle}
+          data={data}
+          keyOfDataRaw={keyOfDataRaw}
+          isPhone={authorLogin.isPhone || false}
+          setTitle={setTitle}
+        />
+      )}
 
       <IonContent fullscreen>
         <IonHeader collapse="condense">
           <IonToolbar>
-            <h3 style={{color: 'green', width: '100%', textAlign: 'center', marginTop: '4px', marginBottom: '0px'}}>{title}</h3>
+            <h3 style={{ color: "green", width: "100%", textAlign: "center", marginTop: "4px", marginBottom: "0px" }}>{title}</h3>
           </IonToolbar>
         </IonHeader>
 
-        {viewStyle === "Stock" && <StockView data={data} keyOfDataRaw={keyOfDataRaw} disPatch={disPatch} ionItemSlidingRef={ionItemSlidingRef} authorLogin={authorLogin} virtuoso={virtuoso} isFilter={isFilter}/>}
-        {viewStyle === "Inbound" && <InboundView data={data} keyOfDataRaw={keyOfDataRaw} disPatch={disPatch} ionItemSlidingRef={ionItemSlidingRef} authorLogin={authorLogin} virtuoso={virtuoso} setTitle={setTitle}/>}
-        {viewStyle === "Outbound" && <ExcelToJson/>}
-       
+        {viewStyle === "Stock" && <StockView data={data} keyOfDataRaw={keyOfDataRaw} disPatch={disPatch} ionItemSlidingRef={ionItemSlidingRef} authorLogin={authorLogin} virtuoso={virtuoso} isFilter={isFilter} />}
+        {viewStyle === "Inbound" && (
+          <InboundView data={data} setViewStyle={setViewStyle} keyOfDataRaw={keyOfDataRaw} disPatch={disPatch} ionItemSlidingRef={ionItemSlidingRef} authorLogin={authorLogin} virtuoso={virtuoso} setTitle={setTitle} />
+        )}
+        {viewStyle === "Outbound" && <ExcelToJson />}
+        {viewStyle === "InboundExcelImport" && <InboundExcelImport setViewStyle={setViewStyle} />}
       </IonContent>
-     
+
       <ModalFilter modalFilterOpen={modalFilterOpen} setModalFilterOpen={setModalFilterOpen} handleFilter={handleFilter} isFilter={isFilter.current} />
     </IonPage>
   );

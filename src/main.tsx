@@ -13,9 +13,9 @@ defineCustomElements(window);
 const container = document.getElementById('root');
 const root = createRoot(container!);
 root.render(
-  <React.StrictMode>
+  // <React.StrictMode>
      <AuthProvider>
     <App />
   </AuthProvider>
-  </React.StrictMode>
+  // </React.StrictMode>
 );

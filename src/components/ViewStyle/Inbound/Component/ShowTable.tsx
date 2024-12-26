@@ -3,8 +3,9 @@ import { InboundDataContext } from "../../../../context/inboundDataContext";
 import { MainContext } from "../../../../context/mainDataContext";
 import firebaseGetMainData from "../../../../firebase/api/getData";
 import excelDateToMonthYear from "../../../function/excelDateToMonthYear";
-import { IonIcon, IonLabel, IonText } from "@ionic/react";
+import { IonIcon, IonLabel, IonPopover, IonText } from "@ionic/react";
 import { warning } from "ionicons/icons";
+import { handleInboundShowTableSearch } from "../../../function/handleInboundShowTableSearch";
 
 export default function ShowTable({ step, setStep }: { step: any; setStep: Function }) {
   // console.log("🚀 ~ ShowTable ~ step:", step);
@@ -18,6 +19,8 @@ export default function ShowTable({ step, setStep }: { step: any; setStep: Funct
   const [stockList, setStockList] = useState<any>([]);
   const [error, setError] = useState<any>("");
   const header = step.value.headerKey;
+  const commonsStyle = { padding: "2px 5px", border: "1px solid gray", fontSize: "12px", width: "auto" };
+  const commonsStyleTd = { padding: "5px 10px", border: "2px solid #ccc", fontSize: "12px" };
   //TODO: Lấy Material List khi load Page lần đầu
   useEffect(() => {
     const callback = (data: any) => {
@@ -31,73 +34,7 @@ export default function ShowTable({ step, setStep }: { step: any; setStep: Funct
   }, []);
 
   //TODO_END:Lấy Material List khi load Page lần đầu
-  //TODO: Search Stock
 
-  const handelSearch = (input: any) => {
-    const material = input[header.material];
-    const stock = input[header.sLoc];
-    const condition1 = Boolean(input[header.unit]);
-    const condition2 = Boolean(material?.toString().length == 9);
-    const condition3 = Boolean((Number(input?.[header.quantity]) || 0) + (Number(input?.[header.quantity2]) || 0));
-    const condition4 = Boolean(input[header.date]);
-    let descriptionWarningMessenger = "";
-    let unitWarningMessenger = "";
-    if (material && stock && condition1 && condition2 && condition3 && condition4) {
-      const key = `${material}-${stock}`;
-
-      if (data[key]) {
-        if (data[key].description !== input.description) {
-          descriptionWarningMessenger = "Tên Vật tư khác với tên trong Stock. Sẽ lấy tên trong Stock !";
-        }
-        if (data[key].unit !== input.unit) {
-          unitWarningMessenger = "Đơn vị Vật tư khác với đơn vị trong Stock. Sẽ lấy đơn vị  trong Stock !";
-        }
-        return {
-          type: "found in stock",
-          color: "",
-          isOk: true,
-          descriptionMessenger: descriptionWarningMessenger,
-          unitMessenger: unitWarningMessenger,
-          descriptionRaw: data[key].description,
-          unitRaw: `<IonIcon icon={warning}></IonIcon>`,
-          isDescriptionDiff: true,
-          isUnitDiff: true,
-        };
-      } else if (materialList[material]) {
-        if (materialList[material].description !== input.description) {
-          descriptionWarningMessenger = "Tên Vật tư khác với tên trong Stock. Sẽ lấy tên trong Stock !";
-        }
-        if (materialList[material].unit !== input.unit) {
-          unitWarningMessenger = "Đơn vị Vật tư khác với đơn vị trong Stock. Sẽ lấy đơn vị  trong Stock !";
-        }
-        return {
-          type: "found in database",
-          color: "green",
-          isOk: true,
-          descriptionMessenger: descriptionWarningMessenger,
-          unitMessenger: unitWarningMessenger,
-          descriptionRaw: data[key].description,
-          unitRaw: data[key].unit,
-          isDescriptionDiff: true,
-          isUnitDiff: true,
-        };
-      } else {
-        return {
-          type: "not found",
-          color: "violet",
-          isOk: true,
-        };
-      }
-    } else {
-      // setError("Mã Vật tư hoặc Kho là không đúng !");
-      return {
-        type: "error",
-        color: "red",
-        isOk: false,
-      };
-    }
-  };
-  //TODO_END: Search Stock
   return (
     <>
       <div style={{ display: "flex", margin: "5px" }}>
@@ -117,54 +54,136 @@ export default function ShowTable({ step, setStep }: { step: any; setStep: Funct
           </div>
         </div>
       </div>
-      <table>
+      <table >
         <thead>
           <tr style={{ background: "red", color: "white", overflowX: "scroll" }}>
-            <th style={{ padding: "5px 10px", border: "2px solid #ccc", fontSize: "12px" }}>Act</th>
-            <th style={{ padding: "5px 10px", border: "2px solid #ccc", fontSize: "12px" }}>No.</th>
-            <th style={{ padding: "5px 10px", border: "2px solid #ccc", fontSize: "12px" }}>Year</th>
-            <th style={{ padding: "5px 10px", border: "2px solid #ccc", fontSize: "12px" }}>Month</th>
-            <th style={{ padding: "5px 10px", border: "2px solid #ccc", fontSize: "12px" }}>Material</th>
-            <th style={{ padding: "5px 10px", border: "2px solid #ccc", fontSize: "12px" }}>Stock Local</th>
-            <th style={{ padding: "5px 10px", border: "2px solid #ccc", fontSize: "12px" }}>Material Description</th>
-            <th style={{ padding: "5px 10px", border: "2px solid #ccc", fontSize: "12px" }}>Quantity</th>
-            <th style={{ padding: "5px 10px", border: "2px solid #ccc", fontSize: "12px" }}>Unit</th>
-            <th style={{ padding: "5px 10px", border: "2px solid #ccc", fontSize: "12px" }}>Price</th>
-            <th style={{ padding: "5px 10px", border: "2px solid #ccc", fontSize: "12px" }}>Total Price</th>
-            <th style={{ padding: "5px 10px", border: "2px solid #ccc", fontSize: "12px" }}>Note</th>
-            <th style={{ padding: "5px 10px", border: "2px solid #ccc", fontSize: "12px" }}>Batch</th>
+            <th style={{ ...commonsStyleTd }}>Act</th>
+            <th style={{ ...commonsStyleTd }}>No.</th>
+            <th style={{ ...commonsStyleTd }}>Year</th>
+            <th style={{ ...commonsStyleTd }}>Month</th>
+            <th style={{ ...commonsStyleTd }}>Material</th>
+            <th style={{ ...commonsStyleTd }}>Stock Local</th>
+            <th style={{ ...commonsStyleTd }}>Material Description</th>
+            <th style={{ ...commonsStyleTd }}>Quantity</th>
+            <th style={{ ...commonsStyleTd }}>Unit</th>
+            <th style={{ ...commonsStyleTd }}>Price</th>
+            <th style={{ ...commonsStyleTd }}>Total Price</th>
+            <th style={{ ...commonsStyleTd }}>Note</th>
+            <th style={{ ...commonsStyleTd }}>Batch</th>
             {/* <th style={{ padding: "5px 10px", border: "2px solid #ccc", fontSize: "12px" }}>LastUpdate</th> */}
           </tr>
         </thead>
-        <tbody>
+        <tbody id="inboundExcelImportShowTable">
           {step.value.data.map((crr: any, index: any) => {
             // console.log("🚀 ~ {step.value.data.map ~ header:", header)
-            const checkAvailableInStock = handelSearch(crr);
+            const checkAvailableInStock = handleInboundShowTableSearch(crr, header, data, materialList);
             const quantityTemp = (Number(crr?.[header.quantity]) || 0) + (Number(crr?.[header.quantity2]) || 0);
             const totalPrice = isNaN(crr?.[header.price] * quantityTemp) ? 1 : crr?.[header.price] * quantityTemp;
 
             return (
               <tr style={{ color: checkAvailableInStock?.color }} key={"showTable-item" + index}>
-                <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", width: "auto", maxWidth: "50px", textAlign: "center", verticalAlign: "middle" }}>
-                  <input type="checkbox" id={`checkbox-${index}`} defaultChecked={checkAvailableInStock.isOk} disabled={!checkAvailableInStock.isOk} />
+                <td className="check" style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", width: "auto", maxWidth: "50px", textAlign: "center", verticalAlign: "middle" }}>
+                  <input className="checkInput" type="checkbox" id={`checkbox-${index}`} defaultChecked={checkAvailableInStock.isOk} disabled={!checkAvailableInStock.isOk} />
                 </td>
-                <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", width: "auto", maxWidth: "50px" }}>{index + 1}</td>
-                <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", width: "auto", maxWidth: "50px" }}>{excelDateToMonthYear(+crr?.[header.date])[1] || 0}</td>
-                <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", width: "auto", maxWidth: "50px" }}>{excelDateToMonthYear(+crr?.[header.date])[0] || 0}</td>
-                <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", minWidth: "60px", maxWidth: "100px" }}>
-                  <strong>{crr?.[header.material]}</strong>
+                <td className="index" style={{ ...commonsStyle, maxWidth: "50px" }}>
+                  {index + 1}
                 </td>
-                <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", minWidth: "50px", maxWidth: "250px" }}>{crr?.[header.sLoc]}</td>
-                <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", minWidth: "200px", maxWidth: "550px", width: "100%" }}>{crr?.[header.description]}</td>
-                <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", minWidth: "30px", maxWidth: "150px", color: 'objectData.quantity < 0 ? "red" : "" ' }}>
-                  <strong>{quantityTemp}</strong>
+                <td className="year" style={{ ...commonsStyle, maxWidth: "50px" }}>
+                  {excelDateToMonthYear(+crr?.[header.date])[1] || 0}
                 </td>
-                <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", minWidth: "30px", maxWidth: "150px" }}>{checkAvailableInStock.unitRaw}</td>
-                <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", minWidth: "100px", maxWidth: "250px", textAlign: "right" }}>{crr?.[header.price] || 1} VNĐ</td>
-                <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", minWidth: "130px", maxWidth: "250px", textAlign: "right" }}>{totalPrice} VNĐ</td>
-                <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", minWidth: "100px", maxWidth: "350px", width: "auto" }}>{crr?.[header.note]}</td>
-                <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", minWidth: "30px", maxWidth: "50px" }}>{crr?.[header.batch]}</td>
-                {/* <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", minWidth: "60px", maxWidth: "100px" }}>{'timestampToTime(objectData.lastUpdate, "date only")'}</td> */}
+                <td className="month" style={{ ...commonsStyle, maxWidth: "50px" }}>
+                  {excelDateToMonthYear(+crr?.[header.date])[0] || 0}
+                </td>
+                <td className="material" style={{ ...commonsStyle, maxWidth: "100px" }}>
+                  {+crr?.[header.material] || "error"}
+                </td>
+                <td className="sLoc" style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", minWidth: "50px", maxWidth: "250px" }}>
+                  {crr?.[header.sLoc]}
+                </td>
+                <td
+                  className="description"
+                  style={{
+                    ...commonsStyle,
+                    minWidth: "100px",
+                    maxWidth: "300px",
+                    whiteSpace: "nowrap", // Prevent line breaks
+                  }}
+                >
+                  <span style={{ display: "inline-flex", alignItems: "center"}}>
+                    <p className="description">{checkAvailableInStock.descriptionRaw}</p>
+                    {checkAvailableInStock.isDescriptionDiff && (
+                      <>
+                        <IonIcon
+                          color="warning"
+                          icon={warning}
+                          id={"warning-icon showTable-item" + index} // Assign an ID for triggering the popover
+                          style={{ cursor: "pointer" }}
+                        />
+                        <IonPopover
+                          trigger={"warning-icon showTable-item" + index} // Use the ID of the IonIcon as the trigger
+                          triggerAction="click" // Show popover on click
+                        >
+                          <div style={{ padding: "10px", maxWidth: "500px" }}>
+                            <p>{checkAvailableInStock.descriptionMessenger}</p>
+                          </div>
+                        </IonPopover>
+                      </>
+                    )}
+                  </span>
+                </td>
+                <td className="quantity" style={{ ...commonsStyle, minWidth: "30px", maxWidth: "150px", fontWeight: 600 }}>
+                  {quantityTemp}
+                </td>
+
+                <td
+                  className="unit"
+                  style={{
+                    ...commonsStyle,
+                    minWidth: "30px",
+                    maxWidth: "100px",
+                    whiteSpace: "nowrap", // Prevent line breaks
+                  }}
+                >
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: "5px" }}>
+                    <strong>{checkAvailableInStock.unitRaw}</strong>
+                    {checkAvailableInStock.isUnitDiff && (
+                      <>
+                        <IonIcon
+                          color="warning"
+                          icon={warning}
+                          id={"warning-icon showTable-item" + index} // Assign an ID for triggering the popover
+                          style={{ cursor: "pointer" }}
+                        />
+                        <IonPopover
+                          trigger={"warning-icon showTable-item" + index} // Use the ID of the IonIcon as the trigger
+                          triggerAction="click" // Show popover on click
+                        >
+                          <div style={{ padding: "10px", maxWidth: "500px" }}>
+                            <p>{checkAvailableInStock.unitMessenger}</p>
+                          </div>
+                        </IonPopover>
+                      </>
+                    )}
+                  </span>
+                </td>
+                <td className="price" style={{ ...commonsStyle, minWidth: "100px", maxWidth: "250px", textAlign: "right" }}>
+                  {crr?.[header.price] || 1} VNĐ
+                </td>
+                <td className="totalPrice" style={{ ...commonsStyle, minWidth: "130px", maxWidth: "250px", textAlign: "right" }}>
+                  {totalPrice} VNĐ
+                </td>
+                <td className="note" style={{ ...commonsStyle, minWidth: "100px", maxWidth: "350px", width: "auto" }}>
+                  {crr?.[header.note]}
+                </td>
+                <td className="batch" style={{ ...commonsStyle, minWidth: "30px", maxWidth: "50px" }}>
+                  {crr?.[header.batch]}
+                </td>
+                <td className="quantityInStock" style={{display: 'none'}}>
+                  {checkAvailableInStock.quantityInStock}
+                </td>
+                <td className="searchType" style={{display: 'none'}}>
+                  {checkAvailableInStock.type}
+                </td>
               </tr>
             );
           })}

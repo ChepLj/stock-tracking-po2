@@ -1,13 +1,19 @@
 import { IonButton, IonButtons, IonHeader, IonText, IonToolbar } from "@ionic/react";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import * as XLSX from "xlsx";
 import ChooseSheet from "./Component/ChooseSheet";
 import ChooseTable from "./Component/ChooseTable";
 import SelectHeader from "./Component/SelectHeader";
 import ShowTable from "./Component/ShowTable";
+import { handleInboundExcelExtract } from "../../function/handleInboundExcelExtract";
+import { handleInboundExcelImportUpload } from "../../function/handleInboundExcelImportUpload";
+import { InboundDataContext } from "../../../context/inboundDataContext";
+import { MainContext } from "../../../context/mainDataContext";
 
 const InboundExcelImport = ({ setViewStyle }: { setViewStyle: Function }) => {
   const [step, setStep] = useState<{ step: number; value: any }>({ step: 0, value: null });
+  const { data, keyOfDataShow, disPatch } = useContext<any>(MainContext);
+  const { InboundData, disPatchInboundData } = useContext<any>(InboundDataContext);
   //TODO: Handle file input change
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -24,7 +30,7 @@ const InboundExcelImport = ({ setViewStyle }: { setViewStyle: Function }) => {
     }
   };
   //TODO_END: Handle file input change
-  console.log(step.step)
+
   return (
     <div id="check">
       <IonHeader>
@@ -40,14 +46,18 @@ const InboundExcelImport = ({ setViewStyle }: { setViewStyle: Function }) => {
               fill="outline"
               color="medium"
               onClick={() => {
-                setViewStyle('Inbound');
-
+                setViewStyle("Inbound");
               }}
             >
               Cancel
             </IonButton>
             &nbsp;&nbsp;&nbsp;
-           {step.step == 4 && <IonButton fill="solid">&nbsp;&nbsp;&nbsp;Extract&nbsp;&nbsp;&nbsp;</IonButton>} &nbsp;&nbsp;&nbsp;
+            {step.step == 4 && (
+              <IonButton fill="solid" onClick={() => handleInboundExcelImportUpload(handleInboundExcelExtract(), disPatch, disPatchInboundData,setViewStyle)}>
+                &nbsp;&nbsp;&nbsp;Extract&nbsp;&nbsp;&nbsp;
+              </IonButton>
+            )}{" "}
+            &nbsp;&nbsp;&nbsp;
           </IonButtons>
         </IonToolbar>
       </IonHeader>
@@ -62,7 +72,3 @@ const InboundExcelImport = ({ setViewStyle }: { setViewStyle: Function }) => {
 };
 
 export default InboundExcelImport;
-
-
-
-

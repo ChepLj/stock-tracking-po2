@@ -6,7 +6,7 @@ import { TableVirtuoso } from "react-virtuoso";
 import { IonFab, IonFabButton, IonIcon } from "@ionic/react";
 import { createOutline, refreshOutline } from "ionicons/icons";
 import timestampToTime from "../function/timestampToTime";
-import ModalEditStock from "../ModalEditStock/ModalEditStock";
+import ModalEditStock from "../ModalEdit/ModalEditStock";
 import firebaseGetMainData from "../../firebase/api/getData";
 
 function StockView({

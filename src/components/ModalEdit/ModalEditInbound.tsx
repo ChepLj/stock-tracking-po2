@@ -5,18 +5,20 @@ import firebasePostData from "../../firebase/api/postData";
 import { MainContext } from "../../context/mainDataContext";
 import firebaseGetMainData from "../../firebase/api/getData";
 import { ActionSheet, ActionSheetButtonStyle } from "@capacitor/action-sheet";
-function ModalEditStock({ isModalOpen, setIsModalOpen }: { isModalOpen: any; setIsModalOpen: Function }) {
-  const { disPatch } = useContext<any>(MainContext);
+import { InboundDataContext } from "../../context/inboundDataContext";
+function ModalEditInbound({ isModalEditOpen, setIsModalEditOpen }: { isModalEditOpen: any; setIsModalEditOpen: Function }) {
+ 
+  const { InboundData, disPatchInboundData } = useContext<any>(InboundDataContext);
   const [state, setState] = useState(false);
   const unit = ["BT", "EA", "G", "KG", "L", "M", "M2", "M3", "ML", "PAA", "PC", "Set", "TON", "Other"];
   const batch = ["none", "C1", "C2", "C3"];
   //TODO: Assign value when action is Edit
   useEffect(() => {
     setState((pre) => !pre);
-  }, [isModalOpen.isOpen]);
+  }, [isModalEditOpen.isOpen]);
 
   useEffect(() => {
-    if (isModalOpen.value) {
+    if (isModalEditOpen.value) {
       const descriptionElm = document.querySelector('[name="edit-stockModal-description"]') as HTMLInputElement;
       const quantityElm = document.querySelector('[name="editStockModal-quantity"]') as HTMLInputElement;
       const unitElm = document.querySelector('[name="editStockModal-unit"]') as HTMLInputElement;
@@ -25,22 +27,22 @@ function ModalEditStock({ isModalOpen, setIsModalOpen }: { isModalOpen: any; set
       const noteElm = document.querySelector('[name="editStockModal-note"]') as HTMLInputElement;
       // Ensure elements exist before accessing properties
       if (descriptionElm) {
-        descriptionElm.value = isModalOpen.value?.description || "";
+        descriptionElm.value = isModalEditOpen.value?.description || "";
       }
       if (quantityElm) {
-        quantityElm.value = isModalOpen.value?.quantity || "";
+        quantityElm.value = isModalEditOpen.value?.quantity || "";
       }
       if (unitElm) {
-        unitElm.value = isModalOpen.value?.unit || "";
+        unitElm.value = isModalEditOpen.value?.unit || "";
       }
       if (priceElm) {
-        priceElm.value = isModalOpen.value?.price || "";
+        priceElm.value = isModalEditOpen.value?.price || "";
       }
       if (batchElm) {
-        batchElm.value = isModalOpen.value?.batch || "";
+        batchElm.value = isModalEditOpen.value?.batch || "";
       }
       if (noteElm) {
-        noteElm.value = isModalOpen.value?.note || "";
+        noteElm.value = isModalEditOpen.value?.note || "";
       }
     }
   }, [state]);
@@ -55,68 +57,68 @@ function ModalEditStock({ isModalOpen, setIsModalOpen }: { isModalOpen: any; set
     const priceElm = document.querySelector('[name="editStockModal-price"]') as HTMLInputElement;
     const batchElm = document.querySelector('[name="editStockModal-batch"]') as HTMLInputElement;
     console.log("🚀 ~ handelUploadData ~ batchElm:", batchElm.value);
-    console.log("🚀 ~ handelUploadData ~ batchElm:", isModalOpen?.value?.batch);
+    console.log("🚀 ~ handelUploadData ~ batchElm:", isModalEditOpen?.value?.batch);
     const noteElm = document.querySelector('[name="editStockModal-note"]') as HTMLInputElement;
 
     const uploadContainer: ITF_UploadContainer[] = [];
 
-    if (descriptionElm?.value !== isModalOpen?.value?.description) {
+    if (descriptionElm?.value !== isModalEditOpen?.value?.description) {
       uploadContainer.push({
-        ref: `MainData/${isModalOpen.key}/description/`,
+        ref: `InboundData/${isModalEditOpen.key}/description/`,
         data: descriptionElm.value,
       });
     }
-    if (quantityElm?.value !== isModalOpen?.value?.quantity) {
+    if (quantityElm?.value !== isModalEditOpen?.value?.quantity) {
       uploadContainer.push({
-        ref: `MainData/${isModalOpen.key}/quantity/`,
+        ref: `InboundData/${isModalEditOpen.key}/quantity/`,
         data: quantityElm.value,
       });
     }
-    if (priceElm?.value !== isModalOpen?.value?.price) {
+    if (priceElm?.value !== isModalEditOpen?.value?.price) {
       uploadContainer.push({
-        ref: `MainData/${isModalOpen.key}/price/`,
+        ref: `InboundData/${isModalEditOpen.key}/price/`,
         data: priceElm.value,
       });
     }
-    if (noteElm?.value !== isModalOpen?.value?.note) {
+    if (noteElm?.value !== isModalEditOpen?.value?.note) {
       uploadContainer.push({
-        ref: `MainData/${isModalOpen.key}/note/`,
+        ref: `InboundData/${isModalEditOpen.key}/note/`,
         data: noteElm.value,
       });
     }
-    if (unitElm?.value !== isModalOpen?.value?.unit) {
+    if (unitElm?.value !== isModalEditOpen?.value?.unit) {
       uploadContainer.push({
-        ref: `MainData/${isModalOpen.key}/unit/`,
+        ref: `InboundData/${isModalEditOpen.key}/unit/`,
         data: unitElm.value,
       });
     }
-    if (batchElm?.value && batchElm?.value !== isModalOpen?.value?.batch && batchElm?.value !== "none") {
+    if (batchElm?.value && batchElm?.value !== isModalEditOpen?.value?.batch && batchElm?.value !== "none") {
       uploadContainer.push({
-        ref: `MainData/${isModalOpen.key}/batch/`,
+        ref: `InboundData/${isModalEditOpen.key}/batch/`,
         data: batchElm.value,
       });
     }
     const timeStamp = Date.now();
     uploadContainer.push(
       {
-        ref: `MainData/${isModalOpen.key}/lastUpdate/`,
+        ref: `InboundData/${isModalEditOpen.key}/lastUpdate/`,
         data: timeStamp,
       },
       {
-        ref: `MainData/${isModalOpen.key}/logs/${timeStamp}/`,
+        ref: `InboundData/${isModalEditOpen.key}/logs/${timeStamp}/`,
         data: {
-          behavior: "Stock Edit",
-          detail: `Old Data : ${JSON.stringify(isModalOpen?.value)}`,
+          behavior: "Inbound Edit",
+          detail: `Old Data : ${JSON.stringify(isModalEditOpen?.value)}`,
           timeStamp: timeStamp,
         },
       },
       {
         ref: `Logs/${timeStamp}`,
         data: {
-          key: isModalOpen.key,
-          behavior: "Stock Edit",
+          key: isModalEditOpen.key,
+          behavior: "Inbound Edit",
           description: descriptionElm.value,
-          detail: "Stock Edit",
+          detail: "Inbound Edit",
           timeStamp: timeStamp,
         },
       }
@@ -125,9 +127,9 @@ function ModalEditStock({ isModalOpen, setIsModalOpen }: { isModalOpen: any; set
     //////////////////////////////
     const handelRefresh = () => {
       //: lấy data từ firebase sao đó dispatch đê render lại
-      const childRef = "MainData/";
-      firebaseGetMainData(childRef, disPatch);
-      setIsModalOpen({ isOpen: false, value: "" });
+      const childRef = "InboundData/";
+      firebaseGetMainData(childRef, disPatchInboundData);
+      setIsModalEditOpen({ isOpen: false, value: "" });
     };
     //////////////////////////////
     console.log("🚀 ~ handelUploadData ~ uploadContainer:", uploadContainer);
@@ -141,13 +143,13 @@ function ModalEditStock({ isModalOpen, setIsModalOpen }: { isModalOpen: any; set
 
   //TODO: Xóa đối tượng
   const handelPreDelete = async () => {
-    const userConfirmed = confirm(`Are you sure you want to delete ${isModalOpen.key}?`);
+    const userConfirmed = confirm(`Are you sure you want to delete ${isModalEditOpen.key}?`);
 
     if (userConfirmed) {
       const key = Date.now();
       const uploadContainer: ITF_UploadContainer[] = [
         {
-          ref: `MainData/${isModalOpen.key}/logs/${key}/`,
+          ref: `InboundData/${isModalEditOpen.key}/logs/${key}/`,
           data: {
             behavior: "pre-delete",
             timeStamp: key,
@@ -156,16 +158,19 @@ function ModalEditStock({ isModalOpen, setIsModalOpen }: { isModalOpen: any; set
         {
           ref: `Logs/${key}`,
           data: {
-            behavior: "pre-delete",
+            behavior: "Inbound pre-delete",
             detail: "pre-delete",
-            item: JSON.stringify(isModalOpen.value),
+            item: 'JSON.stringify(isModalEditOpen.value)',
             timeStamp: key,
+            description: isModalEditOpen.value.description,
+            key: isModalEditOpen.key
           },
         },
         {
-          ref: `MainData/${isModalOpen.key}/status/`,
+          ref: `InboundData/${isModalEditOpen.key}/status/`,
           data: {
             value: "pre-delete",
+            detail: 'Inbound pre-delete',
             timeStamp: key,
           },
         },
@@ -174,9 +179,9 @@ function ModalEditStock({ isModalOpen, setIsModalOpen }: { isModalOpen: any; set
       //////////////////////////////
       const handelRefresh = () => {
         //: lấy data từ firebase sao đó dispatch đê render lại
-        const childRef = "MainData/";
-        firebaseGetMainData(childRef, disPatch);
-        setIsModalOpen({ isOpen: false, value: "" });
+        const childRef = "InboundData/";
+        firebaseGetMainData(childRef, disPatchInboundData);
+        setIsModalEditOpen({ isOpen: false, value: "" });
       };
       //////////////////////////////
 
@@ -188,18 +193,19 @@ function ModalEditStock({ isModalOpen, setIsModalOpen }: { isModalOpen: any; set
   //TODO_END:
 
   return (
-    <IonModal isOpen={isModalOpen.isOpen} onWillDismiss={() => setIsModalOpen({ isOpen: false, value: "" })}>
+    <IonModal isOpen={isModalEditOpen.isOpen} onWillDismiss={() => setIsModalEditOpen({ isOpen: false, value: "" })}>
       <IonHeader>
         <IonToolbar>
           <IonTitle>
-            <i>Edit</i> <strong>{isModalOpen?.value?.material}</strong> <i>Stock</i> <strong>{isModalOpen?.value?.sLoc}</strong>
+            <i>(Nhập Kho) Edit</i> <strong>{isModalEditOpen?.value?.material}</strong> <i>Stock</i> <strong>{isModalEditOpen?.value?.sLoc}</strong>
           </IonTitle>
           <IonButtons slot="end">
-            <IonButton onClick={() => setIsModalOpen({ isOpen: false, value: "" })}>Close</IonButton>
+            <IonButton onClick={() => setIsModalEditOpen({ isOpen: false, value: "" })}>Close</IonButton>
           </IonButtons>
         </IonToolbar>
       </IonHeader>
       <IonContent className="ion-padding">
+        <IonLabel color='danger'>Lưu Ý: Thông tin chỉnh sửa ở trang này sẽ KHÔNG được cập nhật bên STOCK</IonLabel>
         <IonList>
           <IonItem>
             <IonLabel color="tertiary">Description</IonLabel>
@@ -260,4 +266,4 @@ function ModalEditStock({ isModalOpen, setIsModalOpen }: { isModalOpen: any; set
   );
 }
 
-export default ModalEditStock;
+export default ModalEditInbound;

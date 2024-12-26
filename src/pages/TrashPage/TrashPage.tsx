@@ -9,7 +9,8 @@ import firebaseGetMainData from "../../firebase/api/getData";
 import firebasePostData from "../../firebase/api/postData";
 import { ITF_Logs } from "../../interface/mainInterface";
 import timestampToTime from "../../components/function/timestampToTime";
-
+import { InboundDataContext } from "../../context/inboundDataContext";
+import { OutboundDataContext } from "../../context/outboundDataContext";
 
 const TrashPage: React.FC = () => {
   //* Check Render and Unmount
@@ -19,24 +20,41 @@ const TrashPage: React.FC = () => {
   }, []);
   //* END Check Render and Unmount
   const { data, keyOfDataShow, disPatch } = useContext<any>(MainContext);
+  const { InboundData, disPatchInboundData } = useContext<any>(InboundDataContext);
+  const { OutboundData, disPatchOutboundData } = useContext<any>(OutboundDataContext);
   const { authorLogin } = useContext<any>(AuthContext);
   //TODO: get key of delete object
-  const keyOfDataDelete = [];
+  const keyOfStockDataDelete = [];
+  const keyOfInboundDataDelete = [];
+  const keyOfOutboundDataDelete = [];
   for (const key in data) {
-    if (data[key]?.status?.value == "pre-delete" ) {
-      keyOfDataDelete.push(key);
+    if (data[key]?.status?.value == "pre-delete") {
+      keyOfStockDataDelete.push(key);
     }
   }
-  keyOfDataDelete.reverse();
+  for (const key in InboundData) {
+    if (InboundData[key]?.status?.value == "pre-delete") {
+      keyOfInboundDataDelete.push(key);
+    }
+  }
+  for (const key in OutboundData) {
+    if (OutboundData[key]?.status?.value == "pre-delete") {
+      keyOfOutboundDataDelete.push(key);
+    }
+  }
+  keyOfStockDataDelete.reverse();
+  keyOfInboundDataDelete.reverse();
+  keyOfOutboundDataDelete.reverse();
   //TODO_END: get key of delete object
 
   //TODO: restore Item
-  const handelRestoreItem = (item: string) => {
+  const handelRestoreItem = (item: string, ref:string) => {
     const callbackSuccess = (result: string) => {
       if (result === "post successfully!") {
         //: lấy data từ firebase sao đó dispatch đê render lại
-        const childRef = "MainData/";
-        firebaseGetMainData(childRef, disPatch);
+        const childRef = `${ref}/`;
+        const disPatchFunctionTemp = ref == 'MainData' ? disPatch : ref =='InboundData'? disPatchInboundData: disPatchOutboundData
+        firebaseGetMainData(childRef, disPatchFunctionTemp);
       } else {
         Toast.show({
           text: "Something is wrong !",
@@ -46,20 +64,20 @@ const TrashPage: React.FC = () => {
     //!
     const currentTime = Date.now();
     const status = {
-      ref: `MainData/${item}/status`,
+      ref: `${ref}/${item}/status`,
       data: {
         value: "normal",
-        timeStamp: currentTime
+        timeStamp: currentTime,
       },
     };
     const logsItem: ITF_Logs = {
-      ref: `MainData/${item}/logs/${currentTime}`,
+      ref: `${ref}/${item}/logs/${currentTime}`,
       data: {
         behavior: "restore",
         author: authorLogin.displayName,
         authorId: authorLogin.userName,
         detail: "restore",
-   
+
         timeStamp: currentTime,
       },
     };
@@ -67,12 +85,12 @@ const TrashPage: React.FC = () => {
       ref: `Logs/${currentTime}`,
       data: {
         key: item,
-        description: data[item]?.description || '',
-        behavior: "restore",
+        description: data[item]?.description || "",
+        behavior: ref == 'MainData' ? 'Stock restore' : ref =='InboundData'? 'Inbound restore': 'Outbound restore',
         author: authorLogin.displayName,
         authorId: authorLogin.userName,
         detail: "restore",
- 
+
         timeStamp: currentTime,
       },
     };
@@ -81,7 +99,7 @@ const TrashPage: React.FC = () => {
   };
   //TODO_END: restore Item
   //TODO: remove Item
-  const handelRemoveItem = async (item: string) => {
+  const handelRemoveItem = async (item: string, ref:string) => {
     const result = await ActionSheet.showActions({
       title: `Delete forever ${item} item`,
       message: `Are you sure delete forever ${item} item ?`,
@@ -103,21 +121,23 @@ const TrashPage: React.FC = () => {
           const logsMain: ITF_Logs = {
             ref: `Logs/${currentTime}`,
             data: {
-              behavior: "remove",
+              behavior: ref == 'MainData' ? 'Stock remove' : ref =='InboundData'? 'Inbound remove': 'Outbound remove',
               author: authorLogin.displayName,
               authorId: authorLogin.userName,
               detail: "remove",
               key: item,
-              description: data[item]?.description || '',
-              timeStamp: currentTime
+              description: data[item]?.description || "",
+              timeStamp: currentTime,
             },
           };
           const uploadContainer = [logsMain];
           await firebasePostData(uploadContainer, () => {});
 
           //: lấy data từ firebase sao đó dispatch đê render lại
-          const childRef = "MainData/";
-          await firebaseGetMainData(childRef, disPatch);
+          const childRef = `${ref}/`;
+          const disPatchFunctionTemp = ref == 'MainData' ? disPatch : ref =='InboundData'? disPatchInboundData: disPatchOutboundData
+
+          await firebaseGetMainData(childRef, disPatchFunctionTemp);
         } else {
           Toast.show({
             text: "Something is wrong !",
@@ -125,9 +145,9 @@ const TrashPage: React.FC = () => {
         }
       };
       /////////////////////////////////////
-      const keyCheck = item || 'Error'
-      const ref = `MainData/${keyCheck}`;
-      firebaseDeleteData(ref, callbackSuccess);
+      const keyCheck = item || "Error";
+      const refMain = `${ref}/${keyCheck}`;
+      firebaseDeleteData(refMain, callbackSuccess);
     }
   };
   //TODO_END: remove Item
@@ -144,28 +164,31 @@ const TrashPage: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent>
-        {keyOfDataDelete.length >= 1 ? (
+        <p style={{ width: "100%", display: "block", textAlign: "center", fontSize: "10px", color: "gray", margin: "10px" }}>------- Stock -------</p>
+        {keyOfStockDataDelete.length >= 1 ? (
           <IonList>
-            {keyOfDataDelete.map((crrKey, index) => {
+            {keyOfStockDataDelete.map((crrKey, index) => {
               return (
                 <IonItem key={index}>
-                  
-                  <div style={{marginRight: '10px'}}>
+                  <div style={{ marginRight: "10px" }}>
                     <IonLabel className="fontSize-normal" color="primary">
                       {crrKey}
                     </IonLabel>
-                    <IonLabel style={{fontSize: '10px'}} color="warning">
-                      {timestampToTime(data[crrKey]?.status?.timeStamp)}
+                    <IonLabel style={{ fontSize: "10px" }} color="warning">
+                    {data[crrKey]?.status?.detail}
                     </IonLabel>
                   </div>
                   <IonText>{data[crrKey].description}</IonText>
+                  <IonLabel style={{ fontSize: "10px" }} slot="end" color="warning">
+                    {timestampToTime(data[crrKey]?.status?.timeStamp)}
+                  </IonLabel>
                   <IonButtons slot="end">
                     <IonButton
                       slot="start"
                       color="success"
                       fill="solid"
                       onClick={() => {
-                        handelRestoreItem(crrKey);
+                        handelRestoreItem(crrKey,'MainData');
                       }}
                     >
                       Restore
@@ -176,7 +199,7 @@ const TrashPage: React.FC = () => {
                       color="danger"
                       fill="solid"
                       onClick={() => {
-                        handelRemoveItem(crrKey);
+                        handelRemoveItem(crrKey,'MainData');
                       }}
                     >
                       Remove
@@ -188,7 +211,113 @@ const TrashPage: React.FC = () => {
           </IonList>
         ) : (
           <h5 className="fontStyle-italic" style={{ textAlign: "center" }}>
-            Trash is empty !
+            Stock Trash is empty !
+          </h5>
+        )}
+
+        {/* Inbound */}
+        <p style={{ width: "100%", display: "block", textAlign: "center", fontSize: "10px", color: "gray", margin: "10px" }}>------- Inbound -------</p>
+        {keyOfInboundDataDelete.length >= 1 ? (
+          <IonList>
+            {keyOfInboundDataDelete.map((crrKey, index) => {
+                console.log(InboundData[crrKey]?.status)
+              return (
+                <IonItem key={index}>
+                  <div style={{ marginRight: "10px" }}>
+                    <IonLabel className="fontSize-normal" color="primary">
+                      {crrKey}
+                    </IonLabel>
+                    <IonLabel style={{ fontSize: "10px" }} color="warning">
+                      {InboundData[crrKey]?.status?.detail}
+                    </IonLabel>
+                  </div>
+                  <IonText>{InboundData[crrKey].description}</IonText>
+                  <IonLabel style={{ fontSize: "10px" }} slot="end" color="warning">
+                    {timestampToTime(InboundData[crrKey]?.status?.timeStamp)}
+                  </IonLabel>
+                  <IonButtons slot="end">
+                    <IonButton
+                      slot="start"
+                      color="success"
+                      fill="solid"
+                      onClick={() => {
+                        handelRestoreItem(crrKey,'InboundData');
+                      }}
+                    >
+                      Restore
+                    </IonButton>
+                    <span style={{ width: "10px" }}></span>
+                    <IonButton
+                      slot="end"
+                      color="danger"
+                      fill="solid"
+                      onClick={() => {
+                        handelRemoveItem(crrKey,'InboundData');
+                      }}
+                    >
+                      Remove
+                    </IonButton>
+                  </IonButtons>
+                </IonItem>
+              );
+            })}
+          </IonList>
+        ) : (
+          <h5 className="fontStyle-italic" style={{ textAlign: "center" }}>
+            The Inbound trash is empty Or see the "Nhập Kho" page after returning here!
+          </h5>
+        )}
+
+        {/* Outbound */}
+        <p style={{ width: "100%", display: "block", textAlign: "center", fontSize: "10px", color: "gray", margin: "10px" }}>------- Outbound -------</p>
+        {keyOfOutboundDataDelete.length >= 1 ? (
+          <IonList>
+            {keyOfOutboundDataDelete.map((crrKey, index) => {
+            
+              return (
+                <IonItem key={index}>
+                  <div style={{ marginRight: "10px" }}>
+                    <IonLabel className="fontSize-normal" color="primary">
+                      {crrKey}
+                    </IonLabel>
+                    <IonLabel style={{ fontSize: "10px" }} color="warning">
+                    {OutboundData[crrKey]?.status?.detail}
+                    </IonLabel>
+                  </div>
+                  <IonText>{OutboundData[crrKey].description}</IonText>
+                  <IonLabel style={{ fontSize: "10px" }} slot="end" color="warning">
+                    {timestampToTime(OutboundData[crrKey]?.status?.timeStamp)}
+                  </IonLabel>
+                  <IonButtons slot="end">
+                    <IonButton
+                      slot="start"
+                      color="success"
+                      fill="solid"
+                      onClick={() => {
+                        handelRestoreItem(crrKey,'OutboundData');
+                      }}
+                    >
+                      Restore
+                    </IonButton>
+                    <span style={{ width: "10px" }}></span>
+                    <IonButton
+                      slot="end"
+                      color="danger"
+                      fill="solid"
+                      onClick={() => {
+                        handelRemoveItem(crrKey,'OutboundData');
+                      }}
+                    >
+                      Remove
+                    </IonButton>
+                  </IonButtons>
+                </IonItem>
+              );
+            })}
+          </IonList>
+        ) : (
+          <h5 className="fontStyle-italic" style={{ textAlign: "center" }}>
+            The Outbound trash is empty Or see the "Nhập Kho" page after returning here!
           </h5>
         )}
       </IonContent>

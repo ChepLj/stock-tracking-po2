@@ -1,7 +1,9 @@
 import { IonButton, IonButtons, IonCol, IonHeader, IonIcon, IonMenuButton, IonRow, IonSearchbar, IonToolbar } from "@ionic/react";
 import { downloadOutline, filterCircleOutline } from "ionicons/icons";
-import { ITF_Data } from "../../interface/mainInterface";
-import { exportFileFix, exportFileRaw } from "../function/exportFileExcel";
+
+import { exportObjectToExcel } from "../function/exportFileExcel";
+import { ITF_MaterialObject } from "../../interface/mainInterface";
+import { saveObjectAsJson } from "../function/objectToJsonSave";
 
 const HeaderMain = ({
   modalFilterOpen,
@@ -25,7 +27,7 @@ const HeaderMain = ({
   countSearch: number[];
   viewStyle: string;
   setViewStyle: Function;
-  data: ITF_Data;
+  data: ITF_MaterialObject;
   keyOfDataRaw: string[];
   isPhone: boolean;
   setTitle: Function;
@@ -36,6 +38,9 @@ const HeaderMain = ({
   const handleViewStyle = (style: string) => {
     setViewStyle(style);
   };
+
+
+
   //TODO_END: handle view style
   return (
     <IonToolbar>
@@ -86,11 +91,11 @@ const HeaderMain = ({
                 Export Raw
                 <IonIcon icon={downloadOutline} style={{ paddingLeft: "4px" }} />
               </IonButton> */}
-              <IonButton style={{ fontSize: "10px" }} onClick={exportFileFix}>
+              <IonButton style={{ fontSize: "10px" }} onClick={()=>exportObjectToExcel(data)}>
                 Export Excel
                 <IonIcon icon={downloadOutline} style={{ paddingLeft: "4px" }} />
               </IonButton>
-              <IonButton style={{ fontSize: "10px" }} color="medium">
+              <IonButton style={{ fontSize: "10px" }} color="medium" onClick={()=>saveObjectAsJson()}>
                 Backup JSON
                 <IonIcon icon={downloadOutline} style={{ paddingLeft: "4px" }} />
               </IonButton>

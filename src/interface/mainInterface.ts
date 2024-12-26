@@ -1,82 +1,8 @@
 
-export interface ITF_ImagesObject {
-  image: string;
-  hash: string;
-  avatar?: boolean;
-  webPath?: string;
-}
-export interface ITF_AttachmentsObject {
-  fileName: string;
-  URL: string;
-}
-export interface ITF_StoreObject {
-  local: string;
-  quantity: number;
-  unit: "Cái" | "Bộ" | "Hộp" | "Cuộn" | "Thanh" | "Mét" | "Kg" | string;
-}
 
-//! Tạo interface cho Data
-export interface ITF_ObjectData {
-  id: string;
-  code: number | string;
-  title: string;
-  subTitle: string;
-  progressTag?: { [key: string]: ITF_ProgressTag };
-  ref?: string;
-  description: string;
-  store: Array<ITF_StoreObject>;
-  tag: Array<string>;
-  note: string;
-  icon: ITF_ImagesObject;
-  images: Array<ITF_ImagesObject>;
-  attachments?: Array<any>;
-  author: string;
-  authorId: string | number;
-  dateCreated: number | string;
-  logs: Array<any>;
-  status: string;
-  favorite: Array<string>;
-  important: Array<string>;
-  isPrivate: boolean;
-  handelDetail?: Function;
-  handelFavorite?: Function;
-  handelImportant?: Function;
-  handelEdit?: Function;
-  handelPreDelete?: Function;
-  handelUpLoad?: Function;
-  handelCreate?: Function;
-}
-//! Tạo interface cho Data
-export interface ITF_Data {
-  id?: string;
-  code: number;
-  title: string;
-  progressTag?: Array<ITF_ProgressTag>;
-  ref?: string;
-  subTitle: string;
-  description: string;
-  store: Array<ITF_StoreObject>;
-  tag: Array<string>;
-  note: string;
-  icon: ITF_ImagesObject;
-  images: Array<ITF_ImagesObject>;
-  attachments?: Array<any>;
-  author: string;
-  authorId: string | number;
-  dateCreated: number | string;
-  logs?: Array<any>;
-  status?: string;
-  favorite?: Array<string>;
-  important?: Array<string>;
-  isPrivate?: boolean;
-}
 
-export interface ITF_UserPhoto {
-  fileName: string;
-  path?: string;
-  webPath?: string;
-  avatar: boolean;
-}
+
+
 
 //!
 export interface ITF_UploadContainer {
@@ -139,9 +65,18 @@ export interface ITF_ActionDisPatch {
   payload: object;
 }
 
-export interface ITF_ProgressTag {
-  id: string;
-  type: "Original" | "Temporary";
-  ref?: string;
-  area: string;
+export interface ITF_MaterialObject {
+  material: string;
+  sLoc: string | number;
+  description: string;
+  quantity: string | number;
+  unit: string;
+  price: string| number;
+  note: string;
+  batch?: string;
+  month?: string| number;
+  year?: string | number;
+  searchType?: string;
+  quantityInStock: string|number;
+
 }

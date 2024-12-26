@@ -1,45 +1,46 @@
 import { utils, writeFileXLSX } from "xlsx";
+import timestampToTime from "./timestampToTime";
 
-//TODO: handle export fix
-/* get live table and export to XLSX */
-const exportFileFix = () => {
-  const tableViewStyle = document.getElementById("tableViewStyle");
-  const elt = tableViewStyle!.getElementsByTagName("TABLE")[0];
-  const wb = utils.table_to_book(elt);
-  const date = new Date();
-  writeFileXLSX(wb, `Pomina3 Stock Tracking-${date.toDateString()}.xlsx`);
+//TODO: handle export object to excel
+
+const exportObjectToExcel = (data: any) => {
+
+  // Convert the object to a worksheet
+  try {
+    if (data) {
+      const result = [];
+      for (const key in data) {
+        const objectRaw = data[key];
+        const objectFix = {
+          material: objectRaw.material,
+          sLoc: objectRaw.sLoc,
+          description: objectRaw.description,
+          quantity: objectRaw.quantity,
+          unit: objectRaw.unit,
+          price: objectRaw.price,
+          totalPrice: (Number(objectRaw.price) || 1) * Number(objectRaw.quantity),
+          note: objectRaw.note,
+          batch: objectRaw.batch,
+          lastUpdate: timestampToTime(objectRaw.lastUpdate, "date only"),
+          month: objectRaw.month,
+          year: objectRaw.year,
+        };
+        result.push(objectFix);
+      }
+      const ws = utils.json_to_sheet(result);
+
+
+      // // Create a workbook
+      const wb = utils.book_new();
+      utils.book_append_sheet(wb, ws, "Sheet1");
+      const date = new Date();
+      // Write the workbook to a file
+      writeFileXLSX(wb, `Pomina3 Stock Tracking-${date.toDateString()}.xlsx`);
+    }
+  } catch (error) {}
 };
 
-//TODO_END: handle export fix
-//TODO: handle export raw
-/* get state data and export to XLSX */
-const exportFileRaw = ( data: any,keyOfDataRaw: string[] ) => {
-    const newData4Sheet = keyOfDataRaw.map((crr, index)=>{
-        const dataTemp = data[crr]
-        return {
-            No: index + 1,
-            Id: dataTemp.id,
-            Code: dataTemp.code,
-            Name: dataTemp.title,
-            Author: dataTemp.author,
-            Stock: JSON.stringify(dataTemp.store),
-            Description: dataTemp.description,
-            Note: dataTemp.note,
-            Date: dataTemp.dateCreated,
-            Logs: JSON.stringify(dataTemp.logs),
-            Avatar: JSON.stringify(dataTemp.icon),
-            Images: JSON.stringify(dataTemp.images),
-            Attachments: JSON.stringify(dataTemp.attachments),
-        }
-    })
+//TODO_end: handle export object to excel
 
-  const ws = utils.json_to_sheet(newData4Sheet);
-  const wb = utils.book_new();
-  utils.book_append_sheet(wb, ws, "Data");
-  const date = new Date();
-  writeFileXLSX(wb, `ManagerEquipment-${date.toDateString()}.xlsx`);
-};
-//TODO_END: handle export raw
 //! export
-export { exportFileFix, exportFileRaw };
-
+export { exportObjectToExcel };

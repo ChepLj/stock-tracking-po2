@@ -26,9 +26,14 @@ const InboundDataProvider = ({ children }: any) => {
     }
   }
   const [InboundData, disPatchInboundData]: [data: any, disPatch: Function] = useReducer<any>(handleInboundData, initData);
- 
+  const keyOfInboundDataShow = [];
+  for (const key in InboundData) {
+    if (InboundData[key]?.status?.value !== "pre-delete") {
+      keyOfInboundDataShow.push(key);
+    }
+  }
   return (
-    <InboundDataContext.Provider value={{ InboundData, disPatchInboundData }}>
+    <InboundDataContext.Provider value={{ InboundData,keyOfInboundDataShow, disPatchInboundData }}>
       {/* The rest of your app */}
       {children}
     </InboundDataContext.Provider>

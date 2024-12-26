@@ -6,6 +6,7 @@ import { InboundDataContext } from "../../../context/inboundDataContext";
 import firebaseGetMainData from "../../../firebase/api/getData";
 import timestampToTime from "../../function/timestampToTime";
 import ModalInboundHand from "../../ModalInboundHand/ModalInboundHand";
+import ModalEditInbound from "../../ModalEdit/ModalEditInbound";
 
 function InboundView({
   data,
@@ -27,8 +28,10 @@ function InboundView({
   setViewStyle: Function;
 }) {
   const [isModalOpen, setIsModalOpen] = useState<{ isOpen: boolean; value: any; key?: string }>({ isOpen: false, value: {} });
+  const [isModalEditOpen, setIsModalEditOpen] = useState<{ isOpen: boolean; value: any; key: string }>({ isOpen: false, value: {}, key: "" });
 
-  const { InboundData, disPatchInboundData } = useContext<any>(InboundDataContext);
+  const { InboundData,keyOfInboundDataShow, disPatchInboundData } = useContext<any>(InboundDataContext);
+  
 
   //TODO: Lấy Main Data khi load Page lần đầu
   useEffect(() => {
@@ -45,7 +48,7 @@ function InboundView({
           ref={virtuoso}
           id="tableViewStyle"
           style={{ height: "100%", width: "100%" }}
-          data={[...Object.keys(InboundData)]}
+          data={[...keyOfInboundDataShow]}
           // data={new Array(100000)}
           overscan={{ main: 0, reverse: 2000 }}
           fixedHeaderContent={() => (
@@ -78,7 +81,7 @@ function InboundView({
                   ionItemSlidingRef={ionItemSlidingRef}
                   author={authorLogin.displayName}
                   isModalOpen={isModalOpen}
-                  setIsModalOpen={setIsModalOpen}
+                  setIsModalEditOpen={setIsModalEditOpen}
                 />
               </> //: Tạo riêng 1 JSX cho ITEM
             );
@@ -106,6 +109,7 @@ function InboundView({
         </IonFabList>
       </IonFab>
       <ModalInboundHand isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
+      <ModalEditInbound isModalEditOpen={isModalEditOpen} setIsModalEditOpen={setIsModalEditOpen} />
     </>
   );
 }
@@ -119,7 +123,7 @@ const ItemList = ({
   ionItemSlidingRef,
   author,
   isModalOpen,
-  setIsModalOpen,
+  setIsModalEditOpen,
 }: {
   objectData: any;
   index: number;
@@ -128,7 +132,7 @@ const ItemList = ({
   ionItemSlidingRef: any;
   author: string;
   isModalOpen: any;
-  setIsModalOpen: Function;
+  setIsModalEditOpen: Function;
 }) => {
   useEffect(() => {
     //:nothing
@@ -143,7 +147,7 @@ const ItemList = ({
   return (
     <>
       <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", width: "auto", maxWidth: "50px" }}>
-        <IonIcon id={`test-${index}`} icon={createOutline} slot="end" size="small" color="success" onClick={() => setIsModalOpen({ isOpen: true, value: objectData, key: objectKey })} />
+        <IonIcon id={`test-${index}`} icon={createOutline} slot="end" size="small" color="success" onClick={() => setIsModalEditOpen({ isOpen: true, value: objectData, key: objectKey })} />
       </td>
       <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", width: "auto", maxWidth: "50px" }}>{index + 1}</td>
       <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", width: "auto", maxWidth: "50px" }}>{objectData?.year}</td>

@@ -6,7 +6,7 @@ import { TableVirtuoso } from "react-virtuoso";
 import { IonIcon } from "@ionic/react";
 import { createOutline } from "ionicons/icons";
 import timestampToTime from "../function/timestampToTime";
-import ModalEditStock from "../ModalEditStock/ModalEditStock";
+import ModalEditStock from "../ModalEdit/ModalEditStock";
 
 function StockView({ data, keyOfDataRaw, disPatch, ionItemSlidingRef, authorLogin, virtuoso }: { data: any; keyOfDataRaw: string[]; disPatch: Function; ionItemSlidingRef: any; authorLogin: any; virtuoso: any }) {
   const [isModalOpen, setIsModalOpen] = useState<{ isOpen: boolean; value: any; key: string }>({ isOpen: false, value: {}, key: "" });

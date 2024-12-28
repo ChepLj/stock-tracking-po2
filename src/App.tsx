@@ -2,7 +2,6 @@ import { IonApp, IonRouterOutlet, IonSplitPane, setupIonicReact } from "@ionic/r
 import { IonReactRouter } from "@ionic/react-router";
 import { Redirect, Route, Switch } from "react-router-dom";
 
-
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
 
@@ -36,7 +35,7 @@ import Main from "./pages/StockPage/Main";
 import TrashPage from "./pages/TrashPage/TrashPage";
 import HelpsPage from "./pages/HelpsPage/HelpsPage";
 import LogsPage from "./pages/LogsPage/LogsPage";
-
+import { OutboundDataProvider } from "./context/outboundDataContext";
 
 //! end
 setupIonicReact();
@@ -72,7 +71,6 @@ const App: React.FC = () => {
       /////////////////////////////////////////////////////////
       const authorTemp = localStorage.getItem("authorLogin");
       if (authorTemp) {
-
         const now = new Date();
         const oneDayInMs = 24 * 60 * 60 * 1000; // 1 day in milliseconds
         const authorDecryptTemp = decryptCrypto(authorTemp);
@@ -91,50 +89,52 @@ const App: React.FC = () => {
   return (
     <MainDataContext>
       <InboundDataProvider>
-        <IonApp>
-          <IonReactRouter>
-            {loading === "loading" && <h3 style={{ textAlign: "center", height: "100%", paddingTop: "90%" }}>Loading ...</h3>}
-            {loading === "not logged" && (
-              <IonRouterOutlet>
-                <Switch>
-                  {/* <Route path="/page/Detail/QRCode/" exact={true}>
+        <OutboundDataProvider>
+          <IonApp>
+            <IonReactRouter>
+              {loading === "loading" && <h3 style={{ textAlign: "center", height: "100%", paddingTop: "90%" }}>Loading ...</h3>}
+              {loading === "not logged" && (
+                <IonRouterOutlet>
+                  <Switch>
+                    {/* <Route path="/page/Detail/QRCode/" exact={true}>
                     <DetailPage />
                   </Route> */}
 
-                  <Route path="*">
-                    <LoginPage />
-                  </Route>
-                </Switch>
-              </IonRouterOutlet>
-            )}
-            {loading === "logged" && authorLogin && (
-              <IonSplitPane contentId="main" when="(min-width: 800px)">
-                <Menu dispatch={setLoading} />
-
-                <IonRouterOutlet id="main">
-                  <Route path="/" exact={true}>
-                    <Redirect to="/page/Main" />
-                  </Route>
-                  <Route path="/page/Main" exact={true}>
-                    <Main />
-                  </Route>
-                  <Route path="/page/Redirect" exact={true}>
-                    <LoadingPage />
-                  </Route>
-                  <Route path="/page/Trash" exact={true}>
-                    <TrashPage />
-                  </Route>
-                  <Route path="/page/Info" exact={true}>
-                    <HelpsPage />
-                  </Route>
-                  <Route path="/page/Logs" exact={true}>
-                    <LogsPage />
-                  </Route>
+                    <Route path="*">
+                      <LoginPage />
+                    </Route>
+                  </Switch>
                 </IonRouterOutlet>
-              </IonSplitPane>
-            )}
-          </IonReactRouter>
-        </IonApp>
+              )}
+              {loading === "logged" && authorLogin && (
+                <IonSplitPane contentId="main" when="(min-width: 800px)">
+                  <Menu dispatch={setLoading} />
+
+                  <IonRouterOutlet id="main">
+                    <Route path="/" exact={true}>
+                      <Redirect to="/page/Main" />
+                    </Route>
+                    <Route path="/page/Main" exact={true}>
+                      <Main />
+                    </Route>
+                    <Route path="/page/Redirect" exact={true}>
+                      <LoadingPage />
+                    </Route>
+                    <Route path="/page/Trash" exact={true}>
+                      <TrashPage />
+                    </Route>
+                    <Route path="/page/Info" exact={true}>
+                      <HelpsPage />
+                    </Route>
+                    <Route path="/page/Logs" exact={true}>
+                      <LogsPage />
+                    </Route>
+                  </IonRouterOutlet>
+                </IonSplitPane>
+              )}
+            </IonReactRouter>
+          </IonApp>
+        </OutboundDataProvider>
       </InboundDataProvider>
     </MainDataContext>
   );

@@ -13,11 +13,9 @@ const OutboundDataProvider = ({ children }: any) => {
   }, []);
 
   const initData = {
-    StockList:[],
-    UserList:[],
-    TagList:[]
+
   }
-  const handleInboundData = (state: any, action: ITF_ActionDisPatch) => {  
+  const handleOutboundData = (state: any, action: ITF_ActionDisPatch) => {  
     switch (action.type) {
       case "SUCCESSFUL":
         return action.payload;
@@ -25,7 +23,7 @@ const OutboundDataProvider = ({ children }: any) => {
         return state;
     }
   }
-  const [OutboundData, disPatchOutboundData]: [data: any, disPatch: Function] = useReducer<any>(handleInboundData, initData);
+  const [OutboundData, disPatchOutboundData]: [data: any, disPatch: Function] = useReducer<any>(handleOutboundData, initData);
   const keyOfOutboundDataShow = [];
   for (const key in OutboundData) {
     if (OutboundData[key]?.status?.value !== "pre-delete") {

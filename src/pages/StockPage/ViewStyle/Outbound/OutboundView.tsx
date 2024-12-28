@@ -2,15 +2,18 @@ import { useContext, useEffect, useState } from "react";
 import { TableVirtuoso } from "react-virtuoso";
 import { IonFab, IonFabButton, IonFabList, IonIcon } from "@ionic/react";
 import { chevronUpCircle, codeDownloadOutline, createOutline, handRightOutline } from "ionicons/icons";
-import { InboundDataContext } from "../../../context/inboundDataContext";
-import firebaseGetMainData from "../../../firebase/api/getData";
-import timestampToTime from "../../function/timestampToTime";
-import ModalInboundHand from "../../ModalInboundHand/ModalInboundHand";
-import ModalEditInbound from "../../ModalEdit/ModalEditInbound";
+import timestampToTime from "../../../../components/function/timestampToTime";
+import ModalEditInbound from "../../../../components/ModalEdit/ModalEditInbound";
+import ModalInboundHand from "../../../../components/ModalInboundHand/ModalInboundHand";
+import { InboundDataContext } from "../../../../context/inboundDataContext";
+import firebaseGetMainData from "../../../../firebase/api/getData";
+import ModalOutboundHand from "../../../../components/ModalOutboundHand/ModalOutboundHand";
+import { OutboundDataContext } from "../../../../context/outboundDataContext";
+import ModalEditOutbound from "../../../../components/ModalEdit/ModalEditOutbound";
 
-function InboundView({
+function OutboundView({
   data,
-  keyOfDataRaw,
+  keyOfOutboundDataRaw,
   disPatch,
   ionItemSlidingRef,
   authorLogin,
@@ -19,7 +22,7 @@ function InboundView({
   setViewStyle,
 }: {
   data: any;
-  keyOfDataRaw: string[];
+  keyOfOutboundDataRaw: string[];
   disPatch: Function;
   ionItemSlidingRef: any;
   authorLogin: any;
@@ -30,25 +33,35 @@ function InboundView({
   const [isModalOpen, setIsModalOpen] = useState<{ isOpen: boolean; value: any; key?: string }>({ isOpen: false, value: {} });
   const [isModalEditOpen, setIsModalEditOpen] = useState<{ isOpen: boolean; value: any; key: string }>({ isOpen: false, value: {}, key: "" });
 
-  const { InboundData,keyOfInboundDataShow, disPatchInboundData } = useContext<any>(InboundDataContext);
-  
+  const { disPatchOutboundData } = useContext<any>(OutboundDataContext);
 
+  
   //TODO: Lấy Main Data khi load Page lần đầu
   useEffect(() => {
     //: lấy data từ firebase sao đó dispatch đê render lại
-    const childRef = "InboundData/";
-    firebaseGetMainData(childRef, disPatchInboundData);
+    const childRef = "OutboundData/";
+    firebaseGetMainData(childRef, disPatchOutboundData);
   }, []);
   //TODO_END: Lấy Main Data khi load Page lần đầu
 
+  // Sort the keyOfInboundDataRaw array by month and year
+  const sortedKeyOfOutboundDataRaw = [...keyOfOutboundDataRaw].sort((a, b) => {
+    const dataA = data[a];
+    const dataB = data[b];
+    if (dataA.year !== dataB.year) {
+      return dataA.year - dataB.year;
+    }
+    return dataA.month - dataB.month;
+  });
+
   return (
     <>
-      {!keyOfDataRaw.includes("A000000") ? (
+      {!keyOfOutboundDataRaw.includes("A000000") ? (
         <TableVirtuoso
           ref={virtuoso}
           id="tableViewStyle"
           style={{ height: "100%", width: "100%" }}
-          data={[...keyOfInboundDataShow]}
+          data={sortedKeyOfOutboundDataRaw.reverse()}
           // data={new Array(100000)}
           overscan={{ main: 0, reverse: 2000 }}
           fixedHeaderContent={() => (
@@ -69,14 +82,16 @@ function InboundView({
               <th style={{ padding: "5px 10px", border: "2px solid #ccc", fontSize: "12px" }}>LastUpdate</th>
             </tr>
           )}
-          itemContent={(index, crrKey) => {
-            const objectDataRender = InboundData[crrKey];
+          itemContent={(index, item) => {
+           
+            const objectDataRender = data[item];
+
             return (
               <>
                 <ItemList
                   index={index}
                   objectData={objectDataRender}
-                  objectKey={crrKey}
+                  objectKey={item}
                   disPatch={disPatch}
                   ionItemSlidingRef={ionItemSlidingRef}
                   author={authorLogin.displayName}
@@ -100,16 +115,16 @@ function InboundView({
           </IonFabButton>
           <IonFabButton
             onClick={() => {
-              setViewStyle("InboundExcelImport");
-              setTitle('Nhập Kho tự động bằng file Excel')
+              setViewStyle("OutboundExcelImport");
+              setTitle("Xuất Kho tự động bằng file Excel");
             }}
           >
             <IonIcon icon={codeDownloadOutline}></IonIcon>
           </IonFabButton>
         </IonFabList>
       </IonFab>
-      <ModalInboundHand isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
-      <ModalEditInbound isModalEditOpen={isModalEditOpen} setIsModalEditOpen={setIsModalEditOpen} />
+      <ModalOutboundHand isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
+      <ModalEditOutbound isModalEditOpen={isModalEditOpen} setIsModalEditOpen={setIsModalEditOpen} />
     </>
   );
 }
@@ -172,4 +187,4 @@ const ItemList = ({
 //JSX_END: JSX Item List
 
 //! export
-export default InboundView;
+export default OutboundView;

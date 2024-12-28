@@ -1,34 +1,31 @@
-import React, { useContext, useEffect, useState } from "react";
 import {
-  IonButtons,
   IonButton,
-  IonModal,
-  IonHeader,
+  IonButtons,
   IonContent,
-  IonToolbar,
-  IonTitle,
-  IonPage,
+  IonDatetime,
+  IonDatetimeButton,
+  IonHeader,
+  IonInput,
   IonItem,
   IonLabel,
   IonList,
-  IonText,
+  IonModal,
   IonNote,
-  IonInput,
-  IonTextarea,
   IonSelect,
   IonSelectOption,
-  IonDatetime,
-  IonDatetimeButton,
+  IonTextarea,
+  IonTitle,
+  IonToolbar
 } from "@ionic/react";
-import { ITF_AuthorLogin, ITF_UploadContainer } from "../../interface/mainInterface";
-import firebasePostData from "../../firebase/api/postData";
-import { MainContext } from "../../context/mainDataContext";
+import { useContext, useEffect, useState } from "react";
+import { OutboundDataContext } from "../../context/outboundDataContext";
 import firebaseGetMainData from "../../firebase/api/getData";
-import { ActionSheet, ActionSheetButtonStyle } from "@capacitor/action-sheet";
-import { InboundDataContext } from "../../context/inboundDataContext";
+import firebasePostData from "../../firebase/api/postData";
+import { ITF_UploadContainer } from "../../interface/mainInterface";
 
-function ModalEditInbound({ isModalEditOpen, setIsModalEditOpen }: { isModalEditOpen: any; setIsModalEditOpen: Function }) {
-  const { InboundData, disPatchInboundData } = useContext<any>(InboundDataContext);
+
+function ModalEditOutbound({ isModalEditOpen, setIsModalEditOpen }: { isModalEditOpen: any; setIsModalEditOpen: Function }) {
+  const { OutboundData, disPatchOutboundData } = useContext<any>(OutboundDataContext);
   const [state, setState] = useState(false);
   const unit = ["BT", "EA", "G", "KG", "L", "M", "M2", "M3", "ML", "PAA", "PC", "Set", "TON", "Other"];
   const batch = ["none", "C1", "C2", "C3"];
@@ -85,37 +82,37 @@ function ModalEditInbound({ isModalEditOpen, setIsModalEditOpen }: { isModalEdit
 
     if (descriptionElm?.value !== isModalEditOpen?.value?.description) {
       uploadContainer.push({
-        ref: `InboundData/${isModalEditOpen.key}/description/`,
+        ref: `OutboundData/${isModalEditOpen.key}/description/`,
         data: descriptionElm.value,
       });
     }
     if (quantityElm?.value !== isModalEditOpen?.value?.quantity) {
       uploadContainer.push({
-        ref: `InboundData/${isModalEditOpen.key}/quantity/`,
+        ref: `OutboundData/${isModalEditOpen.key}/quantity/`,
         data: quantityElm.value,
       });
     }
     if (priceElm?.value !== isModalEditOpen?.value?.price) {
       uploadContainer.push({
-        ref: `InboundData/${isModalEditOpen.key}/price/`,
+        ref: `OutboundData/${isModalEditOpen.key}/price/`,
         data: priceElm.value,
       });
     }
     if (noteElm?.value !== isModalEditOpen?.value?.note) {
       uploadContainer.push({
-        ref: `InboundData/${isModalEditOpen.key}/note/`,
+        ref: `OutboundData/${isModalEditOpen.key}/note/`,
         data: noteElm.value,
       });
     }
     if (unitElm?.value !== isModalEditOpen?.value?.unit) {
       uploadContainer.push({
-        ref: `InboundData/${isModalEditOpen.key}/unit/`,
+        ref: `OutboundData/${isModalEditOpen.key}/unit/`,
         data: unitElm.value,
       });
     }
     if (batchElm?.value && batchElm?.value !== isModalEditOpen?.value?.batch && batchElm?.value !== "none") {
       uploadContainer.push({
-        ref: `InboundData/${isModalEditOpen.key}/batch/`,
+        ref: `OutboundData/${isModalEditOpen.key}/batch/`,
         data: batchElm.value,
       });
     }
@@ -124,26 +121,26 @@ function ModalEditInbound({ isModalEditOpen, setIsModalEditOpen }: { isModalEdit
     const monthYear = dateElm?.value.split("-");
     if (monthYear?.[1] !== isModalEditOpen?.value?.month) {
       uploadContainer.push({
-        ref: `InboundData/${isModalEditOpen.key}/month/`,
+        ref: `OutboundData/${isModalEditOpen.key}/month/`,
         data: monthYear[1],
       });
     }
     if (monthYear?.[0] !== isModalEditOpen?.value?.year) {
       uploadContainer.push({
-        ref: `InboundData/${isModalEditOpen.key}/year/`,
+        ref: `OutboundData/${isModalEditOpen.key}/year/`,
         data: monthYear[0],
       });
     }
     const timeStamp = Date.now();
     uploadContainer.push(
       {
-        ref: `InboundData/${isModalEditOpen.key}/lastUpdate/`,
+        ref: `OutboundData/${isModalEditOpen.key}/lastUpdate/`,
         data: timeStamp,
       },
       {
-        ref: `InboundData/${isModalEditOpen.key}/logs/${timeStamp}/`,
+        ref: `OutboundData/${isModalEditOpen.key}/logs/${timeStamp}/`,
         data: {
-          behavior: "Inbound Edit",
+          behavior: "Outbound Edit",
           detail: `Old Data : ${JSON.stringify(isModalEditOpen?.value)}`,
           timeStamp: timeStamp,
         },
@@ -152,9 +149,9 @@ function ModalEditInbound({ isModalEditOpen, setIsModalEditOpen }: { isModalEdit
         ref: `Logs/${timeStamp}`,
         data: {
           key: isModalEditOpen.key,
-          behavior: "Inbound Edit",
+          behavior: "Outbound Edit",
           description: descriptionElm.value,
-          detail: "Inbound Edit",
+          detail: "Outbound Edit",
           timeStamp: timeStamp,
         },
       }
@@ -163,8 +160,8 @@ function ModalEditInbound({ isModalEditOpen, setIsModalEditOpen }: { isModalEdit
     //////////////////////////////
     const handelRefresh = () => {
       //: lấy data từ firebase sao đó dispatch đê render lại
-      const childRef = "InboundData/";
-      firebaseGetMainData(childRef, disPatchInboundData);
+      const childRef = "OutboundData/";
+      firebaseGetMainData(childRef, disPatchOutboundData);
       setIsModalEditOpen({ isOpen: false, value: "" });
     };
     //////////////////////////////
@@ -185,7 +182,7 @@ function ModalEditInbound({ isModalEditOpen, setIsModalEditOpen }: { isModalEdit
       const key = Date.now();
       const uploadContainer: ITF_UploadContainer[] = [
         {
-          ref: `InboundData/${isModalEditOpen.key}/logs/${key}/`,
+          ref: `OutboundData/${isModalEditOpen.key}/logs/${key}/`,
           data: {
             behavior: "pre-delete",
             timeStamp: key,
@@ -194,7 +191,7 @@ function ModalEditInbound({ isModalEditOpen, setIsModalEditOpen }: { isModalEdit
         {
           ref: `Logs/${key}`,
           data: {
-            behavior: "Inbound pre-delete",
+            behavior: "Outbound pre-delete",
             detail: "pre-delete",
             item: "JSON.stringify(isModalEditOpen.value)",
             timeStamp: key,
@@ -203,10 +200,10 @@ function ModalEditInbound({ isModalEditOpen, setIsModalEditOpen }: { isModalEdit
           },
         },
         {
-          ref: `InboundData/${isModalEditOpen.key}/status/`,
+          ref: `OutboundData/${isModalEditOpen.key}/status/`,
           data: {
             value: "pre-delete",
-            detail: "Inbound pre-delete",
+            detail: "Outbound pre-delete",
             timeStamp: key,
           },
         },
@@ -215,8 +212,8 @@ function ModalEditInbound({ isModalEditOpen, setIsModalEditOpen }: { isModalEdit
       //////////////////////////////
       const handelRefresh = () => {
         //: lấy data từ firebase sao đó dispatch đê render lại
-        const childRef = "InboundData/";
-        firebaseGetMainData(childRef, disPatchInboundData);
+        const childRef = "OutboundData/";
+        firebaseGetMainData(childRef, disPatchOutboundData);
         setIsModalEditOpen({ isOpen: false, value: "" });
       };
       //////////////////////////////
@@ -239,7 +236,7 @@ function ModalEditInbound({ isModalEditOpen, setIsModalEditOpen }: { isModalEdit
       <IonHeader>
         <IonToolbar>
           <IonTitle>
-            <i>(Nhập Kho) Edit</i> <strong>{isModalEditOpen?.value?.material}</strong> <i>Stock</i> <strong>{isModalEditOpen?.value?.sLoc}</strong>
+            <i>(Xuất Kho) Edit</i> <strong>{isModalEditOpen?.value?.material}</strong> <i>Stock</i> <strong>{isModalEditOpen?.value?.sLoc}</strong>
           </IonTitle>
           <IonButtons slot="end">
             <IonButton onClick={() => setIsModalEditOpen({ isOpen: false, value: "" })}>Close</IonButton>
@@ -315,4 +312,4 @@ function ModalEditInbound({ isModalEditOpen, setIsModalEditOpen }: { isModalEdit
   );
 }
 
-export default ModalEditInbound;
+export default ModalEditOutbound;

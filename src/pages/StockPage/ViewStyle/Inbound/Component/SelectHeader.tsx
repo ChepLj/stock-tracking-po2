@@ -24,11 +24,16 @@ export default function SelectHeader({ step, setStep }: { step: any; setStep: Fu
         note: noteElm.value,
         batch: batchElm.value,
       };
-  
-      setStep({
-        step: 4,
-        value: { headerKey, data: step.value.data },
-      });
+      if(headerKey.material && headerKey.sLoc && headerKey.description && headerKey.date && (headerKey.quantity || headerKey.quantity2)){
+        setStep({
+          step: 4,
+          value: { headerKey, data: step.value.data },
+        });
+      }
+      else{
+        alert('Vui lòng chọn Tiêu đề tương ứng !!!')
+      }
+      
     };
   
     return (
@@ -36,7 +41,7 @@ export default function SelectHeader({ step, setStep }: { step: any; setStep: Fu
         <h4 style={{ width: "100%", textAlign: "center", color: "red" }}>Assign corresponding column headers</h4>
         <IonItem>
           <IonLabel>Material</IonLabel>
-          <IonSelect slot="end" name="inboundExcelImport-material" value={"MVT"} style={{ textAlign: "end", marginLeft: "10px" }} interface="popover" placeholder="Select">
+          <IonSelect slot="end" name="inboundExcelImport-material"  style={{ textAlign: "end", marginLeft: "10px" }} interface="popover" placeholder="Select">
             {step.value.key.map((crr: any, index: number) => {
               return (
                 <IonSelectOption value={crr} key={index}>
@@ -48,7 +53,7 @@ export default function SelectHeader({ step, setStep }: { step: any; setStep: Fu
         </IonItem>
         <IonItem>
           <IonLabel>Stock</IonLabel>
-          <IonSelect slot="end" name="inboundExcelImport-stock" value={"KHO\r\nBPSD"} style={{ textAlign: "end", marginLeft: "10px" }} interface="popover" placeholder="Select">
+          <IonSelect slot="end" name="inboundExcelImport-stock"  style={{ textAlign: "end", marginLeft: "10px" }} interface="popover" placeholder="Select">
             {step.value.key.map((crr: any, index: number) => {
               return (
                 <IonSelectOption value={crr} key={index}>
@@ -60,7 +65,7 @@ export default function SelectHeader({ step, setStep }: { step: any; setStep: Fu
         </IonItem>
         <IonItem>
           <IonLabel>Description</IonLabel>
-          <IonSelect slot="end" name="inboundExcelImport-description" value={"TÊN VT"} style={{ textAlign: "end", marginLeft: "10px" }} interface="popover" placeholder="Select">
+          <IonSelect slot="end" name="inboundExcelImport-description"  style={{ textAlign: "end", marginLeft: "10px" }} interface="popover" placeholder="Select">
             {step.value.key.map((crr: any, index: number) => {
               return (
                 <IonSelectOption value={crr} key={index}>
@@ -93,7 +98,7 @@ export default function SelectHeader({ step, setStep }: { step: any; setStep: Fu
         </IonItem>
         <IonItem>
           <IonLabel>Unit</IonLabel>
-          <IonSelect slot="end" name="inboundExcelImport-unit" value={"ĐVT"} style={{ textAlign: "end", marginLeft: "10px" }} interface="popover" placeholder="Select">
+          <IonSelect slot="end" name="inboundExcelImport-unit"  style={{ textAlign: "end", marginLeft: "10px" }} interface="popover" placeholder="Select">
             {step.value.key.map((crr: any, index: number) => {
               return (
                 <IonSelectOption value={crr} key={index}>
@@ -105,7 +110,7 @@ export default function SelectHeader({ step, setStep }: { step: any; setStep: Fu
         </IonItem>
         <IonItem>
           <IonLabel>Price</IonLabel>
-          <IonSelect slot="end" name="inboundExcelImport-price" value={"GÍA SAP"} style={{ textAlign: "end", marginLeft: "10px" }} interface="popover" placeholder="Select">
+          <IonSelect slot="end" name="inboundExcelImport-price"  style={{ textAlign: "end", marginLeft: "10px" }} interface="popover" placeholder="Select">
             {step.value.key.map((crr: any, index: number) => {
               return (
                 <IonSelectOption value={crr} key={index}>
@@ -117,7 +122,7 @@ export default function SelectHeader({ step, setStep }: { step: any; setStep: Fu
         </IonItem>
         <IonItem>
           <IonLabel>Date</IonLabel>
-          <IonSelect slot="end" name="inboundExcelImport-date" value={"NGÀY NHẬP"} style={{ textAlign: "end", marginLeft: "10px" }} interface="popover" placeholder="Select">
+          <IonSelect slot="end" name="inboundExcelImport-date"  style={{ textAlign: "end", marginLeft: "10px" }} interface="popover" placeholder="Select">
             {step.value.key.map((crr: any, index: number) => {
               return (
                 <IonSelectOption value={crr} key={index}>
@@ -129,7 +134,7 @@ export default function SelectHeader({ step, setStep }: { step: any; setStep: Fu
         </IonItem>
         <IonItem>
           <IonLabel>Note</IonLabel>
-          <IonSelect slot="end" name="inboundExcelImport-note" value={"GHI CHÚ"} style={{ textAlign: "end", marginLeft: "10px" }} interface="popover" placeholder="Select">
+          <IonSelect slot="end" name="inboundExcelImport-note"  style={{ textAlign: "end", marginLeft: "10px" }} interface="popover" placeholder="Select">
             {step.value.key.map((crr: any, index: number) => {
               return (
                 <IonSelectOption value={crr} key={index}>

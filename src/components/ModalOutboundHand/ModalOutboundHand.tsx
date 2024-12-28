@@ -24,12 +24,14 @@ import firebaseGetMainData from "../../firebase/api/getData";
 import firebasePostData from "../../firebase/api/postData";
 import { ITF_UploadContainer } from "../../interface/mainInterface";
 import { InboundDataContext } from "../../context/inboundDataContext";
-function ModalInboundHand({ isModalOpen, setIsModalOpen }: { isModalOpen: any; setIsModalOpen: Function }) {
+import { OutboundDataContext } from "../../context/outboundDataContext";
+
+function ModalOutboundHand({ isModalOpen, setIsModalOpen }: { isModalOpen: any; setIsModalOpen: Function }) {
   const { data, keyOfDataShow, disPatch } = useContext<any>(MainContext);
-  const { InboundData, disPatchInboundData } = useContext<any>(InboundDataContext);
+  const { OutboundData, disPatchOutboundData } = useContext<any>(OutboundDataContext);
   const [state, setState] = useState(false);
   const [searchValue, setSearchValue] = useState<any>({});
-  const unit = [ "PC", "Set", "BT", "EA", "G", "KG", "L", "M", "M2", "M3", "ML", "PAA","TON", "Other"];
+  const unit = ["PC", "Set", "BT", "EA", "G", "KG", "L", "M", "M2", "M3", "ML", "PAA", "TON", "Other"];
   const batch = ["none", "C1", "C2", "C3"];
   const [stockList, setStockList] = useState<any>([]);
   const [error, setError] = useState<any>("");
@@ -66,7 +68,7 @@ function ModalInboundHand({ isModalOpen, setIsModalOpen }: { isModalOpen: any; s
 
       // Ensure elements exist before accessing properties
       const dataTemp = searchValue.value;
-      console.log("🚀 ~ useEffect ~ dataTemp:", dataTemp);
+
       if (descriptionElm) {
         descriptionElm.value = dataTemp?.description || "";
       }
@@ -110,31 +112,9 @@ function ModalInboundHand({ isModalOpen, setIsModalOpen }: { isModalOpen: any; s
         setState((pre) => !pre);
         setError("");
       } else {
-        const callback = (result: any) => {
-          if (result.payload) {
-            const dataTemp = {
-              material: searchElm,
-              sLoc: stockElm,
-              description: result.payload.description,
-              unit: result.payload.unit,
-              isHad: true,
-            };
-            setSearchValue({ value: dataTemp, messenger: "Không tìm thấy Vật tư cùng Kho này trong Stock . Hành động sẽ là thêm mới !" });
-            setState((pre) => !pre);
-            setError("");
-          } else {
-            const dataTemp = {
-              material: searchElm,
-              sLoc: stockElm,
-              isNew: true,
-            };
-            setSearchValue({ value: dataTemp, messenger: "Không tồn tại vật tư này trên hệ thống. Kiểm tra lại mã vật tư trước khi tạo lệnh nhập !" });
-            setState((pre) => !pre);
-            setError("");
-          }
-        };
-        const childRef = `AuxiliaryData/MaterialList/${searchElm}/`;
-        firebaseGetMainData(childRef, callback);
+        setSearchValue({ value: "", messenger: "Không tìm thấy Vật tư cùng Kho này trong Stock . Hành động sẽ là thêm mới !" });
+        setState((pre) => !pre);
+        setError("Không tìm thấy Vật tư cùng Kho này trong Stock . Kiểm tra lại Vật tư và Kho !");
       }
     } else {
       setError("Điền đầy đủ Mã Vật Tư và Kho ! (MVT = 9 ký tự)");
@@ -149,7 +129,7 @@ function ModalInboundHand({ isModalOpen, setIsModalOpen }: { isModalOpen: any; s
     const descriptionElm = document.querySelector('[name="inbound-Modal-description"]') as HTMLInputElement;
     const quantityElm = document.querySelector('[name="inbound-Modal-quantity"]') as HTMLInputElement;
     const unitElm = document.querySelector('[name="inbound-Modal-unit"]') as HTMLInputElement;
-    const dateElm = document.getElementById('datetime-inbound-hand') as HTMLInputElement;
+    const dateElm = document.getElementById("datetime-inbound-hand") as HTMLInputElement;
     const priceElm = document.querySelector('[name="inbound-Modal-price"]') as HTMLInputElement;
     const batchElm = document.querySelector('[name="inbound-Modal-batch"]') as HTMLInputElement;
     const noteElm = document.querySelector('[name="inbound-Modal-note"]') as HTMLInputElement;
@@ -159,30 +139,19 @@ function ModalInboundHand({ isModalOpen, setIsModalOpen }: { isModalOpen: any; s
     try {
       const dataTemp = searchValue.value;
       console.log("🚀 ~ handelUploadData ~ dataTemp:", dataTemp);
-      if (dataTemp.isNew || dataTemp.isHad) {
-        uploadContainer.push({
-          ref: `MainData/${key}/material/`,
-          data: searchElm,
-        });
-        uploadContainer.push({
-          ref: `MainData/${key}/sLoc/`,
-          data: stockElm,
-        });
-      }
-
-      if (descriptionElm?.value !== dataTemp?.description || dataTemp.isNew || dataTemp.isHad) {
-        if (!descriptionElm.value || descriptionElm.value.length < 10) {
-          throw new Error(`Tên vật tư >10 ký tự !`);
+      
+      if (+quantityElm?.value > 0) {
+        const stockQuantity = Number(dataTemp?.quantity) || 0
+        const outboundQuantity = Number(quantityElm.value)
+        const quantityTemp = ()=>{
+          if(stockQuantity -  outboundQuantity < 0){
+            throw new Error ('Số lượng xuất kho lớn hơn số lượng tồn kho. Lỗi !')
+          }
+          return stockQuantity -  outboundQuantity
         }
         uploadContainer.push({
-          ref: `MainData/${key}/description/`,
-          data: descriptionElm.value,
-        });
-      }
-      if (+quantityElm?.value > 0) {
-        uploadContainer.push({
           ref: `MainData/${key}/quantity/`,
-          data: Number(quantityElm.value) + (Number(dataTemp?.quantity) || 0),
+          data: quantityTemp(),
         });
       } else {
         throw new Error(`Số lượng không hợp lệ !`);
@@ -196,21 +165,20 @@ function ModalInboundHand({ isModalOpen, setIsModalOpen }: { isModalOpen: any; s
           data: priceElm.value,
         });
       }
-  
-
+      
       if (!unitElm?.value) {
         throw new Error("Chưa chọn đơn vị !");
       }
-      if (unitElm?.value !== dataTemp?.unit || dataTemp.isNew || dataTemp.isHad) {
+      if (unitElm?.value !== dataTemp?.unit && !dataTemp?.unit) {
         uploadContainer.push({
           ref: `MainData/${key}/unit/`,
           data: unitElm.value,
         });
       }
-
+ 
 
       const timeStamp = Date.now(); // Current timestamp in milliseconds
-  
+
       uploadContainer.push(
         {
           ref: `MainData/${key}/lastUpdate/`,
@@ -219,8 +187,8 @@ function ModalInboundHand({ isModalOpen, setIsModalOpen }: { isModalOpen: any; s
         {
           ref: `MainData/${key}/logs/${timeStamp}/`,
           data: {
-            behavior: "Inbound",
-            detail: dataTemp.isNew ? "Mã vật tư không có trong cơ sở dữ liệu" : dataTemp.isHad ? "Vật tư không có sẵn nhưng có trong cơ sở dữ liệu" : "Nhập kho vật tư có sẵn",
+            behavior: "Outbound",
+            detail: 'Xuất kho thủ công',
             timeStamp: timeStamp,
           },
         },
@@ -228,18 +196,18 @@ function ModalInboundHand({ isModalOpen, setIsModalOpen }: { isModalOpen: any; s
           ref: `Logs/${timeStamp}`,
           data: {
             key: key,
-            behavior: "Inbound",
+            behavior: "Outbound",
             description: descriptionElm.value,
-            detail: dataTemp.isNew ? "Mã vật tư không có trong cơ sở dữ liệu" : dataTemp.isHad ? "Vật tư không có sẵn nhưng có trong cơ sở dữ liệu" : "Nhập kho vật tư có sẵn",
+            detail: 'Xuất kho thủ công',
             timeStamp: timeStamp,
           },
         }
       );
       ///////////////////////
-      const monthYear = dateElm.value.split('-')
+      const monthYear = dateElm.value.split("-");
 
       uploadContainer.push({
-        ref: `InboundData/${key}-${timeStamp}/`,
+        ref: `OutboundData/${key}-${timeStamp}/`,
         data: {
           material: searchElm,
           description: descriptionElm.value,
@@ -261,12 +229,12 @@ function ModalInboundHand({ isModalOpen, setIsModalOpen }: { isModalOpen: any; s
         //: lấy data từ firebase sao đó dispatch đê render lại
         const childRef = "MainData/";
         firebaseGetMainData(childRef, disPatch);
-        const childInboundRef = "InboundData/";
-        firebaseGetMainData(childInboundRef, disPatchInboundData);
+        const childOutboundRef = "OutboundData/";
+        firebaseGetMainData(childOutboundRef, disPatchOutboundData);
         // setIsModalOpen({ isOpen: false, value: "" });
         setSearchValue({ value: "", messenger: "" });
         setError("");
-        alert(`Nhập thành công Vật tư ${searchElm} vào Kho ${stockElm}`);
+        alert(`Xuất thành công ${quantityElm.value} ${unitElm.value} Vật tư ${searchElm}  Kho ${stockElm}`);
       };
       //////////////////////////////
       console.log("🚀 ~ handelUploadData ~ uploadContainer:", uploadContainer);
@@ -286,7 +254,7 @@ function ModalInboundHand({ isModalOpen, setIsModalOpen }: { isModalOpen: any; s
       <IonHeader>
         <IonToolbar>
           <IonTitle>
-            <i>Nhập Kho </i>
+            <i>Xuất Kho </i>
           </IonTitle>
           <IonButtons slot="end">
             <IonButton onClick={() => setIsModalOpen({ isOpen: false, value: "" })}>Close</IonButton>
@@ -298,10 +266,17 @@ function ModalInboundHand({ isModalOpen, setIsModalOpen }: { isModalOpen: any; s
           <>
             <IonList>
               <IonItem>
-                <IonInput name="inbound-stockModal-materialSearch" label="Nhập Mã Vật Tư :" type="number" placeholder="Enter text" color="success" style={{ fontSize: "20px", color: "red" }}></IonInput>
+                <IonInput
+                  name="inbound-stockModal-materialSearch"
+                  label="Nhập Mã Vật Tư :"
+                  type="number"
+                  placeholder="Enter text"
+                  color="success"
+                  style={{ fontSize: "20px", color: "red" }}
+                ></IonInput>
               </IonItem>
               <IonItem>
-                <IonLabel>Lưu kho:</IonLabel>
+                <IonLabel>Kho xuất:</IonLabel>
                 <IonSelect name="inbound-stockModal-stockSearch" style={{ textAlign: "end", marginLeft: "10px" }} interface="popover" placeholder="Select">
                   {stockList.map((crr: any, index: number) => {
                     return (
@@ -400,8 +375,8 @@ function ModalInboundHand({ isModalOpen, setIsModalOpen }: { isModalOpen: any; s
               >
                 Reset
               </IonButton>
-              <IonButton slot="end" color="success" onClick={handelUploadData}>
-                Tạo Lệnh Nhập Kho
+              <IonButton slot="end" color="secondary" onClick={handelUploadData}>
+                Tạo Lệnh Xuất Kho
               </IonButton>
             </IonToolbar>
           </>
@@ -411,4 +386,4 @@ function ModalInboundHand({ isModalOpen, setIsModalOpen }: { isModalOpen: any; s
   );
 }
 
-export default ModalInboundHand;
+export default ModalOutboundHand;

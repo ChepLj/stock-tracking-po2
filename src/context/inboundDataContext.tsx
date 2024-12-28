@@ -13,9 +13,7 @@ const InboundDataProvider = ({ children }: any) => {
   }, []);
 
   const initData = {
-    StockList:[],
-    UserList:[],
-    TagList:[]
+
   }
   const handleInboundData = (state: any, action: ITF_ActionDisPatch) => {  
     switch (action.type) {
@@ -30,7 +28,7 @@ const InboundDataProvider = ({ children }: any) => {
   for (const key in InboundData) {
     if (InboundData[key]?.status?.value !== "pre-delete") {
       keyOfInboundDataShow.push(key);
-    }
+    }    
   }
   return (
     <InboundDataContext.Provider value={{ InboundData,keyOfInboundDataShow, disPatchInboundData }}>

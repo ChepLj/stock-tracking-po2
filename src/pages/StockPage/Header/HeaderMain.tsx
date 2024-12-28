@@ -1,9 +1,8 @@
 import { IonButton, IonButtons, IonCol, IonHeader, IonIcon, IonMenuButton, IonRow, IonSearchbar, IonToolbar } from "@ionic/react";
 import { downloadOutline, filterCircleOutline } from "ionicons/icons";
-
-import { exportObjectToExcel } from "../function/exportFileExcel";
-import { ITF_MaterialObject } from "../../interface/mainInterface";
-import { saveObjectAsJson } from "../function/objectToJsonSave";
+import { exportObjectToExcel } from "../../../components/function/exportFileExcel";
+import { saveObjectAsJson } from "../../../components/function/objectToJsonSave";
+import { ITF_MaterialObject } from "../../../interface/mainInterface";
 
 const HeaderMain = ({
   modalFilterOpen,
@@ -12,10 +11,13 @@ const HeaderMain = ({
   isFilter,
   value,
   countSearch,
+  countInboundSearch,
+  countOutboundSearch,
   viewStyle,
   setViewStyle,
   data,
-  keyOfDataRaw,
+  inboundData,
+  outboundData,
   isPhone,
   setTitle,
 }: {
@@ -25,10 +27,14 @@ const HeaderMain = ({
   isFilter: boolean;
   value: any;
   countSearch: number[];
+  countInboundSearch: number[];
+  countOutboundSearch: number[];
   viewStyle: string;
   setViewStyle: Function;
   data: ITF_MaterialObject;
-  keyOfDataRaw: string[];
+  inboundData: ITF_MaterialObject;
+  outboundData: ITF_MaterialObject;
+
   isPhone: boolean;
   setTitle: Function;
 }) => {
@@ -39,9 +45,24 @@ const HeaderMain = ({
     setViewStyle(style);
   };
 
-
-
   //TODO_END: handle view style
+
+  const countSearchTemp = ()=>{
+    switch(viewStyle){
+      case 'Stock': {
+        return `${countSearch[0]}/${countSearch[1]}`
+      }
+      case 'Inbound': {
+        return `${countInboundSearch[0]}/${countInboundSearch[1]}`
+      }
+      case 'Outbound': {
+        return `${countOutboundSearch[0]}/${countOutboundSearch[1]}`
+      }
+      default: {
+        return "error/error";
+      }
+    }
+  }
   return (
     <IonToolbar>
       <IonButtons slot="start">
@@ -91,11 +112,17 @@ const HeaderMain = ({
                 Export Raw
                 <IonIcon icon={downloadOutline} style={{ paddingLeft: "4px" }} />
               </IonButton> */}
-              <IonButton style={{ fontSize: "10px" }} onClick={()=>exportObjectToExcel(data)}>
+              <IonButton
+                style={{ fontSize: "10px" }}
+                onClick={() => {
+                  const dataTemp = viewStyle === "Stock" ? data : viewStyle === "Inbound" ? inboundData : outboundData;
+                  exportObjectToExcel(dataTemp);
+                }}
+              >
                 Export Excel
                 <IonIcon icon={downloadOutline} style={{ paddingLeft: "4px" }} />
               </IonButton>
-              <IonButton style={{ fontSize: "10px" }} color="medium" onClick={()=>saveObjectAsJson()}>
+              <IonButton style={{ fontSize: "10px" }} color="medium" onClick={() => saveObjectAsJson()}>
                 Backup JSON
                 <IonIcon icon={downloadOutline} style={{ paddingLeft: "4px" }} />
               </IonButton>
@@ -106,7 +133,7 @@ const HeaderMain = ({
         <IonCol>
           <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minWidth: "100px" }}>
             <div style={{ fontSize: "8px", fontStyle: "italic", padding: "2px", color: "gray" }}>
-              {countSearch[0]}/{countSearch[1]} item
+              {countSearchTemp()} item
             </div>
             <IonSearchbar style={{ padding: "0 5px 0 0", height: "30px" }} debounce={500} showClearButton="never" onIonChange={(ev) => callbackResultSearch!(ev)} value={value}></IonSearchbar>
             <IonIcon icon={filterCircleOutline} slot="end" size="large" color={isFilter ? "danger" : "medium"} onClick={() => setModalFilterOpen!(!modalFilterOpen)} />

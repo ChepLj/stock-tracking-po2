@@ -1,30 +1,36 @@
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from "@ionic/react";
 import { useParams } from "react-router";
 
-import { useContext, useEffect, useRef, useState } from "react";
-import conditionFilter from "../../components/function/conditionFilter";
-import conditionSearch from "../../components/function/conditionSearch";
-import Header from "../../components/Header/HeaderMain";
 import "./Main.css";
 
 import ExcelToJson from "../../components/ExcelToJson/ExcelToJson";
 import ModalFilter from "../../components/ModalFilter/ModalFilter";
-import InboundView from "../../components/ViewStyle/Inbound/InboundView";
-import StockView from "../../components/ViewStyle/StockView";
+import { useContext, useState, useRef, useEffect } from "react";
+import conditionFilter from "../../components/function/conditionFilter";
+import conditionSearch from "../../components/function/conditionSearch";
 import { InboundDataContext } from "../../context/inboundDataContext";
 import { AuthContext } from "../../context/loginContext";
 import { MainContext } from "../../context/mainDataContext";
 import firebaseGetMainData from "../../firebase/api/getData";
 import { ITF_FilterResult } from "../../interface/mainInterface";
-import InboundExcelImport from "../../components/ViewStyle/Inbound/InboundExcelImport";
+import Header from "./Header/HeaderMain";
+import InboundExcelImport from "./ViewStyle/Inbound/InboundExcelImport";
+import InboundView from "./ViewStyle/Inbound/InboundView";
+import StockView from "./ViewStyle/StockView";
+import { OutboundDataContext } from "../../context/outboundDataContext";
+import OutboundView from "./ViewStyle/Outbound/OutboundView";
+import OutboundExcelImport from "./ViewStyle/Outbound/OutboundExcelImport";
 
 const Main: React.FC = () => {
   const { name } = useParams<{ name: string }>();
   console.log("%cMain Page Render", "color:green");
 
   const { data, keyOfDataShow, disPatch } = useContext<any>(MainContext);
+  const { InboundData, keyOfInboundDataShow, disPatchInboundData } = useContext<any>(InboundDataContext);
+  const { OutboundData, keyOfOutboundDataShow, disPatchOutboundData } = useContext<any>(OutboundDataContext);
   const [KeyOfDataShowFilter, setKeyOfDataShowFilter] = useState<any>(keyOfDataShow || []);
-  const { InboundData, disPatchInboundData } = useContext<any>(InboundDataContext);
+  const [KeyOfInboundDataShowFilter, setKeyOfInboundDataShowFilter] = useState<any>(keyOfInboundDataShow || []);
+  const [KeyOfOutboundDataShowFilter, setKeyOfOutboundDataShowFilter] = useState<any>(keyOfOutboundDataShow || []);
   const { authorLogin } = useContext<any>(AuthContext);
   const [title, setTitle] = useState("Danh sách Vật tư tồn thực tế theo Kho");
   const [searchState, setSearchState] = useState<any>({ type: false, payload: [] });
@@ -34,12 +40,23 @@ const Main: React.FC = () => {
   const [viewStyle, setViewStyle] = useState("Stock");
 
   let keyOfDataRaw: Array<string> = [];
+  let keyOfInboundDataRaw: Array<string> = [];
+  let keyOfOutboundDataRaw: Array<string> = [];
   if (searchState.type) {
-    keyOfDataRaw = searchState.payload;
+    keyOfDataRaw = searchState.payload.stock || [];
+    keyOfInboundDataRaw = searchState.payload.inbound || [];
+    keyOfOutboundDataRaw = searchState.payload.outbound || [];
   } else {
     keyOfDataRaw = [...KeyOfDataShowFilter];
+    keyOfInboundDataRaw = [...KeyOfInboundDataShowFilter];
+    keyOfOutboundDataRaw = [...KeyOfOutboundDataShowFilter];
   }
+
   keyOfDataRaw.reverse();
+  keyOfInboundDataRaw.reverse();
+  keyOfOutboundDataRaw.reverse();
+
+
   const virtuoso = useRef<any>(null);
   const ionItemSlidingRef = useRef<HTMLIonItemSlidingElement>(null);
   //TODO: Check Mobile Screen
@@ -61,6 +78,12 @@ const Main: React.FC = () => {
   useEffect(() => {
     setKeyOfDataShowFilter(keyOfDataShow);
   }, [keyOfDataShow]);
+  useEffect(() => {
+    setKeyOfInboundDataShowFilter(keyOfInboundDataShow);
+  }, [keyOfInboundDataShow]);
+  useEffect(() => {
+    setKeyOfOutboundDataShowFilter(keyOfOutboundDataShow);
+  }, [keyOfOutboundDataShow]);
   //TODO_END: gán key of keyOfDataShow sang setKeyOfDataShowFilter
 
   //TODO_END:Lấy Main Data khi load Page lần đầu
@@ -71,17 +94,40 @@ const Main: React.FC = () => {
   const handelSearch = (ev: Event) => {
     let query = "";
     const searchTarget = ev.target as HTMLIonSearchbarElement;
+
     if (searchTarget) {
-      // query = target.value!.toLowerCase();
-      query = searchTarget.value!;
+      query = searchTarget.value?.trim() || ""; // Get the search query
       searchTargetValue.current = query;
+
       if (query) {
-        setSearchState({ type: true, payload: conditionSearch(data, KeyOfDataShowFilter, query) });
+        // Perform search on all datasets
+        const filteredKeyOfDataRaw = viewStyle === "Stock" ? conditionSearch(data, KeyOfDataShowFilter, query) : [];
+        const filteredKeyOfInboundDataRaw = viewStyle === "Inbound" ? conditionSearch(InboundData, KeyOfInboundDataShowFilter, query) : [];
+        const filteredKeyOfOutboundDataRaw = viewStyle === "Outbound" ? conditionSearch(OutboundData, KeyOfOutboundDataShowFilter, query) : [];
+
+        // Update the state with the filtered results
+        setSearchState({
+          type: true,
+          payload: {
+            stock: filteredKeyOfDataRaw,
+            inbound: filteredKeyOfInboundDataRaw,
+            outbound: filteredKeyOfOutboundDataRaw,
+          },
+        });
       } else {
-        setSearchState({ type: false, payload: [] });
+        // Reset search state when query is empty
+        setSearchState({
+          type: false,
+          payload: {
+            data: [],
+            inbound: [],
+            outbound: [],
+          },
+        });
       }
     }
   };
+
   //TODO_END: Search Result
   //TODO:  handel filter
   const handleFilter = (filterList: ITF_FilterResult) => {
@@ -106,6 +152,7 @@ const Main: React.FC = () => {
     searchTargetValue.current = "";
   };
   //TODO_END:  handel filter
+
   return (
     <IonPage>
       {viewStyle !== "InboundExcelImport" && (
@@ -116,10 +163,14 @@ const Main: React.FC = () => {
           isFilter={isFilter.current}
           value={searchTargetValue.current}
           countSearch={[keyOfDataRaw?.length, keyOfDataShow?.length]}
+          countInboundSearch={[keyOfInboundDataRaw?.length, keyOfInboundDataShow?.length]}
+          countOutboundSearch={[keyOfOutboundDataRaw?.length, keyOfOutboundDataShow?.length]}
           viewStyle={viewStyle}
           setViewStyle={setViewStyle}
           data={data}
-          keyOfDataRaw={keyOfDataRaw}
+          inboundData={InboundData}
+          outboundData={OutboundData}
+
           isPhone={authorLogin.isPhone || false}
           setTitle={setTitle}
         />
@@ -132,12 +183,35 @@ const Main: React.FC = () => {
           </IonToolbar>
         </IonHeader>
 
-        {viewStyle === "Stock" && <StockView data={data} keyOfDataRaw={keyOfDataRaw} disPatch={disPatch} ionItemSlidingRef={ionItemSlidingRef} authorLogin={authorLogin} virtuoso={virtuoso} isFilter={isFilter} />}
-        {viewStyle === "Inbound" && (
-          <InboundView data={data} setViewStyle={setViewStyle} keyOfDataRaw={keyOfDataRaw} disPatch={disPatch} ionItemSlidingRef={ionItemSlidingRef} authorLogin={authorLogin} virtuoso={virtuoso} setTitle={setTitle} />
+        {viewStyle === "Stock" && (
+          <StockView data={data} keyOfDataRaw={keyOfDataRaw} disPatch={disPatch} ionItemSlidingRef={ionItemSlidingRef} authorLogin={authorLogin} virtuoso={virtuoso} isFilter={isFilter} />
         )}
-        {viewStyle === "Outbound" && <ExcelToJson />}
+        {viewStyle === "Inbound" && (
+          <InboundView
+            data={InboundData}
+            setViewStyle={setViewStyle}
+            keyOfInboundDataRaw={keyOfInboundDataRaw}
+            disPatch={disPatch}
+            ionItemSlidingRef={ionItemSlidingRef}
+            authorLogin={authorLogin}
+            virtuoso={virtuoso}
+            setTitle={setTitle}
+          />
+        )}
+         {viewStyle === "Outbound" && (
+          <OutboundView
+            data={OutboundData}
+            setViewStyle={setViewStyle}
+            keyOfOutboundDataRaw={keyOfOutboundDataRaw}
+            disPatch={disPatch}
+            ionItemSlidingRef={ionItemSlidingRef}
+            authorLogin={authorLogin}
+            virtuoso={virtuoso}
+            setTitle={setTitle}
+          />
+        )}
         {viewStyle === "InboundExcelImport" && <InboundExcelImport setViewStyle={setViewStyle} />}
+        {viewStyle === "OutboundExcelImport" && <OutboundExcelImport setViewStyle={setViewStyle} />}
       </IonContent>
 
       <ModalFilter modalFilterOpen={modalFilterOpen} setModalFilterOpen={setModalFilterOpen} handleFilter={handleFilter} isFilter={isFilter.current} />

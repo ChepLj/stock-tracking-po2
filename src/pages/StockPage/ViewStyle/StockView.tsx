@@ -5,9 +5,10 @@ import { TableVirtuoso } from "react-virtuoso";
 // import { ITF_ObjectData } from "../../../interface/mainInterface";
 import { IonFab, IonFabButton, IonIcon } from "@ionic/react";
 import { createOutline, refreshOutline } from "ionicons/icons";
-import timestampToTime from "../function/timestampToTime";
-import ModalEditStock from "../ModalEdit/ModalEditStock";
-import firebaseGetMainData from "../../firebase/api/getData";
+import timestampToTime from "../../../components/function/timestampToTime";
+import ModalEditStock from "../../../components/ModalEdit/ModalEditStock";
+import firebaseGetMainData from "../../../firebase/api/getData";
+
 
 function StockView({
   data,

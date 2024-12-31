@@ -1,0 +1,46 @@
+.pie-container {
+    width: 400px;
+    height: auto;
+    margin: 10px auto;
+    position: relative;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 15px;
+    background: linear-gradient(135deg, #f0f8ff, #ffe4e1);
+    padding: 10px;
+}
+
+.pie-container:hover {
+    transform: scale(0.95); /* Shrink effect */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+    background: linear-gradient(135deg, #ffe4e1, #f0f8ff);
+}
+
+
+.chart-container {
+    width: auto;
+    height: auto;
+    margin: 10px auto;
+    position: relative;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 15px;
+    background: linear-gradient(135deg, #f0f8ff, #ffe4e1);
+    padding: 10px;
+}
+
+.chart-container:hover {
+    transform: scale(0.95); /* Shrink effect */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+    background: linear-gradient(135deg, #ffe4e1, #f0f8ff);
+}
+.stockChart-pie{
+    /* box-shadow: 1px 1px solid #ccc; */
+
+}
+
+.stockChart-pie_totalPrice{
+
+    margin-top: 10px;
+    color: blue
+}

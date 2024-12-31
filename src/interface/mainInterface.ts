@@ -80,3 +80,28 @@ export interface ITF_MaterialObject {
   quantityInStock: string|number;
 
 }
+
+export interface Material {
+  material: string;
+  description: string;
+  quantity: number;
+  price: number;
+  unit: string;
+  sLoc: string;
+}
+
+export interface GroupedMaterial {
+  material: string;
+  description: string;
+  quantity: number;
+  price: number;
+  subtotal: number;
+  unit: string;
+}
+
+export interface GroupedSLoc {
+  sLoc: string;
+  totalQuantity: number;
+  totalPrice: number;
+  materials: GroupedMaterial[];
+}

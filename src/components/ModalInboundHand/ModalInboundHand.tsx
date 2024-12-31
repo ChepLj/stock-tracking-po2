@@ -305,8 +305,8 @@ function ModalInboundHand({ isModalOpen, setIsModalOpen }: { isModalOpen: any; s
                 <IonSelect name="inbound-stockModal-stockSearch" style={{ textAlign: "end", marginLeft: "10px" }} interface="popover" placeholder="Select">
                   {stockList.map((crr: any, index: number) => {
                     return (
-                      <IonSelectOption value={crr?.Kho} key={index}>
-                        {crr?.Kho} - {crr?.[`Diễn Giải`]}
+                      <IonSelectOption value={crr?.Sloc} key={index}>
+                        {crr?.Sloc} - {crr?.Description}
                       </IonSelectOption>
                     );
                   })}

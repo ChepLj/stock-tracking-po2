@@ -23,6 +23,16 @@ const TrashPage: React.FC = () => {
   const { InboundData, disPatchInboundData } = useContext<any>(InboundDataContext);
   const { OutboundData, disPatchOutboundData } = useContext<any>(OutboundDataContext);
   const { authorLogin } = useContext<any>(AuthContext);
+
+  useEffect(() => {
+    //: lấy data từ firebase sao đó dispatch đê render lại
+    const childRef = "MainData/";
+    firebaseGetMainData(childRef, disPatch);
+    const childRefInbound = "InboundData/";
+    firebaseGetMainData(childRefInbound, disPatchInboundData);
+    const childRefOutbound = "OutboundData/";
+    firebaseGetMainData(childRefOutbound, disPatchOutboundData);
+  }, []);
   //TODO: get key of delete object
   const keyOfStockDataDelete = [];
   const keyOfInboundDataDelete = [];
@@ -48,12 +58,12 @@ const TrashPage: React.FC = () => {
   //TODO_END: get key of delete object
 
   //TODO: restore Item
-  const handelRestoreItem = (item: string, ref:string) => {
+  const handelRestoreItem = (item: string, ref: string) => {
     const callbackSuccess = (result: string) => {
       if (result === "post successfully!") {
         //: lấy data từ firebase sao đó dispatch đê render lại
         const childRef = `${ref}/`;
-        const disPatchFunctionTemp = ref == 'MainData' ? disPatch : ref =='InboundData'? disPatchInboundData: disPatchOutboundData
+        const disPatchFunctionTemp = ref == "MainData" ? disPatch : ref == "InboundData" ? disPatchInboundData : disPatchOutboundData;
         firebaseGetMainData(childRef, disPatchFunctionTemp);
       } else {
         Toast.show({
@@ -86,7 +96,7 @@ const TrashPage: React.FC = () => {
       data: {
         key: item,
         description: data[item]?.description || "",
-        behavior: ref == 'MainData' ? 'Stock restore' : ref =='InboundData'? 'Inbound restore': 'Outbound restore',
+        behavior: ref == "MainData" ? "Stock restore" : ref == "InboundData" ? "Inbound restore" : "Outbound restore",
         author: authorLogin.displayName,
         authorId: authorLogin.userName,
         detail: "restore",
@@ -99,7 +109,7 @@ const TrashPage: React.FC = () => {
   };
   //TODO_END: restore Item
   //TODO: remove Item
-  const handelRemoveItem = async (item: string, ref:string) => {
+  const handelRemoveItem = async (item: string, ref: string) => {
     const result = await ActionSheet.showActions({
       title: `Delete forever ${item} item`,
       message: `Are you sure delete forever ${item} item ?`,
@@ -121,7 +131,7 @@ const TrashPage: React.FC = () => {
           const logsMain: ITF_Logs = {
             ref: `Logs/${currentTime}`,
             data: {
-              behavior: ref == 'MainData' ? 'Stock remove' : ref =='InboundData'? 'Inbound remove': 'Outbound remove',
+              behavior: ref == "MainData" ? "Stock remove" : ref == "InboundData" ? "Inbound remove" : "Outbound remove",
               author: authorLogin.displayName,
               authorId: authorLogin.userName,
               detail: "remove",
@@ -135,7 +145,7 @@ const TrashPage: React.FC = () => {
 
           //: lấy data từ firebase sao đó dispatch đê render lại
           const childRef = `${ref}/`;
-          const disPatchFunctionTemp = ref == 'MainData' ? disPatch : ref =='InboundData'? disPatchInboundData: disPatchOutboundData
+          const disPatchFunctionTemp = ref == "MainData" ? disPatch : ref == "InboundData" ? disPatchInboundData : disPatchOutboundData;
 
           await firebaseGetMainData(childRef, disPatchFunctionTemp);
         } else {
@@ -175,36 +185,38 @@ const TrashPage: React.FC = () => {
                       {crrKey}
                     </IonLabel>
                     <IonLabel style={{ fontSize: "10px" }} color="warning">
-                    {data[crrKey]?.status?.detail}
+                      {data[crrKey]?.status?.detail}
                     </IonLabel>
                   </div>
-                  <IonText>{data[crrKey].description}</IonText>
-                  <IonLabel style={{ fontSize: "10px" }} slot="end" color="warning">
-                    {timestampToTime(data[crrKey]?.status?.timeStamp)}
-                  </IonLabel>
-                  <IonButtons slot="end">
-                    <IonButton
-                      slot="start"
-                      color="success"
-                      fill="solid"
-                      onClick={() => {
-                        handelRestoreItem(crrKey,'MainData');
-                      }}
-                    >
-                      Restore
-                    </IonButton>
-                    <span style={{ width: "10px" }}></span>
-                    <IonButton
-                      slot="end"
-                      color="danger"
-                      fill="solid"
-                      onClick={() => {
-                        handelRemoveItem(crrKey,'MainData');
-                      }}
-                    >
-                      Remove
-                    </IonButton>
-                  </IonButtons>
+                  <IonText style={{ width: "100%" }}>{data[crrKey].description}</IonText>
+                  <div>
+                    <IonButtons slot="end">
+                      <IonButton
+                        slot="start"
+                        color="success"
+                        fill="solid"
+                        onClick={() => {
+                          handelRestoreItem(crrKey, "MainData");
+                        }}
+                      >
+                        Restore
+                      </IonButton>
+                      <span style={{ width: "10px" }}></span>
+                      <IonButton
+                        slot="end"
+                        color="danger"
+                        fill="solid"
+                        onClick={() => {
+                          handelRemoveItem(crrKey, "MainData");
+                        }}
+                      >
+                        Remove
+                      </IonButton>
+                    </IonButtons>
+                    <IonLabel style={{ fontSize: "10px" }} slot="end" color="warning">
+                      {timestampToTime(data[crrKey]?.status?.timeStamp)}
+                    </IonLabel>
+                  </div>
                 </IonItem>
               );
             })}
@@ -220,7 +232,6 @@ const TrashPage: React.FC = () => {
         {keyOfInboundDataDelete.length >= 1 ? (
           <IonList>
             {keyOfInboundDataDelete.map((crrKey, index) => {
-                console.log(InboundData[crrKey]?.status)
               return (
                 <IonItem key={index}>
                   <div style={{ marginRight: "10px" }}>
@@ -231,33 +242,35 @@ const TrashPage: React.FC = () => {
                       {InboundData[crrKey]?.status?.detail}
                     </IonLabel>
                   </div>
-                  <IonText>{InboundData[crrKey].description}</IonText>
-                  <IonLabel style={{ fontSize: "10px" }} slot="end" color="warning">
-                    {timestampToTime(InboundData[crrKey]?.status?.timeStamp)}
-                  </IonLabel>
-                  <IonButtons slot="end">
-                    <IonButton
-                      slot="start"
-                      color="success"
-                      fill="solid"
-                      onClick={() => {
-                        handelRestoreItem(crrKey,'InboundData');
-                      }}
-                    >
-                      Restore
-                    </IonButton>
-                    <span style={{ width: "10px" }}></span>
-                    <IonButton
-                      slot="end"
-                      color="danger"
-                      fill="solid"
-                      onClick={() => {
-                        handelRemoveItem(crrKey,'InboundData');
-                      }}
-                    >
-                      Remove
-                    </IonButton>
-                  </IonButtons>
+                  <IonText style={{ width: "100%" }}>{InboundData[crrKey].description}</IonText>
+                  <div>
+                    <IonButtons slot="end">
+                      <IonButton
+                        slot="start"
+                        color="success"
+                        fill="solid"
+                        onClick={() => {
+                          handelRestoreItem(crrKey, "InboundData");
+                        }}
+                      >
+                        Restore
+                      </IonButton>
+                      <span style={{ width: "10px" }}></span>
+                      <IonButton
+                        slot="end"
+                        color="danger"
+                        fill="solid"
+                        onClick={() => {
+                          handelRemoveItem(crrKey, "InboundData");
+                        }}
+                      >
+                        Remove
+                      </IonButton>
+                    </IonButtons>
+                    <IonLabel style={{ fontSize: "10px" }} slot="end" color="warning">
+                      {timestampToTime(InboundData[crrKey]?.status?.timeStamp)}
+                    </IonLabel>
+                  </div>
                 </IonItem>
               );
             })}
@@ -273,7 +286,6 @@ const TrashPage: React.FC = () => {
         {keyOfOutboundDataDelete.length >= 1 ? (
           <IonList>
             {keyOfOutboundDataDelete.map((crrKey, index) => {
-            
               return (
                 <IonItem key={index}>
                   <div style={{ marginRight: "10px" }}>
@@ -281,36 +293,38 @@ const TrashPage: React.FC = () => {
                       {crrKey}
                     </IonLabel>
                     <IonLabel style={{ fontSize: "10px" }} color="warning">
-                    {OutboundData[crrKey]?.status?.detail}
+                      {OutboundData[crrKey]?.status?.detail}
                     </IonLabel>
                   </div>
-                  <IonText>{OutboundData[crrKey].description}</IonText>
-                  <IonLabel style={{ fontSize: "10px" }} slot="end" color="warning">
-                    {timestampToTime(OutboundData[crrKey]?.status?.timeStamp)}
-                  </IonLabel>
-                  <IonButtons slot="end">
-                    <IonButton
-                      slot="start"
-                      color="success"
-                      fill="solid"
-                      onClick={() => {
-                        handelRestoreItem(crrKey,'OutboundData');
-                      }}
-                    >
-                      Restore
-                    </IonButton>
-                    <span style={{ width: "10px" }}></span>
-                    <IonButton
-                      slot="end"
-                      color="danger"
-                      fill="solid"
-                      onClick={() => {
-                        handelRemoveItem(crrKey,'OutboundData');
-                      }}
-                    >
-                      Remove
-                    </IonButton>
-                  </IonButtons>
+                  <IonText style={{ width: "100%" }}>{OutboundData[crrKey].description}</IonText>
+                  <div>
+                    <IonButtons slot="end">
+                      <IonButton
+                        slot="start"
+                        color="success"
+                        fill="solid"
+                        onClick={() => {
+                          handelRestoreItem(crrKey, "OutboundData");
+                        }}
+                      >
+                        Restore
+                      </IonButton>
+                      <span style={{ width: "10px" }}></span>
+                      <IonButton
+                        slot="end"
+                        color="danger"
+                        fill="solid"
+                        onClick={() => {
+                          handelRemoveItem(crrKey, "OutboundData");
+                        }}
+                      >
+                        Remove
+                      </IonButton>
+                    </IonButtons>
+                    <IonLabel style={{ fontSize: "10px" }} slot="end" color="warning">
+                      {timestampToTime(OutboundData[crrKey]?.status?.timeStamp)}
+                    </IonLabel>
+                  </div>
                 </IonItem>
               );
             })}

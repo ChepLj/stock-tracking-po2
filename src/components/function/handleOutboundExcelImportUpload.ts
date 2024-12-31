@@ -11,28 +11,33 @@ export const handleOutboundExcelImportUpload = (object: any, disPatch: Function,
       for (const itemKey in object) {
         const item: ITF_MaterialObject = object[itemKey];
         const key = `${item.material}-${item.sLoc}`;
-       
-        uploadContainer.push({
-          ref: `MainData/${key}/quantity/`,
-          data: (Number(item.quantity) || 0) + (Number(item.quantityInStock) || 0),
-        });
+
+        if (+item?.quantity > 0) {
+          const stockQuantity = Number(item.quantityInStock) || 0;
+          const outboundQuantity = Number(item.quantity);
+          const quantityTemp = () => {
+            if (stockQuantity - outboundQuantity < 0) {
+              alert(`${item.material} Số lượng xuất kho lớn hơn số lượng tồn kho. Lỗi !`);
+            }
+            return stockQuantity - outboundQuantity;
+          };
+          uploadContainer.push({
+            ref: `MainData/${key}/quantity/`,
+            data: quantityTemp(),
+          });
+        }
+
         uploadContainer.push({
           ref: `MainData/${key}/unit/`,
           data: item.unit,
         });
-        uploadContainer.push({
-          ref: `MainData/${key}/price/`,
-          data: item.price,
-        });
-        uploadContainer.push({
-          ref: `MainData/${key}/note/`,
-          data: item.note,
-        });
-        uploadContainer.push({
-          ref: `MainData/${key}/batch/`,
-          data: item.batch,
-        });
-       
+        if (Number(item.price) > 1) {
+          uploadContainer.push({
+            ref: `MainData/${key}/price/`,
+            data: item.price,
+          });
+        }
+
         uploadContainer.push({
           ref: `MainData/${key}/lastUpdate/`,
           data: timeStamp,

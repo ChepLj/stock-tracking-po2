@@ -11,6 +11,8 @@ import {
   paperPlaneSharp,
   qrCodeOutline,
   qrCodeSharp,
+  statsChartOutline,
+  statsChartSharp,
   trashOutline,
   trashSharp,
   warningOutline,
@@ -36,6 +38,12 @@ const appPages: AppPage[] = [
     url: "/page/Main",
     iosIcon: mailOutline,
     mdIcon: mailSharp,
+  },
+  {
+    title: "Dashboard",
+    url: "/page/Dashboard",
+    iosIcon: statsChartOutline,
+    mdIcon: statsChartSharp,
   },
   {
     title: "Auxiliary ",

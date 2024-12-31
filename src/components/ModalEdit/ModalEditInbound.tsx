@@ -152,6 +152,7 @@ function ModalEditInbound({ isModalEditOpen, setIsModalEditOpen }: { isModalEdit
         ref: `Logs/${timeStamp}`,
         data: {
           key: isModalEditOpen.key,
+          item: `${isModalEditOpen.value.material}-${isModalEditOpen.value.sLoc}`,
           behavior: "Inbound Edit",
           description: descriptionElm.value,
           detail: "Inbound Edit",
@@ -196,7 +197,7 @@ function ModalEditInbound({ isModalEditOpen, setIsModalEditOpen }: { isModalEdit
           data: {
             behavior: "Inbound pre-delete",
             detail: "pre-delete",
-            item: "JSON.stringify(isModalEditOpen.value)",
+            item: `${isModalEditOpen.value.material}-${isModalEditOpen.value.sLoc}`,
             timeStamp: key,
             description: isModalEditOpen.value.description,
             key: isModalEditOpen.key,

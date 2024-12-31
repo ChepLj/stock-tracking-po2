@@ -36,6 +36,7 @@ import TrashPage from "./pages/TrashPage/TrashPage";
 import HelpsPage from "./pages/HelpsPage/HelpsPage";
 import LogsPage from "./pages/LogsPage/LogsPage";
 import { OutboundDataProvider } from "./context/outboundDataContext";
+import Dashboard from "./pages/Dashboard/Dashboard";
 
 //! end
 setupIonicReact();
@@ -115,6 +116,12 @@ const App: React.FC = () => {
                       <Redirect to="/page/Main" />
                     </Route>
                     <Route path="/page/Main" exact={true}>
+                      <Main />
+                    </Route>
+                    <Route path="/page/Dashboard" exact={true}>
+                      <Dashboard />
+                    </Route>
+                    <Route path="/page/Auxiliary" exact={true}>
                       <Main />
                     </Route>
                     <Route path="/page/Redirect" exact={true}>

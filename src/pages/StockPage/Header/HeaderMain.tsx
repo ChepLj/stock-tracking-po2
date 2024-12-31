@@ -47,22 +47,22 @@ const HeaderMain = ({
 
   //TODO_END: handle view style
 
-  const countSearchTemp = ()=>{
-    switch(viewStyle){
-      case 'Stock': {
-        return `${countSearch[0]}/${countSearch[1]}`
+  const countSearchTemp = () => {
+    switch (viewStyle) {
+      case "Stock": {
+        return `${countSearch[0]}/${countSearch[1]}`;
       }
-      case 'Inbound': {
-        return `${countInboundSearch[0]}/${countInboundSearch[1]}`
+      case "Inbound": {
+        return `${countInboundSearch[0]}/${countInboundSearch[1]}`;
       }
-      case 'Outbound': {
-        return `${countOutboundSearch[0]}/${countOutboundSearch[1]}`
+      case "Outbound": {
+        return `${countOutboundSearch[0]}/${countOutboundSearch[1]}`;
       }
       default: {
         return "error/error";
       }
     }
-  }
+  };
   return (
     <IonToolbar>
       <IonButtons slot="start">
@@ -73,17 +73,17 @@ const HeaderMain = ({
           <div>
             <IonButtons>
               <IonButton
-                fill="outline"
+                fill={viewStyle === "Stock" ? "solid" : "outline"}
                 color={viewStyle === "Stock" ? "primary" : "medium"}
                 onClick={() => {
                   handleViewStyle("Stock");
                   setTitle("Danh sách Vật tư tồn thực tế theo Kho");
                 }}
               >
-                Stock
+                Stock 
               </IonButton>
               <IonButton
-                fill="outline"
+                fill={viewStyle === "Inbound" ? "solid" : "outline"}
                 color={viewStyle === "Inbound" ? "primary" : "medium"}
                 onClick={() => {
                   handleViewStyle("Inbound");
@@ -93,7 +93,7 @@ const HeaderMain = ({
                 Nhập Kho
               </IonButton>
               <IonButton
-                fill="outline"
+                fill={viewStyle === "Outbound" ? "solid" : "outline"}
                 color={viewStyle === "Outbound" ? "primary" : "medium"}
                 onClick={() => {
                   handleViewStyle("Outbound");
@@ -132,10 +132,20 @@ const HeaderMain = ({
 
         <IonCol>
           <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minWidth: "100px" }}>
-            <div style={{ fontSize: "8px", fontStyle: "italic", padding: "2px", color: "gray" }}>
-              {countSearchTemp()} item
-            </div>
-            <IonSearchbar style={{ padding: "0 5px 0 0", height: "30px" }} debounce={500} showClearButton="never" onIonChange={(ev) => callbackResultSearch!(ev)} value={value}></IonSearchbar>
+            <div style={{ fontSize: "8px", fontStyle: "italic", padding: "2px", color: "gray" }}>{countSearchTemp()} item</div>
+            <IonSearchbar
+              style={{ padding: "0 5px 0 0", height: "30px" }}
+              debounce={500}
+              showClearButton="never"
+              onIonChange={(ev) => callbackResultSearch!(ev)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  const searchTarget = event.target as HTMLIonSearchbarElement;
+                  // searchTarget.value == '' && callbackResultSearch!(event)
+                }
+              }}
+              value={value}
+            ></IonSearchbar>
             <IonIcon icon={filterCircleOutline} slot="end" size="large" color={isFilter ? "danger" : "medium"} onClick={() => setModalFilterOpen!(!modalFilterOpen)} />
           </div>
         </IonCol>

@@ -30,6 +30,7 @@ function OutboundView({
   setTitle: Function;
   setViewStyle: Function;
 }) {
+
   const [isModalOpen, setIsModalOpen] = useState<{ isOpen: boolean; value: any; key?: string }>({ isOpen: false, value: {} });
   const [isModalEditOpen, setIsModalEditOpen] = useState<{ isOpen: boolean; value: any; key: string }>({ isOpen: false, value: {}, key: "" });
 
@@ -171,7 +172,7 @@ const ItemList = ({
         <strong>{objectData.material}</strong>
       </td>
       <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", minWidth: "50px", maxWidth: "250px" }}>{objectData.sLoc}</td>
-      <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", minWidth: "60px", maxWidth: "550px", width: "100%" }}>{objectData.description}</td>
+      <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", minWidth: "260px", maxWidth: "550px", width: "100%" }}>{objectData.description}</td>
       <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", minWidth: "50px", maxWidth: "150px", color: objectData.quantity < 0 ? "red" : "" }}>
         <strong>{`${objectData.quantity}`}</strong>
       </td>

@@ -1,7 +1,7 @@
 import { ITF_FilterResult } from "../../interface/mainInterface";
 
 function conditionFilter(dataRaw: any, keyOfDataShow: Array<string>, filterList: ITF_FilterResult, authorLogin: any) {
-  console.log("🚀 ~ file: conditionFilter.ts:4 ~ conditionFilter ~ filterList:", filterList);
+
   return keyOfDataShow.filter((key) => {
     const objectNew = dataRaw[key];
 
@@ -19,7 +19,7 @@ function conditionFilter(dataRaw: any, keyOfDataShow: Array<string>, filterList:
     const conditionStockCheck = () => {
       if (filterList.stock.length) {
         
-        if (filterList.stock?.includes(objectNew?.sLoc)) {
+        if (filterList.stock?.toString().includes(objectNew?.sLoc.toString())) {
           return true;
         }
         else {

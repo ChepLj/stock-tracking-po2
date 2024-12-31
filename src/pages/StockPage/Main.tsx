@@ -56,7 +56,6 @@ const Main: React.FC = () => {
   keyOfInboundDataRaw.reverse();
   keyOfOutboundDataRaw.reverse();
 
-
   const virtuoso = useRef<any>(null);
   const ionItemSlidingRef = useRef<HTMLIonItemSlidingElement>(null);
   //TODO: Check Mobile Screen
@@ -92,9 +91,9 @@ const Main: React.FC = () => {
 
   //TODO: Search Result
   const handelSearch = (ev: Event) => {
+    console.log('check')
     let query = "";
     const searchTarget = ev.target as HTMLIonSearchbarElement;
-
     if (searchTarget) {
       query = searchTarget.value?.trim() || ""; // Get the search query
       searchTargetValue.current = query;
@@ -131,6 +130,7 @@ const Main: React.FC = () => {
   //TODO_END: Search Result
   //TODO:  handel filter
   const handleFilter = (filterList: ITF_FilterResult) => {
+    console.log("🚀 ~ handleFilter ~ filterList:", filterList)
     const isFilterFC = () => {
       for (const key in filterList) {
         const newKey = key as keyof ITF_FilterResult;
@@ -141,14 +141,30 @@ const Main: React.FC = () => {
       return false;
     };
     ////////////////
-    if (isFilterFC()) {
-      isFilter.current = true;
+    const updateFilterState = (dataInput: any, setKeyOfDataFn: Function, keyOfDataShowInput: string[]) => {
+      if (isFilterFC()) {
+        isFilter.current = true;
+        setKeyOfDataFn(conditionFilter(dataInput, keyOfDataShowInput, filterList, authorLogin));
+      } else {
+        isFilter.current = false;
+        setKeyOfDataFn(keyOfDataShowInput);
+      }
+    };
 
-      setKeyOfDataShowFilter(conditionFilter(data, keyOfDataShow, filterList, authorLogin));
-    } else {
-      isFilter.current = false;
-      setKeyOfDataShowFilter(keyOfDataShow);
+    switch (viewStyle) {
+      case "Stock":
+        updateFilterState(data, setKeyOfDataShowFilter, keyOfDataShow);
+        break;
+      case "Inbound":
+        updateFilterState(InboundData, setKeyOfInboundDataShowFilter, keyOfInboundDataShow);
+        break;
+      case "Outbound":
+        updateFilterState(OutboundData, setKeyOfOutboundDataShowFilter, keyOfOutboundDataShow);
+        break;
+      default:
+        console.warn(`Unhandled viewStyle: ${viewStyle}`);
     }
+
     searchTargetValue.current = "";
   };
   //TODO_END:  handel filter
@@ -170,7 +186,6 @@ const Main: React.FC = () => {
           data={data}
           inboundData={InboundData}
           outboundData={OutboundData}
-
           isPhone={authorLogin.isPhone || false}
           setTitle={setTitle}
         />
@@ -198,7 +213,7 @@ const Main: React.FC = () => {
             setTitle={setTitle}
           />
         )}
-         {viewStyle === "Outbound" && (
+        {viewStyle === "Outbound" && (
           <OutboundView
             data={OutboundData}
             setViewStyle={setViewStyle}
@@ -214,7 +229,7 @@ const Main: React.FC = () => {
         {viewStyle === "OutboundExcelImport" && <OutboundExcelImport setViewStyle={setViewStyle} />}
       </IonContent>
 
-      <ModalFilter modalFilterOpen={modalFilterOpen} setModalFilterOpen={setModalFilterOpen} handleFilter={handleFilter} isFilter={isFilter.current} />
+      <ModalFilter modalFilterOpen={modalFilterOpen} setModalFilterOpen={setModalFilterOpen} handleFilter={handleFilter} isFilter={isFilter} viewStyle={viewStyle} />
     </IonPage>
   );
 };

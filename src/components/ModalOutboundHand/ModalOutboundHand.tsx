@@ -159,7 +159,7 @@ function ModalOutboundHand({ isModalOpen, setIsModalOpen }: { isModalOpen: any; 
       if (+priceElm?.value <= 0) {
         throw new Error("Giá không hợp lệ !");
       }
-      if (priceElm?.value !== dataTemp?.price) {
+      if (priceElm?.value > dataTemp?.price) {
         uploadContainer.push({
           ref: `MainData/${key}/price/`,
           data: priceElm.value,
@@ -280,8 +280,8 @@ function ModalOutboundHand({ isModalOpen, setIsModalOpen }: { isModalOpen: any; 
                 <IonSelect name="inbound-stockModal-stockSearch" style={{ textAlign: "end", marginLeft: "10px" }} interface="popover" placeholder="Select">
                   {stockList.map((crr: any, index: number) => {
                     return (
-                      <IonSelectOption value={crr?.Kho} key={index}>
-                        {crr?.Kho} - {crr?.[`Diễn Giải`]}
+                      <IonSelectOption value={crr?.Sloc} key={index}>
+                        {crr?.Sloc} - {crr?.Description}
                       </IonSelectOption>
                     );
                   })}

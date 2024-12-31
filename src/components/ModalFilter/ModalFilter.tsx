@@ -4,8 +4,21 @@ import { ITF_FilterResult } from "../../interface/mainInterface";
 
 import firebaseGetMainData from "../../firebase/api/getData";
 
-function ModalFilter({ modalFilterOpen, setModalFilterOpen, handleFilter, isFilter }: { modalFilterOpen: boolean; setModalFilterOpen: Function; handleFilter: Function; isFilter: boolean }) {
+function ModalFilter({
+  modalFilterOpen,
+  setModalFilterOpen,
+  handleFilter,
+  isFilter,
+  viewStyle,
+}: {
+  modalFilterOpen: boolean;
+  setModalFilterOpen: Function;
+  handleFilter: Function;
+  isFilter: any;
+  viewStyle: string;
+}) {
   console.log("%cModalFilter  Render", "color:green");
+
   useEffect(() => {
     //: Unmount
     return () => {
@@ -14,6 +27,20 @@ function ModalFilter({ modalFilterOpen, setModalFilterOpen, handleFilter, isFilt
   }, []);
 
   // //TODO: Lấy StockList khi load Page lần đầu
+  
+  //TODO: handle all select
+  const handleAllSelect = () => {
+    setResultObj(initResult);
+  };
+
+  //TODO_END: handle all select
+  //TODO: refresh Filter
+  useEffect(() => {
+    handleAllSelect();
+    isFilter.current = false;
+  },[viewStyle]);
+
+  //TODO_END: refresh Filter
 
   // //TODO_END:Lấy StockList khi load Page lần đầu
   const initResult: ITF_FilterResult = {
@@ -27,9 +54,9 @@ function ModalFilter({ modalFilterOpen, setModalFilterOpen, handleFilter, isFilt
   const [resultObj, setResultObj] = useState(initResult);
 
   interface ITF_StockList {
-    Kho: string;
-    "Diễn Giải": string;
-    KTV: string;
+    Sloc: string;
+    Description: string;
+
   }
   const [stockList, setStockList] = useState<ITF_StockList[]>([]);
 
@@ -62,12 +89,6 @@ function ModalFilter({ modalFilterOpen, setModalFilterOpen, handleFilter, isFilt
   };
   //TODO_END: handle toggle select
 
-  //TODO: handle all select
-  const handleAllSelect = () => {
-    setResultObj(initResult);
-  };
-
-  //TODO_END: handle all select
 
   //TODO: handle filterResult
   const handleFilterResult = () => {
@@ -118,11 +139,11 @@ function ModalFilter({ modalFilterOpen, setModalFilterOpen, handleFilter, isFilt
                 style={{ cursor: "pointer" }}
                 key={index}
                 onClick={() => {
-                  handleToggleSelect(crr.Kho, "stock");
+                  handleToggleSelect(crr.Sloc, "stock");
                 }}
               >
-                <IonLabel color={resultObj.stock.includes(crr.Kho) ? "secondary" : ""}>
-                  {crr.Kho} - {crr?.["Diễn Giải"]}
+                <IonLabel color={resultObj.stock.includes(crr.Sloc) ? "danger" : ""}>
+                  {crr.Sloc} - {crr.Description}
                 </IonLabel>
               </IonItem>
             ))}
@@ -140,7 +161,7 @@ function ModalFilter({ modalFilterOpen, setModalFilterOpen, handleFilter, isFilt
                   handleToggleSelect(crr, "personal");
                 }}
               >
-                <IonLabel color={resultObj.personal.includes(crr) ? "secondary" : ""}>{crr}</IonLabel>
+                <IonLabel color={resultObj.personal.includes(crr) ? "danger" : ""}>{crr}</IonLabel>
               </IonItem>
             ))}
           </IonItemGroup>

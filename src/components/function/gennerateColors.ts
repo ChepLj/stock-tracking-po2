@@ -17,7 +17,7 @@ export default function generateColors(count: number): { backgroundColor: string
   
   const { backgroundColor, borderColor } = generateColors(30);
   
-  console.log("Background Colors:", backgroundColor);
-  console.log("Border Colors:", borderColor);
+  // console.log("Background Colors:", backgroundColor);
+  // console.log("Border Colors:", borderColor);
   
 

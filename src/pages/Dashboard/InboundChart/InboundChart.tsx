@@ -1,178 +1,130 @@
-
-import React, { useState } from 'react';
-import { Bar } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+import React, { useEffect, useState } from "react";
+import { Bar, Chart } from "react-chartjs-2";
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
+import { handelInboundData } from "./function/handelInboundData";
+import { IonGrid, IonRow, IonCol } from "@ionic/react";
 
 // Register chart.js components
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
-
-// TypeScript interfaces for the data structure
-interface DataItem {
-  description: string;
-  material: string;
-  quantity: string;
-  price: string;
-  year: string;
-  month: string;
-  sLoc: string;
+interface ITF_dataArrayTemp {
+  label: string[];
+  totalPrice: number[];
+  TotalValue: number;
+  TotalMaterial: number;
+  materialArray: string[];
 }
 
-interface GroupedData {
-  [year: string]: {
-    [month: string]: {
-      totalPrice: number;
-      sLocs: {
-        [sLoc: string]: number; // Price for each sLoc
-      };
-    };
-  };
-}
+const StockChart = ({ dataInput }: { dataInput: any }) => {
+  // console.log("🚀 ~ StockChart ~ dataInput:", dataInput)
+  const [selectedYear, setSelectedYear] = useState<string>("2024"); // Default selected year
+  const softMonths = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-interface ChartData {
-  labels: string[];
-  datasets: {
-    label: string;
-    data: number[];
-    backgroundColor: string;
-    borderColor: string;
-    borderWidth: number;
-  }[];
-}
-
-const data: Record<string, DataItem> = {
-  "111111111-3014": {
-    description: "234sdfsdfd",
-    material: "111111111",
-    quantity: "2",
-    price: "1",
-    year: "2024",
-    month: "12",
-    sLoc: "3014"
-  },
-  "120000046-3010": {
-    description: "Bang keo dien 2P 100g",
-    material: "120000046",
-    quantity: "11",
-    price: "6000",
-    year: "2024",
-    month: "10",
-    sLoc: "3010"
-  },
-  "120000046-3017": {
-    description: "Bang keo dien 2P 100g",
-    material: "120000046",
-    quantity: "84",
-    price: "6000",
-    year: "2024",
-    month: "11",
-    sLoc: "3017"
-  },
-  "120000046-3110": {
-    description: "Bang keo dien 2P 100g",
-    material: "120000046",
-    quantity: "20",
-    price: "6000",
-    year: "2024",
-    month: "10",
-    sLoc: "3110"
-  }
-};
-
-// Group data by year, month, and sLoc
-function groupDataByYearMonthAndSLoc(data: Record<string, DataItem>): GroupedData {
-  const groupedData: GroupedData = {};
-
-  Object.values(data).forEach(item => {
-    const { year, month, quantity, price, sLoc } = item;
-    const totalPrice = parseInt(price) * parseInt(quantity);
-
-    if (!groupedData[year]) {
-      groupedData[year] = {};
-    }
-
-    if (!groupedData[year][month]) {
-      groupedData[year][month] = {
-        totalPrice: 0,
-        sLocs: {}
-      };
-    }
-
-    // Add total price for the month
-    groupedData[year][month].totalPrice += totalPrice;
-
-    // Add price for each sLoc
-    if (!groupedData[year][month].sLocs[sLoc]) {
-      groupedData[year][month].sLocs[sLoc] = 0;
-    }
-    groupedData[year][month].sLocs[sLoc] += totalPrice;
+  const [dataArray, setDataArray] = useState<ITF_dataArrayTemp>({
+    label: [],
+    totalPrice: [],
+    TotalValue: 0,
+    TotalMaterial: 0,
+    materialArray: [],
   });
-
-  return groupedData;
-}
-
-// Format data for the chart
-function formatDataForChart(groupedData: GroupedData, year: string): ChartData {
-  const chartData: ChartData = {
-    labels: [], // Months
-    datasets: [] // Datasets for each sLoc
-  };
-
-  if (groupedData[year]) {
-    Object.keys(groupedData[year]).forEach(month => {
-      const totalPrice = groupedData[year][month].totalPrice;
-      chartData.labels.push(month);
-
-      // Create a dataset for each sLoc
-      Object.keys(groupedData[year][month].sLocs).forEach((sLoc, index) => {
-        const priceForSLoc = groupedData[year][month].sLocs[sLoc];
-        const percentage = (priceForSLoc / totalPrice) * 100;
-
-        // If this is the first time adding the dataset, initialize it
-        if (!chartData.datasets[index]) {
-          chartData.datasets[index] = {
-            label: `sLoc ${sLoc}`,
-            data: [],
-            backgroundColor: `rgba(${(index * 50) % 255}, ${(index * 100) % 255}, ${(index * 150) % 255}, 0.5)`,
-            borderColor: `rgba(${(index * 50) % 255}, ${(index * 100) % 255}, ${(index * 150) % 255}, 1)`,
-            borderWidth: 1
-          };
-        }
-
-        // Push the percentage value for each sLoc
-        chartData.datasets[index].data.push(percentage);
+  const [dataChart, setDataChart] = useState<any>({
+    labels: [''],
+    datasets: [
+      {
+        type: "bar" as const,
+        label: "Price",
+        backgroundColor: "rgb(75, 192, 192)",
+        data: [''],
+        borderColor: "white",
+        borderWidth: 2,
+        yAxisID: "y1",
+      },
+    ],
+  })
+  //TODO: change year
+  useEffect(() => {
+    const data = dataInput[selectedYear.toString()];
+    if (data) {
+      const dataArrayTemp: ITF_dataArrayTemp = { label: [], totalPrice: [], TotalValue: 0, TotalMaterial: 0, materialArray: [] };
+      [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].forEach((crr: any, index: number) => {
+        const item = data[crr];
+        const totalPrice = Number(item?.totalPrice) || 0;
+        dataArrayTemp.label.push(softMonths[crr - 1]);
+        dataArrayTemp.totalPrice.push(totalPrice);
+        dataArrayTemp.TotalValue = dataArrayTemp.TotalValue + totalPrice;
+        // dataArrayTemp.materialArray.push(item.materials.length);
+        // dataArrayTemp.TotalMaterial = dataArrayTemp.TotalMaterial + (item.materials.length);
       });
-    });
-  }
+      setDataArray(dataArrayTemp);
+      setDataChart({
+        labels: dataArray.label,
+        datasets: [
+          {
+            type: "bar" as const,
+            label: "Price",
+            backgroundColor: "rgb(75, 192, 192)",
+            data: dataArray.totalPrice,
+            borderColor: "white",
+            borderWidth: 2,
+            yAxisID: "y1",
+          },
+        ],
+      })
+    }
+  }, [selectedYear, dataInput]);
 
-  return chartData;
-}
-
-const StockChart = ({dataInput}:{dataInput: any}) => {
-  const [selectedYear, setSelectedYear] = useState<string>('2024'); // Default selected year
-  const groupedData = groupDataByYearMonthAndSLoc(data);
-  const chartData = formatDataForChart(groupedData, selectedYear);
+  //TODO_END: change year
 
   // Handle year selection
   const handleYearChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedYear(event.target.value);
   };
 
-  return (
-    <div>
-      <h1>Stock Price Chart by sLoc</h1>
-      
-      {/* Year Selector */}
-      <select value={selectedYear} onChange={handleYearChange}>
-        {Object.keys(groupedData).map(year => (
-          <option key={year} value={year}>
-            {year}
-          </option>
-        ))}
-      </select>
 
-      {/* Bar Chart Component */}
-      <Bar data={chartData} />
-    </div>
+
+  const optionsChart = {
+    responsive: true,
+    interaction: {
+      mode: "index" as const,
+      intersect: false,
+    },
+    stacked: false,
+    plugins: {
+      title: {
+        display: true,
+        text: "Biểu đồ giá trị nhập kho theo tháng",
+      },
+    },
+    scales: {
+      y1: {
+        type: "linear" as const,
+        display: true,
+        position: "right" as const,
+        grid: {
+          drawOnChartArea: false,
+        },
+      },
+    },
+  };
+  const formattedTotalValue = dataArray.TotalValue.toLocaleString("en-US");
+
+  return (
+    <IonGrid>
+      <IonRow>
+        <IonCol size="12" size-lg="8">
+          <div className="chart-container">
+            <select value={selectedYear} onChange={handleYearChange}>
+              {Object.keys(dataInput).map((year) => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
+            </select>
+            <Chart type="bar" data={dataChart} options={optionsChart} redraw={true} />
+            <div className="stockChart-pie_totalPrice">Total value: {formattedTotalValue} VNĐ</div>
+          </div>
+        </IonCol>
+      </IonRow>
+    </IonGrid>
   );
 };
 

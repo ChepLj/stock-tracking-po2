@@ -70,7 +70,7 @@ export default function StockChart({ dataInput }: { dataInput: any }) {
     plugins: {
       title: {
         display: true,
-        text: "Chart.js Line Chart - Multi Axis",
+        text: "Biều đồ tương quan giữa số lượng đầu Vật tư và Giá",
       },
     },
     scales: {
@@ -98,6 +98,7 @@ export default function StockChart({ dataInput }: { dataInput: any }) {
           <div className="chart-container">
             <Chart type="bar" data={dataChart} options={optionsChart} redraw={true} />
             <div className="stockChart-pie_totalPrice">Total material: {dataArrayTemp.TotalMaterial} item</div>
+            <div className="stockChart-pie_totalPrice">Total value: {formattedTotalValue} VNĐ</div>
           </div>
         </IonCol>
         <IonCol>

@@ -1,5 +1,23 @@
 import React, { useContext, useEffect, useState } from "react";
-import { IonButtons, IonButton, IonModal, IonHeader, IonContent, IonToolbar, IonTitle, IonPage, IonItem, IonLabel, IonList, IonText, IonNote, IonInput, IonTextarea, IonSelect, IonSelectOption } from "@ionic/react";
+import {
+  IonButtons,
+  IonButton,
+  IonModal,
+  IonHeader,
+  IonContent,
+  IonToolbar,
+  IonTitle,
+  IonPage,
+  IonItem,
+  IonLabel,
+  IonList,
+  IonText,
+  IonNote,
+  IonInput,
+  IonTextarea,
+  IonSelect,
+  IonSelectOption,
+} from "@ionic/react";
 import { ITF_AuthorLogin, ITF_UploadContainer } from "../../interface/mainInterface";
 import firebasePostData from "../../firebase/api/postData";
 import { MainContext } from "../../context/mainDataContext";
@@ -90,7 +108,8 @@ function ModalEditStock({ isModalOpen, setIsModalOpen }: { isModalOpen: any; set
         data: unitElm.value,
       });
     }
-    if (batchElm?.value && batchElm?.value !== isModalOpen?.value?.batch && batchElm?.value !== "none") {
+    if (batchElm?.value && batchElm?.value !== isModalOpen?.value?.batch ) {
+
       uploadContainer.push({
         ref: `MainData/${isModalOpen.key}/batch/`,
         data: batchElm.value,
@@ -161,7 +180,7 @@ function ModalEditStock({ isModalOpen, setIsModalOpen }: { isModalOpen: any; set
             item: "JSON.stringify(isModalOpen.value)",
             timeStamp: key,
             description: isModalOpen.value.description,
-            key: isModalOpen.key
+            key: isModalOpen.key,
           },
         },
         {

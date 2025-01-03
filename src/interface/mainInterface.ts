@@ -50,6 +50,7 @@ export interface ITF_AuthorLogin {
   photoURL: string;
   provider: string;
   userName: any;
+  level: string;
 }
 
 export interface ITF_FilterResult {

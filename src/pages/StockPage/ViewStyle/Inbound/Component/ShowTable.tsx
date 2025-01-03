@@ -108,10 +108,11 @@ export default function ShowTable({ step, setStep }: { step: any; setStep: Funct
                     minWidth: "100px",
                     maxWidth: "300px",
                     whiteSpace: "nowrap", // Prevent line breaks
+                    
                   }}
                 >
-                  <span style={{ display: "inline-flex", alignItems: "center"}}>
-                    <p className="description">{checkAvailableInStock.descriptionRaw}</p>
+                  <span style={{ display: "inline-flex", alignItems: "center" ,color:'red'}}>
+                    <p className="description" style={{color:checkAvailableInStock.color}}>{checkAvailableInStock.descriptionRaw}</p>
                     {checkAvailableInStock.isDescriptionDiff && (
                       <>
                         <IonIcon
@@ -145,8 +146,8 @@ export default function ShowTable({ step, setStep }: { step: any; setStep: Funct
                     whiteSpace: "nowrap", // Prevent line breaks
                   }}
                 >
-                  <span style={{ display: "inline-flex", alignItems: "center", gap: "5px" }}>
-                    <strong>{checkAvailableInStock.unitRaw}</strong>
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: "5px", color:checkAvailableInStock.color}} >
+                    <strong> {checkAvailableInStock.unitRaw}</strong>
                     {checkAvailableInStock.isUnitDiff && (
                       <>
                         <IonIcon

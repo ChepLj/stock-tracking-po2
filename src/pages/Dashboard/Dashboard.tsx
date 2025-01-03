@@ -10,11 +10,12 @@ import { handelStockData } from "./StockChart/function/handelStockData";
 import { handelInboundData } from "./InboundChart/function/handelInboundData";
 import { OutboundDataContext } from "../../context/outboundDataContext";
 import OutboundChart from "./OutboundChart/OutboundChart";
+import { handelOutboundData } from "./OutboundChart/function/handelOutboundData";
 
 export default function Dashboard() {
-  const { data, disPatch } = useContext<any>(MainContext);
-  const { InboundData, disPatchInboundData } = useContext<any>(InboundDataContext);
-  const { OutboundData, disPatchOutboundData } = useContext<any>(OutboundDataContext);
+  const { data,keyOfDataShow, disPatch } = useContext<any>(MainContext);
+  const { InboundData,keyOfInboundDataShow, disPatchInboundData } = useContext<any>(InboundDataContext);
+  const { OutboundData,keyOfOutboundDataShow, disPatchOutboundData } = useContext<any>(OutboundDataContext);
 
   //TODO: Lấy Main Data khi load Page lần đầu
   useEffect(() => {
@@ -26,9 +27,9 @@ export default function Dashboard() {
   //TODO: gán key of keyOfDataShow sang setKeyOfDataShowFilter
 
   // Group and calculate
-  const stockData = handelStockData(data);
-  const inboundData = handelInboundData(InboundData);
-  const outboundData = handelInboundData(OutboundData);
+  const stockData = handelStockData(data, keyOfDataShow);
+  const inboundData = handelInboundData(InboundData, keyOfInboundDataShow);
+  const outboundData = handelOutboundData(OutboundData, keyOfOutboundDataShow);
 
   // Display the result
 

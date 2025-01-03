@@ -23,10 +23,11 @@ interface GroupedData {
   };
 }
 
-export const handelInboundData = (data: Record<string, DataItem>): GroupedData => {
+export const handelInboundData = (data: Record<string, DataItem>, keyOfDataShow:string[]): GroupedData => {
   const groupedData: GroupedData = {};
 
-  Object.values(data).forEach((item) => {
+  keyOfDataShow.forEach((crr) => {
+    const item = data[crr]
     const { year, month, quantity, price, sLoc } = item;
     const totalQuantity = parseInt(quantity);
     const totalPrice = parseInt(price) * totalQuantity;

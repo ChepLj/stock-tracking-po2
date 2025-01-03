@@ -1,2 +1,128 @@
 /* For information on how to create your own theme, please see:
 http://ionicframework.com/docs/theming/ */
+/* Light Mode (Default) */
+:root {
+  --ion-background-color: #ffffff;
+  --ion-text-color: #000000;
+  --ion-color-primary: #3880ff;
+  --ion-color-secondary: #3dc2ff;
+  --ion-color-tertiary: #5260ff;
+  --ion-color-success: #2dd36f;
+  --ion-color-warning: #ffc409;
+  --ion-color-danger: #eb445a;
+  --ion-color-light: #f4f5f8;
+  --ion-color-medium: #92949c;
+  --ion-color-dark: #222428;
+  --ion-background-color-step-300:var(--ion-color-primary)
+}
+
+/* Dark Mode */
+body.dark {
+  --ion-background-color: #121212;
+  --ion-background-color-rgb: 18, 18, 18;
+
+  --ion-text-color: #bebebe;
+  --ion-text-color-rgb: 229, 229, 229;
+
+  --ion-color-primary: #bb86fc;
+  --ion-color-primary-rgb: 187, 134, 252;
+  --ion-color-primary-contrast: #000000;
+  --ion-color-primary-contrast-rgb: 0, 0, 0;
+
+  --ion-color-secondary: #03dac6;
+  --ion-color-secondary-rgb: 3, 218, 198;
+  --ion-color-secondary-contrast: #000000;
+  --ion-color-secondary-contrast-rgb: 0, 0, 0;
+
+  --ion-color-tertiary: #03a9f4;
+  --ion-color-tertiary-rgb: 3, 169, 244;
+
+  --ion-color-success: #4caf50;
+  --ion-color-success-rgb: 76, 175, 80;
+
+  --ion-color-warning: #ffeb3b;
+  --ion-color-warning-rgb: 255, 235, 59;
+
+  --ion-color-danger: #cf6679;
+  --ion-color-danger-rgb: 207, 102, 121;
+
+  /* --ion-color-light: #1c1c1c; */
+  --ion-color-light: #4b4949;
+  --ion-color-light-rgb: 28, 28, 28;
+
+  --ion-color-medium: #666666;
+  --ion-color-medium-rgb: 102, 102, 102;
+
+  --ion-color-dark: #ffffff;
+  --ion-color-dark-rgb: 255, 255, 255;
+
+  /* Ion card and item styles */
+  --ion-card-background: #1e1e1e;
+  /* --ion-item-background: #2a2a2a; */
+  --ion-item-color: #e5e5e5;
+
+  /* Button colors */
+  --ion-button-background: var(--ion-color-primary);
+  --ion-button-color: var(--ion-text-color);
+  --button-color: var(--ion-text-secondary);
+
+  /* Input fields */
+  --ion-input-background: #1e1e1e;
+  --ion-input-color: #e5e5e5;
+
+  /* Toolbar and header styles */
+  --ion-toolbar-background: #1e1e1e;
+  --ion-toolbar-color: var(--ion-text-color);
+  --ion-background-color-step-300:var(--ion-color-primary)
+}
+
+body {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+ion-content {
+  background-color: var(--ion-background-color);
+  color: var(--ion-text-color);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+span,
+ion-label {
+  color: var(--ion-text-color);
+}
+
+/* Cards */
+ion-card {
+  background-color: var(--ion-card-background);
+  color: var(--ion-text-color);
+}
+
+/* Buttons */
+/* ion-button {
+  background-color: var(--ion-button-background);
+  color: var(--ion-button-color);
+  border-radius: 8px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+} */
+
+/* Inputs */
+ion-input {
+  background-color: var(--ion-input-background);
+  color: var(--ion-input-color);
+}
+
+ion-button,
+ion-card,
+ion-toolbar {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.dark .sc-ion-input-ios-h {
+  --background: var(--ion-background-color, #fff);
+}

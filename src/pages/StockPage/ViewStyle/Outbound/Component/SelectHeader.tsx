@@ -41,7 +41,7 @@ export default function SelectHeader({ step, setStep }: { step: any; setStep: Fu
       <IonList>
         <h4 style={{ width: "100%", textAlign: "center", color: "red" }}>Assign corresponding column headers</h4>
         <IonItem>
-          <IonLabel>Materia*</IonLabel>
+          <IonLabel>Material*</IonLabel>
           <IonSelect slot="end" name="inboundExcelImport-material" style={{ textAlign: "end", marginLeft: "10px" }} interface="popover" placeholder="Select">
             {step.value.key.map((crr: any, index: number) => {
               return (

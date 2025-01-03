@@ -22,7 +22,7 @@ export default function ChooseTable({ step, setStep }: { step: any; setStep: Fun
             <table>
       
               <thead>
-                <tr style={{ margin: "10px", backgroundColor: "#ccc" }} onClick={() => handleSelectSheet(index)}>
+                <tr style={{ margin: "10px", backgroundColor: "blue" }} onClick={() => handleSelectSheet(index)}>
                   {headerList[index].map((item: any, i: number) => {
                     return (
                       <th key={"sheet-chooseTable-child" + index + i} style={{ padding: "5px 10px", border: "2px solid gray", fontSize: "12px" }}>

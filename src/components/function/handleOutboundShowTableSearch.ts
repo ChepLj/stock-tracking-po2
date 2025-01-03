@@ -69,6 +69,7 @@ export const handleOutboundShowTableSearch = (input: any, header: any, data: any
       type: "error",
       color: "red",
       isOk: false,
+      descriptionRaw: description,
     };
   }
 };

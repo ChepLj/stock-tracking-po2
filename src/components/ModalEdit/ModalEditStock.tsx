@@ -134,7 +134,7 @@ function ModalEditStock({ isModalOpen, setIsModalOpen }: { isModalOpen: any; set
         data: {
           key: isModalOpen.key,
           behavior: "Stock Edit",
-          description: descriptionElm.value,
+          description: descriptionElm.value || '',
           detail: "Stock Edit",
           timeStamp: timeStamp,
         },

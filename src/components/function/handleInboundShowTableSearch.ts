@@ -73,6 +73,8 @@ export const handleInboundShowTableSearch = (input: any, header: any, data: any,
         type: "not found",
         color: "violet",
         isOk: true,
+        descriptionRaw: input?.[header.description],
+        unitRaw: input?.[header.unit],
       };
     }
   } else {
@@ -81,6 +83,8 @@ export const handleInboundShowTableSearch = (input: any, header: any, data: any,
       type: "error",
       color: "red",
       isOk: false,
+      descriptionRaw: input?.[header.description],
+      unitRaw: input?.[header.unit],
     };
   }
 };

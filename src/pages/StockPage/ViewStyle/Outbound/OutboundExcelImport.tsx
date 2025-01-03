@@ -47,7 +47,7 @@ const OutboundExcelImport = ({ setViewStyle }: { setViewStyle: Function }) => {
               fill="outline"
               color="medium"
               onClick={() => {
-                setViewStyle("Inbound");
+                setViewStyle("Outbound");
               }}
             >
               Cancel

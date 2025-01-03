@@ -108,11 +108,17 @@ const LoginPage = () => {
           <div className={style.showPassWord} onClick={showPassword}>
             Show password
           </div>
+          
         </div>
+        
         <button className={style.button} onClick={handelManualLogin}>
           Login
         </button>
-
+        <div className={style.note}>
+          <p><i>Nếu là Khách, sử dụng tài khoản sau:</i></p>
+          <p>Id : guest</p>
+          <p>Pass: pomina</p>
+        </div>
         {isToastOpen.isOpen && <div className={style.toast}>{isToastOpen.messenger}</div>}
       </section>
     </section>

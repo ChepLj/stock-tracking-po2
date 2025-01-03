@@ -9,6 +9,7 @@ export async function showActionSheet(header: string,textCommand: string, handle
       {
         text: textCommand,
         role: 'destructed', 
+        
         handler: () => {
             handlerConfirm()
         },

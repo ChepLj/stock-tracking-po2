@@ -29,8 +29,8 @@ export default function StockChart({ dataInput }: { dataInput: any }) {
       {
         label: "# Total Price",
         data: dataArrayTemp.totalPrice,
-        backgroundColor: colorArray.backgroundColor,
-        borderColor: colorArray.borderColor,
+        backgroundColor: colorArray.backgroundColors,
+        borderColor: colorArray.borderColors,
         borderWidth: 1,
       },
     ],

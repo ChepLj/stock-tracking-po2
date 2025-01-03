@@ -113,7 +113,7 @@ function ModalEditInbound({ isModalEditOpen, setIsModalEditOpen }: { isModalEdit
         data: unitElm.value,
       });
     }
-    if (batchElm?.value && batchElm?.value !== isModalEditOpen?.value?.batch && batchElm?.value !== "none") {
+    if (batchElm?.value && batchElm?.value !== isModalEditOpen?.value?.batch) {
       uploadContainer.push({
         ref: `InboundData/${isModalEditOpen.key}/batch/`,
         data: batchElm.value,

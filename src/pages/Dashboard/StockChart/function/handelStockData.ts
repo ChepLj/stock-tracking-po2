@@ -1,10 +1,11 @@
 import { Material, GroupedSLoc } from "../../../../interface/mainInterface";
 
 // Function to group by sLoc and calculate subtotals
- export  const handelStockData = (data: Record<string, Material>): Record<string, GroupedSLoc>=> {
+ export  const handelStockData = (data: Record<string, Material>, keyOfDataShow: string[])=> {
     const result: Record<string, GroupedSLoc> = {};
 
-    Object.values(data).forEach((item) => {
+    keyOfDataShow.forEach((crr) => {
+      const item = data[crr]
       const sLoc = item.sLoc;
       const quantity = Number(item.quantity) || 0;
       const price = Number(item.price) || 0;

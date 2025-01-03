@@ -140,3 +140,13 @@ ion-split-pane {
   color: #616e7e;
 
 }
+
+.darkModeWrap{
+  position: relative;
+  width: 100%;
+}
+
+.darkMode_button{
+  position: absolute;
+  right: 5px
+}

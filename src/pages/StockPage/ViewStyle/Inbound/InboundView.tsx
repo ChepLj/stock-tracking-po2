@@ -7,6 +7,9 @@ import ModalEditInbound from "../../../../components/ModalEdit/ModalEditInbound"
 import ModalInboundHand from "../../../../components/ModalInboundHand/ModalInboundHand";
 import { InboundDataContext } from "../../../../context/inboundDataContext";
 import firebaseGetMainData from "../../../../firebase/api/getData";
+import { checkLevelAcc } from "../../../../components/function/checkLevelAcc";
+import { AuthContext } from "../../../../context/loginContext";
+import { toLocalStringOfPrice } from "../../../../components/function/toLocalStringOfPrice";
 
 function InboundView({
   data,
@@ -32,7 +35,6 @@ function InboundView({
 
   const { disPatchInboundData } = useContext<any>(InboundDataContext);
 
-  
   //TODO: Lấy Main Data khi load Page lần đầu
   useEffect(() => {
     //: lấy data từ firebase sao đó dispatch đê render lại
@@ -51,6 +53,28 @@ function InboundView({
     return dataA.month - dataB.month;
   });
 
+  //TODO: handle handImport
+  const handleHandImport = () => {
+    if (checkLevelAcc(authorLogin)) {
+      setIsModalOpen({ isOpen: true, value: "" });
+    } else {
+      alert("Tài khoản không đủ quyền thực hiện hành động này !. Liên hệ Mr.Sỹ để biết thêm thông tin");
+    }
+  };
+
+  //TODO_END: handle ExcelImport
+  //TODO: handle ExcelImport
+  const handleExcelImport = () => {
+    if (checkLevelAcc(authorLogin)) {
+      setViewStyle("InboundExcelImport");
+      setTitle("Nhập Kho tự động bằng file Excel");
+    } else {
+      alert("Tài khoản không đủ quyền thực hiện hành động này !. Liên hệ Mr.Sỹ để biết thêm thông tin");
+    }
+  };
+
+  //TODO_END: handle ExcelImport
+
   return (
     <>
       {!keyOfInboundDataRaw.includes("A000000") ? (
@@ -62,7 +86,7 @@ function InboundView({
           // data={new Array(100000)}
           overscan={{ main: 0, reverse: 2000 }}
           fixedHeaderContent={() => (
-            <tr style={{ background: "red", color: "white" }}>
+            <tr style={{ background: "blue", color: "white" }}>
               <th style={{ padding: "5px 10px", border: "2px solid #ccc", fontSize: "12px" }}>Act</th>
               <th style={{ padding: "5px 10px", border: "2px solid #ccc", fontSize: "12px" }}>No.</th>
               <th style={{ padding: "5px 10px", border: "2px solid #ccc", fontSize: "12px" }}>Year</th>
@@ -80,7 +104,6 @@ function InboundView({
             </tr>
           )}
           itemContent={(index, item) => {
-           
             const objectDataRender = data[item];
 
             return (
@@ -107,15 +130,10 @@ function InboundView({
           <IonIcon icon={chevronUpCircle}></IonIcon>
         </IonFabButton>
         <IonFabList side="top">
-          <IonFabButton onClick={() => setIsModalOpen({ isOpen: true, value: "" })}>
+          <IonFabButton onClick={handleHandImport}>
             <IonIcon icon={handRightOutline}></IonIcon>
           </IonFabButton>
-          <IonFabButton
-            onClick={() => {
-              setViewStyle("InboundExcelImport");
-              setTitle("Nhập Kho tự động bằng file Excel");
-            }}
-          >
+          <IonFabButton onClick={handleExcelImport}>
             <IonIcon icon={codeDownloadOutline}></IonIcon>
           </IonFabButton>
         </IonFabList>
@@ -146,26 +164,40 @@ const ItemList = ({
   isModalOpen: any;
   setIsModalEditOpen: Function;
 }) => {
+  const { authorLogin, setAuthorLogin } = useContext<any>(AuthContext);
+
   useEffect(() => {
     //:nothing
 
     //:Unmount
     //! To enhance performant set Object to null
-    
+
     return () => {};
 
     //! end
   }, []);
 
+  //TODO: handle Show Edit Modal
+  const handleShowEditModal = () => {
+    if (checkLevelAcc(authorLogin)) {
+      setIsModalEditOpen({ isOpen: true, value: objectData, key: objectKey });
+    } else {
+      alert("Tài khoản không đủ quyền thực hiện hành động này !. Liên hệ Mr.Sỹ để biết thêm thông tin");
+    }
+  };
+
+  //TODO_END: handle Show Edit Modal
+const priceTemp = toLocalStringOfPrice(objectData?.price || 1)
+  const totalPriceTemp = toLocalStringOfPrice(objectData.price * objectData.quantity  || 1)
   return (
     <>
       <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", width: "auto", maxWidth: "50px" }}>
-        <IonIcon id={`test-${index}`} icon={createOutline} slot="end" size="small" color="success" onClick={() => setIsModalEditOpen({ isOpen: true, value: objectData, key: objectKey })} />
+        <IonIcon id={`test-${index}`} icon={createOutline} slot="end" size="small" color="success" onClick={handleShowEditModal} />
       </td>
       <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", width: "auto", maxWidth: "50px" }}>{index + 1}</td>
       <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", width: "auto", maxWidth: "50px" }}>{objectData?.year}</td>
       <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", width: "auto", maxWidth: "50px" }}>{objectData?.month}</td>
-      <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", minWidth: "60px",width: '150px', maxWidth: "200px" }}>
+      <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", minWidth: "60px", width: "150px", maxWidth: "200px" }}>
         <strong>{objectData.material}</strong>
       </td>
       <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", minWidth: "50px", maxWidth: "100px" }}>{objectData.sLoc}</td>
@@ -174,10 +206,10 @@ const ItemList = ({
         <strong>{`${objectData.quantity}`}</strong>
       </td>
       <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", minWidth: "50px", maxWidth: "150px" }}>{objectData.unit}</td>
-      <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", minWidth: "100px", maxWidth: "250px", textAlign: "right" }}>{objectData.price || 1} VNĐ</td>
-      <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", minWidth: "100px", maxWidth: "250px", textAlign: "right" }}>{objectData.price * objectData.quantity || 1} VNĐ</td>
+      <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", minWidth: "100px", maxWidth: "250px", textAlign: "right" }}>{priceTemp} VNĐ</td>
+      <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", minWidth: "100px", maxWidth: "250px", textAlign: "right" }}>{totalPriceTemp} VNĐ</td>
       <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", minWidth: "100px", maxWidth: "350px" }}>{objectData.note}</td>
-      <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", minWidth: "30px", maxWidth: "50px" }}>{objectData.Batch}</td>
+      <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", minWidth: "30px", maxWidth: "50px" }}>{objectData.batch}</td>
       <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", minWidth: "60px", maxWidth: "100px" }}>{timestampToTime(objectData.lastUpdate, "date only")}</td>
     </>
   );

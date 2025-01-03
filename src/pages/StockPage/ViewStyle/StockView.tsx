@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { TableVirtuoso } from "react-virtuoso";
 // import ObjectData, { objectListRender } from "../../../components/FC_Components/initObjectData";
 
@@ -8,7 +8,9 @@ import { createOutline, refreshOutline } from "ionicons/icons";
 import timestampToTime from "../../../components/function/timestampToTime";
 import ModalEditStock from "../../../components/ModalEdit/ModalEditStock";
 import firebaseGetMainData from "../../../firebase/api/getData";
-
+import { checkLevelAcc } from "../../../components/function/checkLevelAcc";
+import { AuthContext } from "../../../context/loginContext";
+import { toLocalStringOfPrice } from "../../../components/function/toLocalStringOfPrice";
 
 function StockView({
   data,
@@ -25,12 +27,12 @@ function StockView({
   ionItemSlidingRef: any;
   authorLogin: any;
   virtuoso: any;
-  isFilter: any
+  isFilter: any;
 }) {
   const [isModalOpen, setIsModalOpen] = useState<{ isOpen: boolean; value: any; key: string }>({ isOpen: false, value: {}, key: "" });
 
-   //TODO: refresh Data
-   const handelRefresh = () => {
+  //TODO: refresh Data
+  const handelRefresh = () => {
     //: lấy data từ firebase sao đó dispatch đê render lại
     const childRef = "MainData/";
     firebaseGetMainData(childRef, disPatch);
@@ -94,7 +96,7 @@ function StockView({
       )}
 
       <IonFab slot="fixed" vertical="bottom" horizontal="end">
-        <IonFabButton size="small" >
+        <IonFabButton size="small">
           <IonIcon icon={refreshOutline} onClick={handelRefresh}></IonIcon>
         </IonFabButton>
       </IonFab>
@@ -123,6 +125,8 @@ const ItemList = ({
   isModalOpen: any;
   setIsModalOpen: Function;
 }) => {
+  const { authorLogin, setAuthorLogin } = useContext<any>(AuthContext);
+
   useEffect(() => {
     //:nothing
 
@@ -133,10 +137,29 @@ const ItemList = ({
     //! end
   }, []);
 
+  //TODO: handle Show Edit Modal
+  const handleShowEditModal = () => {
+    if (checkLevelAcc(authorLogin)) {
+      setIsModalOpen({ isOpen: true, value: objectData, key: objectKey });
+    } else {
+      alert("Tài khoản không đủ quyền thực hiện hành động này !. Liên hệ Mr.Sỹ để biết thêm thông tin");
+    }
+  };
+
+  //TODO_END: handle Show Edit Modal
+  const priceTemp = toLocalStringOfPrice(objectData?.price || 1)
+  const totalPriceTemp = toLocalStringOfPrice(objectData.price * objectData.quantity  || 1)
   return (
     <>
       <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", width: "auto", maxWidth: "50px" }}>
-        <IonIcon id={`test-${index}`} icon={createOutline} slot="end" size="small" color="success" onClick={() => setIsModalOpen({ isOpen: true, value: objectData, key: objectKey })} />
+        <IonIcon
+          id={`test-${index}`}
+          icon={createOutline}
+          slot="end"
+          size="small"
+          color="success"
+          onClick={handleShowEditModal}
+        />
       </td>
       <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", width: "auto", maxWidth: "50px" }}>{index + 1}</td>
       <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", minWidth: "60px", maxWidth: "100px" }}>
@@ -148,8 +171,8 @@ const ItemList = ({
         <strong>{`${objectData.quantity}`}</strong>
       </td>
       <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", minWidth: "50px", maxWidth: "150px" }}>{objectData.unit}</td>
-      <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", minWidth: "100px", maxWidth: "250px", textAlign: "right" }}>{objectData.price || 1} VNĐ</td>
-      <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", minWidth: "100px", maxWidth: "250px", textAlign: "right" }}>{objectData.price * objectData.quantity || 1} VNĐ</td>
+      <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", minWidth: "100px", maxWidth: "250px", textAlign: "right" }}>{priceTemp} VNĐ</td>
+      <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", minWidth: "100px", maxWidth: "350px", textAlign: "right" }}>{totalPriceTemp} VNĐ</td>
       <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", minWidth: "100px", maxWidth: "350px", width: "auto" }}>{objectData.note}</td>
       <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", minWidth: "30px", maxWidth: "50px" }}>{objectData.batch}</td>
       <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", minWidth: "60px", maxWidth: "100px" }}>{timestampToTime(objectData.lastUpdate, "date only")}</td>

@@ -5,9 +5,9 @@ function conditionSearch(dataRaw: any, KeyOfDataShowFilter: Array<string>, query
   for (const key of KeyOfDataShowFilter) {
     const dataTemp = dataRaw[key]
     const conditionSearch1 = () => regex.test(key);
-    const conditionSearch2 = () => regex.test(((dataTemp.material).toString())?.toUpperCase());
-    const conditionSearch3 = () => regex.test(((dataTemp.description)?.toString())?.toUpperCase());
-    const conditionSearch4 = () => regex.test(dataTemp.sLoc);
+    const conditionSearch2 = () => regex.test(((dataTemp?.material || '').toString())?.toUpperCase());
+    const conditionSearch3 = () => regex.test(((dataTemp.description || '')?.toString())?.toUpperCase());
+    const conditionSearch4 = () => regex.test(dataTemp.sLoc || '');
     const conditionSearch6 = () => regex.test(((dataTemp?.note ||'').toString())?.toUpperCase());
     // const conditionSearch7 = () => regex.test(((dataTemp?.lastUpdate ||'').toString())?.toUpperCase());
 

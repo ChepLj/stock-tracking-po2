@@ -11,6 +11,8 @@ import { ITF_Logs } from "../../interface/mainInterface";
 import timestampToTime from "../../components/function/timestampToTime";
 import { InboundDataContext } from "../../context/inboundDataContext";
 import { OutboundDataContext } from "../../context/outboundDataContext";
+import { checkActionCode } from "firebase/auth";
+import { checkLevelAcc } from "../../components/function/checkLevelAcc";
 
 const TrashPage: React.FC = () => {
   //* Check Render and Unmount
@@ -59,105 +61,113 @@ const TrashPage: React.FC = () => {
 
   //TODO: restore Item
   const handelRestoreItem = (item: string, ref: string) => {
-    const callbackSuccess = (result: string) => {
-      if (result === "post successfully!") {
-        //: lấy data từ firebase sao đó dispatch đê render lại
-        const childRef = `${ref}/`;
-        const disPatchFunctionTemp = ref == "MainData" ? disPatch : ref == "InboundData" ? disPatchInboundData : disPatchOutboundData;
-        firebaseGetMainData(childRef, disPatchFunctionTemp);
-      } else {
-        Toast.show({
-          text: "Something is wrong !",
-        });
-      }
-    };
-    //!
-    const currentTime = Date.now();
-    const status = {
-      ref: `${ref}/${item}/status`,
-      data: {
-        value: "normal",
-        timeStamp: currentTime,
-      },
-    };
-    const logsItem: ITF_Logs = {
-      ref: `${ref}/${item}/logs/${currentTime}`,
-      data: {
-        behavior: "restore",
-        author: authorLogin.displayName,
-        authorId: authorLogin.userName,
-        detail: "restore",
-
-        timeStamp: currentTime,
-      },
-    };
-    const logsMain: ITF_Logs = {
-      ref: `Logs/${currentTime}`,
-      data: {
-        key: item,
-        description: data[item]?.description || "",
-        behavior: ref == "MainData" ? "Stock restore" : ref == "InboundData" ? "Inbound restore" : "Outbound restore",
-        author: authorLogin.displayName,
-        authorId: authorLogin.userName,
-        detail: "restore",
-
-        timeStamp: currentTime,
-      },
-    };
-    const uploadContainer = [status, logsItem, logsMain];
-    firebasePostData(uploadContainer, callbackSuccess);
-  };
-  //TODO_END: restore Item
-  //TODO: remove Item
-  const handelRemoveItem = async (item: string, ref: string) => {
-    const result = await ActionSheet.showActions({
-      title: `Delete forever ${item} item`,
-      message: `Are you sure delete forever ${item} item ?`,
-      options: [
-        {
-          title: "Delete",
-          style: ActionSheetButtonStyle.Destructive,
-        },
-        {
-          title: "Cancel",
-          style: ActionSheetButtonStyle.Cancel,
-        },
-      ],
-    });
-    if (result.index === 0) {
-      const callbackSuccess = async (result: string) => {
-        if (result === "remove successfully!") {
-          const currentTime = Date.now();
-          const logsMain: ITF_Logs = {
-            ref: `Logs/${currentTime}`,
-            data: {
-              behavior: ref == "MainData" ? "Stock remove" : ref == "InboundData" ? "Inbound remove" : "Outbound remove",
-              author: authorLogin.displayName,
-              authorId: authorLogin.userName,
-              detail: "remove",
-              key: item,
-              description: data[item]?.description || "",
-              timeStamp: currentTime,
-            },
-          };
-          const uploadContainer = [logsMain];
-          await firebasePostData(uploadContainer, () => {});
-
+    if (checkLevelAcc(authorLogin)) {
+      const callbackSuccess = (result: string) => {
+        if (result === "post successfully!") {
           //: lấy data từ firebase sao đó dispatch đê render lại
           const childRef = `${ref}/`;
           const disPatchFunctionTemp = ref == "MainData" ? disPatch : ref == "InboundData" ? disPatchInboundData : disPatchOutboundData;
-
-          await firebaseGetMainData(childRef, disPatchFunctionTemp);
+          firebaseGetMainData(childRef, disPatchFunctionTemp);
         } else {
           Toast.show({
             text: "Something is wrong !",
           });
         }
       };
-      /////////////////////////////////////
-      const keyCheck = item || "Error";
-      const refMain = `${ref}/${keyCheck}`;
-      firebaseDeleteData(refMain, callbackSuccess);
+      //!
+      const currentTime = Date.now();
+      const status = {
+        ref: `${ref}/${item}/status`,
+        data: {
+          value: "normal",
+          timeStamp: currentTime,
+        },
+      };
+      const logsItem: ITF_Logs = {
+        ref: `${ref}/${item}/logs/${currentTime}`,
+        data: {
+          behavior: "restore",
+          author: authorLogin.displayName,
+          authorId: authorLogin.userName,
+          detail: "restore",
+
+          timeStamp: currentTime,
+        },
+      };
+      const logsMain: ITF_Logs = {
+        ref: `Logs/${currentTime}`,
+        data: {
+          key: item,
+          description: data[item]?.description || "",
+          behavior: ref == "MainData" ? "Stock restore" : ref == "InboundData" ? "Inbound restore" : "Outbound restore",
+          author: authorLogin.displayName,
+          authorId: authorLogin.userName,
+          detail: "restore",
+
+          timeStamp: currentTime,
+        },
+      };
+      const uploadContainer = [status, logsItem, logsMain];
+      firebasePostData(uploadContainer, callbackSuccess);
+    } else {
+      alert("Tài khoản không đủ quyền thực hiện hành động này !. Liên hệ Mr.Sỹ để biết thêm thông tin");
+    }
+  };
+  //TODO_END: restore Item
+  //TODO: remove Item
+  const handelRemoveItem = async (item: string, ref: string) => {
+    if (checkLevelAcc(authorLogin)) {
+      const result = await ActionSheet.showActions({
+        title: `Delete forever ${item} item`,
+        message: `Are you sure delete forever ${item} item ?`,
+        options: [
+          {
+            title: "Delete",
+            style: ActionSheetButtonStyle.Destructive,
+          },
+          {
+            title: "Cancel",
+            style: ActionSheetButtonStyle.Cancel,
+          },
+        ],
+      });
+      if (result.index === 0) {
+        const callbackSuccess = async (result: string) => {
+          if (result === "remove successfully!") {
+            const currentTime = Date.now();
+            const logsMain: ITF_Logs = {
+              ref: `Logs/${currentTime}`,
+              data: {
+                behavior: ref == "MainData" ? "Stock remove" : ref == "InboundData" ? "Inbound remove" : "Outbound remove",
+                author: authorLogin.displayName,
+                authorId: authorLogin.userName,
+                detail: "remove",
+                key: item,
+                description: data[item]?.description || "",
+                timeStamp: currentTime,
+              },
+            };
+            const uploadContainer = [logsMain];
+            await firebasePostData(uploadContainer, () => {});
+
+            //: lấy data từ firebase sao đó dispatch đê render lại
+            const childRef = `${ref}/`;
+            const disPatchFunctionTemp = ref == "MainData" ? disPatch : ref == "InboundData" ? disPatchInboundData : disPatchOutboundData;
+
+            await firebaseGetMainData(childRef, disPatchFunctionTemp);
+          } else {
+            Toast.show({
+              text: "Something is wrong !",
+            });
+          }
+        };
+        /////////////////////////////////////
+        const keyCheck = item || "Error";
+        const refMain = `${ref}/${keyCheck}`;
+        firebaseDeleteData(refMain, callbackSuccess);
+      }
+    } else {
+      alert("Tài khoản không đủ quyền thực hiện hành động này !. Liên hệ Mr.Sỹ để biết thêm thông tin");
     }
   };
   //TODO_END: remove Item

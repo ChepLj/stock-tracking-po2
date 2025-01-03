@@ -171,7 +171,7 @@ const Main: React.FC = () => {
 
   return (
     <IonPage>
-      {viewStyle !== "InboundExcelImport" && (
+      {viewStyle !== "InboundExcelImport" && viewStyle !== "OutboundExcelImport" && (
         <Header
           callbackResultSearch={handelSearch}
           modalFilterOpen={modalFilterOpen}

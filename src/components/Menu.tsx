@@ -1,4 +1,4 @@
-import { IonAvatar, IonContent, IonIcon, IonImg, IonItem, IonLabel, IonList, IonListHeader, IonMenu, IonMenuToggle, IonNote, useIonRouter } from "@ionic/react";
+import { IonAvatar, IonButton, IonButtons, IonContent, IonIcon, IonImg, IonItem, IonLabel, IonList, IonListHeader, IonMenu, IonMenuToggle, IonNote, useIonRouter } from "@ionic/react";
 
 import {
   fileTrayFullOutline,
@@ -7,20 +7,21 @@ import {
   informationCircleSharp,
   mailOutline,
   mailSharp,
+  moon,
   paperPlaneOutline,
   paperPlaneSharp,
   qrCodeOutline,
   qrCodeSharp,
   statsChartOutline,
   statsChartSharp,
+  sunny,
   trashOutline,
   trashSharp,
   warningOutline,
   warningSharp,
 } from "ionicons/icons";
-import { memo, useContext } from "react";
+import { memo, useContext, useEffect, useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
-
 
 import "./Menu.css";
 import { AuthContext } from "../context/loginContext";
@@ -51,7 +52,6 @@ const appPages: AppPage[] = [
     iosIcon: fileTrayFullOutline,
     mdIcon: fileTrayFullSharp,
   },
- 
 
   {
     title: "Logs",
@@ -80,6 +80,18 @@ const Menu = ({ dispatch }: { dispatch: Function }) => {
   const history = useHistory();
   const { authorLogin } = useContext<any>(AuthContext);
   const router = useIonRouter();
+  const [darkMode, setDarkMode] = useState(false);
+  //! Dark mode
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("dark-mode") === "true";
+    setDarkMode(savedTheme);
+  }, []);
+
+  useEffect(() => {
+    document.body.classList.toggle("dark", darkMode);
+    localStorage.setItem("dark-mode", darkMode.toString());
+  }, [darkMode]);
+
   const handelLogout = async () => {
     // const options = {
     //   url: "http://equipment.manager",
@@ -128,7 +140,12 @@ const Menu = ({ dispatch }: { dispatch: Function }) => {
             </span>
           </IonListHeader>
 
-          <IonNote className="fontSize-normal fontStyle-italic">{authorLogin.displayName}</IonNote>
+          <div className="darkModeWrap">
+            <IonNote className="fontSize-normal fontStyle-italic" style={{margin: '7px'}}>{authorLogin.displayName}</IonNote>{" "}
+            <IonButton onClick={() => setDarkMode(!darkMode)} shape="round" fill="outline" size="small"  className="darkMode_button">
+                  <IonIcon icon={darkMode ? sunny : moon}   slot="icon-only" />
+                </IonButton>
+          </div>
           {appPages.map((appPage, index) => {
             return (
               <IonMenuToggle key={index} autoHide={false}>
@@ -153,7 +170,7 @@ const Menu = ({ dispatch }: { dispatch: Function }) => {
           })}
         </IonList>
         <p style={{ color: "gray", fontStyle: "italic", fontSize: "10px", width: "100%", textAlign: "center" }}>- - - - - -Other App- - - - - - </p>
-        
+
         <div className="menu-bottom">
           <div>App made for BTĐ Pomina</div>
           <div>Author Mr.Sỹ</div>

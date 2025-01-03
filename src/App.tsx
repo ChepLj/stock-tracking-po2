@@ -37,6 +37,10 @@ import HelpsPage from "./pages/HelpsPage/HelpsPage";
 import LogsPage from "./pages/LogsPage/LogsPage";
 import { OutboundDataProvider } from "./context/outboundDataContext";
 import Dashboard from "./pages/Dashboard/Dashboard";
+import Auxiliary from "./pages/AuxiliaryPage/AuxiliaryPage";
+import { checkLevelAcc } from "./components/function/checkLevelAcc";
+import ExcelToJson from "./components/ExcelToJson/ExcelToJson";
+import excelDateToMonthYear from "./components/function/excelDateToMonthYear";
 
 //! end
 setupIonicReact();
@@ -44,8 +48,14 @@ setupIonicReact();
 const App: React.FC = () => {
   console.log("%cApp Render", "color:green");
   const { authorLogin, setAuthorLogin } = useContext<any>(AuthContext);
+  console.log("🚀 ~ authorLogin:", authorLogin)
   const [loading, setLoading] = useState<"loading" | "logged" | "not logged">("loading");
   const date = new Date();
+
+
+
+
+
   useEffect(() => {
     if (authorLogin) {
       setLoading("logged");
@@ -87,6 +97,10 @@ const App: React.FC = () => {
       //TODO_END: Get authorLogin cookie
     }
   }, [authorLogin]);
+
+
+
+
   return (
     <MainDataContext>
       <InboundDataProvider>
@@ -122,7 +136,7 @@ const App: React.FC = () => {
                       <Dashboard />
                     </Route>
                     <Route path="/page/Auxiliary" exact={true}>
-                      <Main />
+                      <ExcelToJson />
                     </Route>
                     <Route path="/page/Redirect" exact={true}>
                       <LoadingPage />
@@ -146,5 +160,6 @@ const App: React.FC = () => {
     </MainDataContext>
   );
 };
+  console.log("🚀 ~ excelDateToMonthYear(45596):", excelDateToMonthYear(45596))
 
 export default App;

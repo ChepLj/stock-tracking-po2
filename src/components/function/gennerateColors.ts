@@ -1,4 +1,4 @@
-const backgroundColor = [
+const backgroundColors = [
   "#FF6F61", // Candy Apple Red
   "#FFB400", // Caramel Yellow
   "#FFA07A", // Peach Candy
@@ -21,7 +21,7 @@ const backgroundColor = [
   "#808000"  // Olive Candy
 ];
 
-const borderCandyColors = [
+const borderColors = [
   "#CC584D", // Darker Candy Apple Red
   "#CC8E00", // Darker Caramel Yellow
   "#CC805F", // Darker Peach Candy
@@ -61,7 +61,7 @@ export default function generateColors(count: number) {
     //   borderColor.push(border);
     // }
   
-    return { backgroundColor, borderCandyColors };
+    return { backgroundColors, borderColors };
   }
   
   // const { candyColors, borderCandyColors } = generateColors(30);

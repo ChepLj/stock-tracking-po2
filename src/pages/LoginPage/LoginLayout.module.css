@@ -110,3 +110,11 @@
   user-select: none;
   margin-left: auto;
 }
+
+
+.note{
+  border: 1px dashed #ccc;
+  border-radius: 15px;
+  padding: 15px;
+  margin: 15px
+}

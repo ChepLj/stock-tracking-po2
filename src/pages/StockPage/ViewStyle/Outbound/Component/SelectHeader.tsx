@@ -38,10 +38,10 @@ export default function SelectHeader({ step, setStep }: { step: any; setStep: Fu
     };
   
     return (
-      <IonList>
+      <IonList style={{width:  '1000px'}}>
         <h4 style={{ width: "100%", textAlign: "center", color: "red" }}>Assign corresponding column headers</h4>
         <IonItem>
-          <IonLabel>Material*</IonLabel>
+          <IonLabel>Material* <i>(Mã vật tư)</i></IonLabel>
           <IonSelect slot="end" name="inboundExcelImport-material" style={{ textAlign: "end", marginLeft: "10px" }} interface="popover" placeholder="Select">
             {step.value.key.map((crr: any, index: number) => {
               return (
@@ -53,7 +53,7 @@ export default function SelectHeader({ step, setStep }: { step: any; setStep: Fu
           </IonSelect>
         </IonItem>
         <IonItem>
-          <IonLabel>Stock*</IonLabel>
+          <IonLabel>Stock* <i>(Kho lưu)</i></IonLabel>
           <IonSelect slot="end" name="inboundExcelImport-stock"  style={{ textAlign: "end", marginLeft: "10px" }} interface="popover" placeholder="Select">
             {step.value.key.map((crr: any, index: number) => {
               return (
@@ -65,7 +65,7 @@ export default function SelectHeader({ step, setStep }: { step: any; setStep: Fu
           </IonSelect>
         </IonItem>
         <IonItem>
-          <IonLabel>Description*</IonLabel>
+          <IonLabel>Description* <i>(Tên vật tư)</i></IonLabel>
           <IonSelect slot="end" name="inboundExcelImport-description"  style={{ textAlign: "end", marginLeft: "10px" }} interface="popover" placeholder="Select">
             {step.value.key.map((crr: any, index: number) => {
               return (
@@ -122,7 +122,7 @@ export default function SelectHeader({ step, setStep }: { step: any; setStep: Fu
           </IonSelect>
         </IonItem>
         <IonItem>
-          <IonLabel>Date*</IonLabel>
+          <IonLabel>Date* <i>(Ngày xuất kho)</i></IonLabel>
           <IonSelect slot="end" name="inboundExcelImport-date"  style={{ textAlign: "end", marginLeft: "10px" }} interface="popover" placeholder="Select">
             {step.value.key.map((crr: any, index: number) => {
               return (

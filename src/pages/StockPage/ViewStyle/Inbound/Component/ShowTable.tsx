@@ -79,7 +79,9 @@ export default function ShowTable({ step, setStep }: { step: any; setStep: Funct
             // console.log("🚀 ~ {step.value.data.map ~ header:", header)
             const checkAvailableInStock = handleInboundShowTableSearch(crr, header, data, materialList);
             const quantityTemp = (Number(crr?.[header.quantity]) || 0) + (Number(crr?.[header.quantity2]) || 0);
-            const totalPrice = isNaN(crr?.[header.price] * quantityTemp) ? 1 : crr?.[header.price] * quantityTemp;
+            const price = isNaN(crr?.[header.price]) ? 1 : crr[header.price];
+
+            const totalPrice = isNaN(price * quantityTemp) ? 1 : price * quantityTemp;
 
             return (
               <tr style={{ color: checkAvailableInStock?.color }} key={"showTable-item" + index}>
@@ -169,7 +171,7 @@ export default function ShowTable({ step, setStep }: { step: any; setStep: Funct
                   </span>
                 </td>
                 <td className="price" style={{ ...commonsStyle, minWidth: "100px", maxWidth: "250px", textAlign: "right" }}>
-                  {crr?.[header.price] || 1} VNĐ
+                  {price} VNĐ
                 </td>
                 <td className="totalPrice" style={{ ...commonsStyle, minWidth: "130px", maxWidth: "250px", textAlign: "right" }}>
                   {totalPrice} VNĐ

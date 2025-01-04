@@ -5,7 +5,7 @@ export const handleOutboundShowTableSearch = (input: any, header: any, data: any
   const description = input[header.description];
   const unit = input[header.unit];
   const stock = input[header.sLoc];
-  const quantity = (Number(input?.[header.quantity]) || 0) + (Number(input?.[header.quantity2]) || 0)
+  const quantity = (Number(input?.[header.quantity]) || 0) + (Number(input?.[header.quantity2]) || 0);
   const condition1 = Boolean(input[header.unit]);
   const condition2 = Boolean(material?.toString().length == 9);
 
@@ -33,7 +33,9 @@ export const handleOutboundShowTableSearch = (input: any, header: any, data: any
         unitWarningMessenger = "";
         isUnitDiff = false;
       }
-      if(data[key].quantity - quantity <0){
+      //! Kiểm tra số lượng
+      if (data[key].quantity - quantity < 0) {
+        // Số lượng xuất lớn hơn số lượng tồn kho
         return {
           type: "error",
           descriptionRaw: description,
@@ -43,7 +45,7 @@ export const handleOutboundShowTableSearch = (input: any, header: any, data: any
         };
       }
       return {
-        type: "found in stock",
+        type: "found in stock", // Thỏa điều kiện xuất
         color: "",
         isOk: true,
         descriptionMessenger: descriptionWarningMessenger,
@@ -54,16 +56,16 @@ export const handleOutboundShowTableSearch = (input: any, header: any, data: any
         isUnitDiff: isUnitDiff,
         quantityInStock: data[key].quantity,
       };
-    } else {
+    } else { //! Không tìm thấy
       return {
         type: "error",
         descriptionRaw: description,
         unitRaw: unit,
-        color: "red",
+        color: "violet",
         isOk: false,
       };
     }
-  } else {
+  } else { //! Thiếu thông tin
     // setError("Mã Vật tư hoặc Kho là không đúng !");
     return {
       type: "error",

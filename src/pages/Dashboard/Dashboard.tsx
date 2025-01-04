@@ -1,4 +1,4 @@
-import { IonContent, IonFooter, IonHeader, IonLabel, IonPage, IonSegment, IonSegmentButton, IonSegmentContent, IonSegmentView, IonToolbar } from "@ionic/react";
+import { IonButtons, IonContent, IonFooter, IonHeader, IonLabel, IonMenuButton, IonPage, IonSegment, IonSegmentButton, IonSegmentContent, IonSegmentView, IonTitle, IonToolbar } from "@ionic/react";
 import StockChart from "./StockChart/StockChart";
 import { MainContext } from "../../context/mainDataContext";
 import { useContext, useEffect, useState } from "react";
@@ -13,9 +13,9 @@ import OutboundChart from "./OutboundChart/OutboundChart";
 import { handelOutboundData } from "./OutboundChart/function/handelOutboundData";
 
 export default function Dashboard() {
-  const { data,keyOfDataShow, disPatch } = useContext<any>(MainContext);
-  const { InboundData,keyOfInboundDataShow, disPatchInboundData } = useContext<any>(InboundDataContext);
-  const { OutboundData,keyOfOutboundDataShow, disPatchOutboundData } = useContext<any>(OutboundDataContext);
+  const { data, keyOfDataShow, disPatch } = useContext<any>(MainContext);
+  const { InboundData, keyOfInboundDataShow, disPatchInboundData } = useContext<any>(InboundDataContext);
+  const { OutboundData, keyOfOutboundDataShow, disPatchOutboundData } = useContext<any>(OutboundDataContext);
 
   //TODO: Lấy Main Data khi load Page lần đầu
   useEffect(() => {
@@ -66,6 +66,15 @@ export default function Dashboard() {
   //TODO_END: handleViewChange
   return (
     <IonPage>
+      <IonHeader>
+        <IonToolbar>
+          <IonButtons slot="start">
+            {/* <IonBackButton text="Home"></IonBackButton> */}
+            <IonMenuButton />
+          </IonButtons>
+          <IonTitle>Dashboard</IonTitle>
+        </IonToolbar>
+      </IonHeader>
       <IonContent>
         <IonSegmentView>
           <IonSegmentContent id="second">

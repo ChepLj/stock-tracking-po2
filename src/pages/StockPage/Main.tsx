@@ -1,28 +1,25 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from "@ionic/react";
-import { useParams } from "react-router";
+import { IonContent, IonHeader, IonPage, IonToolbar } from "@ionic/react";
 
 import "./Main.css";
 
-import ExcelToJson from "../../components/ExcelToJson/ExcelToJson";
-import ModalFilter from "../../components/ModalFilter/ModalFilter";
-import { useContext, useState, useRef, useEffect } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import conditionFilter from "../../components/function/conditionFilter";
 import conditionSearch from "../../components/function/conditionSearch";
+import ModalFilter from "../../components/ModalFilter/ModalFilter";
 import { InboundDataContext } from "../../context/inboundDataContext";
 import { AuthContext } from "../../context/loginContext";
 import { MainContext } from "../../context/mainDataContext";
+import { OutboundDataContext } from "../../context/outboundDataContext";
 import firebaseGetMainData from "../../firebase/api/getData";
 import { ITF_FilterResult } from "../../interface/mainInterface";
 import Header from "./Header/HeaderMain";
 import InboundExcelImport from "./ViewStyle/Inbound/InboundExcelImport";
 import InboundView from "./ViewStyle/Inbound/InboundView";
-import StockView from "./ViewStyle/StockView";
-import { OutboundDataContext } from "../../context/outboundDataContext";
-import OutboundView from "./ViewStyle/Outbound/OutboundView";
 import OutboundExcelImport from "./ViewStyle/Outbound/OutboundExcelImport";
+import OutboundView from "./ViewStyle/Outbound/OutboundView";
+import StockView from "./ViewStyle/StockView";
 
 const Main: React.FC = () => {
-  const { name } = useParams<{ name: string }>();
   console.log("%cMain Page Render", "color:green");
 
   const { data, keyOfDataShow, disPatch } = useContext<any>(MainContext);
@@ -91,7 +88,7 @@ const Main: React.FC = () => {
 
   //TODO: Search Result
   const handelSearch = (ev: Event) => {
-    console.log('check')
+    console.log("check");
     let query = "";
     const searchTarget = ev.target as HTMLIonSearchbarElement;
     if (searchTarget) {
@@ -130,7 +127,7 @@ const Main: React.FC = () => {
   //TODO_END: Search Result
   //TODO:  handel filter
   const handleFilter = (filterList: ITF_FilterResult) => {
-    console.log("🚀 ~ handleFilter ~ filterList:", filterList)
+    console.log("🚀 ~ handleFilter ~ filterList:", filterList);
     const isFilterFC = () => {
       for (const key in filterList) {
         const newKey = key as keyof ITF_FilterResult;
@@ -190,14 +187,11 @@ const Main: React.FC = () => {
           setTitle={setTitle}
         />
       )}
+      <IonToolbar>
+        <h3 style={{ color: "green", width: "100%", textAlign: "center", marginTop: "4px", marginBottom: "0px" }}>{title}</h3>
+      </IonToolbar>
 
       <IonContent fullscreen>
-        <IonHeader collapse="condense">
-          <IonToolbar>
-            <h3 style={{ color: "green", width: "100%", textAlign: "center", marginTop: "4px", marginBottom: "0px" }}>{title}</h3>
-          </IonToolbar>
-        </IonHeader>
-
         {viewStyle === "Stock" && (
           <StockView data={data} keyOfDataRaw={keyOfDataRaw} disPatch={disPatch} ionItemSlidingRef={ionItemSlidingRef} authorLogin={authorLogin} virtuoso={virtuoso} isFilter={isFilter} />
         )}

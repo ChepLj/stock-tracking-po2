@@ -1,5 +1,5 @@
 import { IonButton, IonButtons, IonHeader, IonText, IonToolbar } from "@ionic/react";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import * as XLSX from "xlsx";
 import ChooseSheet from "./Component/ChooseSheet";
 import ChooseTable from "./Component/ChooseTable";
@@ -9,7 +9,9 @@ import { handleInboundExcelExtract } from "../../../../components/function/handl
 import { handleInboundExcelImportUpload } from "../../../../components/function/handleInboundExcelImportUpload";
 import { InboundDataContext } from "../../../../context/inboundDataContext";
 import { MainContext } from "../../../../context/mainDataContext";
-
+import { inboundCautionImg } from "../../../../source/img";
+import { backspaceOutline } from "ionicons/icons";
+import { backupDataActionSheet } from "../../../../components/function/backupDataActionSheet";
 
 const InboundExcelImport = ({ setViewStyle }: { setViewStyle: Function }) => {
   const [step, setStep] = useState<{ step: number; value: any }>({ step: 0, value: null });
@@ -31,7 +33,11 @@ const InboundExcelImport = ({ setViewStyle }: { setViewStyle: Function }) => {
     }
   };
   //TODO_END: Handle file input change
-
+  //TODO: Backup Data before update
+  useEffect(() => {
+    backupDataActionSheet();
+  }, []);
+  //TODO_END: Backup Data before update
   return (
     <div id="check">
       <IonHeader>
@@ -54,7 +60,7 @@ const InboundExcelImport = ({ setViewStyle }: { setViewStyle: Function }) => {
             </IonButton>
             &nbsp;&nbsp;&nbsp;
             {step.step == 4 && (
-              <IonButton fill="solid" onClick={() => handleInboundExcelImportUpload(handleInboundExcelExtract(), disPatch, disPatchInboundData,setViewStyle)}>
+              <IonButton fill="solid" onClick={() => handleInboundExcelImportUpload(handleInboundExcelExtract(), disPatch, disPatchInboundData, setViewStyle)}>
                 &nbsp;&nbsp;&nbsp;Extract&nbsp;&nbsp;&nbsp;
               </IonButton>
             )}{" "}
@@ -67,6 +73,7 @@ const InboundExcelImport = ({ setViewStyle }: { setViewStyle: Function }) => {
         {step.step == 2 && <ChooseTable step={step} setStep={setStep} />}
         {step.step == 3 && <SelectHeader step={step} setStep={setStep} />}
         {step.step == 4 && <ShowTable step={step} setStep={setStep} />}
+        {step.step == 0 && <img src={inboundCautionImg} />}
       </section>
     </div>
   );

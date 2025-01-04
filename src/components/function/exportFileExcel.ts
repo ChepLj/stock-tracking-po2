@@ -9,9 +9,11 @@ const exportObjectToExcel = (data: any) => {
   try {
     if (data) {
       const result = [];
+      let index =1
       for (const key in data) {
         const objectRaw = data[key];
         const objectFix = {
+          index:index,
           material: objectRaw.material,
           sLoc: objectRaw.sLoc,
           description: objectRaw.description,
@@ -26,6 +28,7 @@ const exportObjectToExcel = (data: any) => {
           year: objectRaw.year,
         };
         result.push(objectFix);
+        index++
       }
       const ws = utils.json_to_sheet(result);
 

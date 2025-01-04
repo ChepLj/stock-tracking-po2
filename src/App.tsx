@@ -136,7 +136,7 @@ const App: React.FC = () => {
                       <Dashboard />
                     </Route>
                     <Route path="/page/Auxiliary" exact={true}>
-                      <ExcelToJson />
+                      <Auxiliary />
                     </Route>
                     <Route path="/page/Redirect" exact={true}>
                       <LoadingPage />

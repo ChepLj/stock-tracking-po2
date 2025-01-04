@@ -1,4 +1,5 @@
 import { IonList, IonItem, IonChip } from "@ionic/react";
+import { inboundCautionImg } from "../../../../../source/img";
 
 export default function ChooseSheet({ step, setStep }: { step: any; setStep: Function }) {
     const handleSelectSheet = (sheet: string) => {
@@ -21,6 +22,9 @@ export default function ChooseSheet({ step, setStep }: { step: any; setStep: Fun
           );
         })}
       </IonList>
+      
+     
+    
     );
   }
   

@@ -1,5 +1,5 @@
 import { IonButton, IonButtons, IonHeader, IonText, IonToolbar } from "@ionic/react";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import * as XLSX from "xlsx";
 import { handleOutboundExcelExtract } from "../../../../components/function/handleOutboundExcelExtract";
 import { handleOutboundExcelImportUpload } from "../../../../components/function/handleOutboundExcelImportUpload";
@@ -9,6 +9,8 @@ import ChooseSheet from "./Component/ChooseSheet";
 import ChooseTable from "./Component/ChooseTable";
 import SelectHeader from "./Component/SelectHeader";
 import ShowTable from "./Component/ShowTable";
+import { inboundCautionImg } from "../../../../source/img";
+import { backupDataActionSheet } from "../../../../components/function/backupDataActionSheet";
 
 
 const OutboundExcelImport = ({ setViewStyle }: { setViewStyle: Function }) => {
@@ -31,7 +33,11 @@ const OutboundExcelImport = ({ setViewStyle }: { setViewStyle: Function }) => {
     }
   };
   //TODO_END: Handle file input change
-
+  //TODO: Backup Data before update
+  useEffect(() => {
+    backupDataActionSheet();
+  }, []);
+  //TODO_END: Backup Data before update
   return (
     <div id="check">
       <IonHeader>
@@ -57,7 +63,7 @@ const OutboundExcelImport = ({ setViewStyle }: { setViewStyle: Function }) => {
               <IonButton fill="solid" onClick={() => handleOutboundExcelImportUpload(handleOutboundExcelExtract(), disPatch, disPatchOutboundData,setViewStyle)}>
                 &nbsp;&nbsp;&nbsp;Extract&nbsp;&nbsp;&nbsp;
               </IonButton>
-            )}{" "}
+            )}
             &nbsp;&nbsp;&nbsp;
           </IonButtons>
         </IonToolbar>
@@ -68,6 +74,7 @@ const OutboundExcelImport = ({ setViewStyle }: { setViewStyle: Function }) => {
         {step.step == 2 && <ChooseTable step={step} setStep={setStep} />}
         {step.step == 3 && <SelectHeader step={step} setStep={setStep} />}
         {step.step == 4 && <ShowTable step={step} setStep={setStep} />}
+        {step.step == 0 &&  <img  src={inboundCautionImg} />}
       </section>
     </div>
   );

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
-import { IonContent, IonPage } from "@ionic/react";
+import { IonButton, IonContent, IonPage } from "@ionic/react";
 
 // Define the structure of the data you're expecting
 interface Item {
@@ -70,15 +70,15 @@ const ExcelToJson = () => {
   };
 
   return (
-    <IonPage>
-      <IonContent>
-        <h1>Excel to JSON Converter</h1>
-        <input type="file" accept=".xlsx,.xls" onChange={handleFileChange} />
-        <button onClick={handleExportJson} disabled={!excelData}>
+    <div style={{ margin: "30px" }}>
+      <h1>Excel to JSON Converter</h1>
+      <input type="file" accept=".xlsx,.xls" onChange={handleFileChange} />
+      <div style={{ margin: "30px",  color:'red' }}>
+        <IonButton onClick={handleExportJson} disabled={!excelData} expand="block">
           Export to JSON
-        </button>
-      </IonContent>
-    </IonPage>
+        </IonButton>
+      </div>
+    </div>
   );
 };
 

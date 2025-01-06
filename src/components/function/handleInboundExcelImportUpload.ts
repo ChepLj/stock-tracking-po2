@@ -7,10 +7,19 @@ export const handleInboundExcelImportUpload = (object: any, disPatch: Function, 
   try {
     if (object) {
       const uploadContainer: ITF_UploadContainer[] = [];
+
+      const quantityStock: Record<string, any> = {};
       const timeStamp = Date.now();
+      let index = 0;
       for (const itemKey in object) {
         const item: ITF_MaterialObject = object[itemKey];
         const key = `${item.material}-${item.sLoc}`;
+
+        if (!quantityStock[key]) {
+          quantityStock[key] = (Number(item.quantity) || 0) + (Number(item.quantityInStock) || 0);
+        } else {
+          quantityStock[key] = quantityStock[key] + (Number(item.quantity) || 0);
+        }
         uploadContainer.push({
           ref: `MainData/${key}/material/`,
           data: item.material,
@@ -25,7 +34,7 @@ export const handleInboundExcelImportUpload = (object: any, disPatch: Function, 
         });
         uploadContainer.push({
           ref: `MainData/${key}/quantity/`,
-          data: (Number(item.quantity) || 0) + (Number(item.quantityInStock) || 0),
+          data: quantityStock[key],
         });
         uploadContainer.push({
           ref: `MainData/${key}/unit/`,
@@ -43,7 +52,7 @@ export const handleInboundExcelImportUpload = (object: any, disPatch: Function, 
           ref: `MainData/${key}/batch/`,
           data: item.batch,
         });
-       
+
         uploadContainer.push({
           ref: `MainData/${key}/lastUpdate/`,
           data: timeStamp,
@@ -59,7 +68,7 @@ export const handleInboundExcelImportUpload = (object: any, disPatch: Function, 
         });
 
         uploadContainer.push({
-          ref: `InboundData/${key}-${timeStamp}/`,
+          ref: `InboundData/${key}-${timeStamp}-${index}/`,
           data: {
             material: item.material,
             description: item.description,
@@ -91,6 +100,8 @@ export const handleInboundExcelImportUpload = (object: any, disPatch: Function, 
             timeStamp: timeStamp,
           },
         });
+
+        index++;
       }
 
       const handelRefresh = () => {

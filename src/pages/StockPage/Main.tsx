@@ -88,7 +88,7 @@ const Main: React.FC = () => {
 
   //TODO: Search Result
   const handelSearch = (ev: Event) => {
-    console.log("check");
+
     let query = "";
     const searchTarget = ev.target as HTMLIonSearchbarElement;
     if (searchTarget) {

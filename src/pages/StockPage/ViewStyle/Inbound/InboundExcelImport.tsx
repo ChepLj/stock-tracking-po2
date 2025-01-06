@@ -38,6 +38,7 @@ const InboundExcelImport = ({ setViewStyle }: { setViewStyle: Function }) => {
     backupDataActionSheet();
   }, []);
   //TODO_END: Backup Data before update
+  console.log("🚀 ~ handleFileChange ~ step:", step)
   return (
     <div id="check">
       <IonHeader>

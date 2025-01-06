@@ -47,7 +47,7 @@ function InboundView({
   const sortedKeyOfInboundDataRaw = [...keyOfInboundDataRaw].sort((a, b) => {
     const dataA = data[a];
     const dataB = data[b];
-    if (dataA.year !== dataB.year) {
+    if (dataA?.year !== dataB?.year) {
       return dataA.year - dataB.year;
     }
     return dataA.month - dataB.month;
@@ -100,6 +100,7 @@ function InboundView({
               <th style={{ padding: "5px 10px", border: "2px solid #ccc", fontSize: "12px" }}>Total Price</th>
               <th style={{ padding: "5px 10px", border: "2px solid #ccc", fontSize: "12px" }}>Note</th>
               <th style={{ padding: "5px 10px", border: "2px solid #ccc", fontSize: "12px" }}>Batch</th>
+              {/* <th style={{ padding: "5px 10px", border: "2px solid #ccc", fontSize: "12px" }}>Workshop</th> */}
               <th style={{ padding: "5px 10px", border: "2px solid #ccc", fontSize: "12px" }}>LastUpdate</th>
             </tr>
           )}
@@ -210,6 +211,7 @@ const priceTemp = toLocalStringOfPrice(objectData?.price || 1)
       <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", minWidth: "100px", maxWidth: "250px", textAlign: "right" }}>{totalPriceTemp} VNĐ</td>
       <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", minWidth: "100px", maxWidth: "350px" }}>{objectData.note}</td>
       <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", minWidth: "30px", maxWidth: "50px" }}>{objectData.batch}</td>
+      {/* <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", minWidth: "30px", maxWidth: "50px" }}>{objectData.workshop}</td> */}
       <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", minWidth: "60px", maxWidth: "100px" }}>{timestampToTime(objectData.lastUpdate, "date only")}</td>
     </>
   );

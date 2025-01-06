@@ -11,14 +11,7 @@ import firebaseGetMainData from "../../../../../firebase/api/getData";
 export default function ShowTable({ step, setStep }: { step: any; setStep: Function }) {
   // console.log("🚀 ~ ShowTable ~ step:", step);
   const { data, keyOfDataShow, disPatch } = useContext<any>(MainContext);
-  const { InboundData, disPatchInboundData } = useContext<any>(InboundDataContext);
   const [materialList, setMaterialList] = useState<any>({});
-  const [state, setState] = useState(false);
-  const [searchValue, setSearchValue] = useState<any>();
-  const unit = ["PC", "Set", "BT", "EA", "G", "KG", "L", "M", "M2", "M3", "ML", "PAA", "TON", "Other"];
-  const batch = ["none", "C1", "C2", "C3"];
-  const [stockList, setStockList] = useState<any>([]);
-  const [error, setError] = useState<any>("");
   const header = step.value.headerKey;
   const commonsStyle = { padding: "2px 5px", border: "1px solid gray", fontSize: "12px", width: "auto" };
   const commonsStyleTd = { padding: "5px 10px", border: "2px solid #ccc", fontSize: "12px" };
@@ -78,6 +71,7 @@ export default function ShowTable({ step, setStep }: { step: any; setStep: Funct
           {step.value.data.map((crr: any, index: any) => {
             // console.log("🚀 ~ {step.value.data.map ~ header:", header)
             const checkAvailableInStock = handleInboundShowTableSearch(crr, header, data, materialList);
+ 
             const quantityTemp = (Number(crr?.[header.quantity]) || 0) + (Number(crr?.[header.quantity2]) || 0);
             const price = isNaN(crr?.[header.price]) ? 1 : crr[header.price];
 

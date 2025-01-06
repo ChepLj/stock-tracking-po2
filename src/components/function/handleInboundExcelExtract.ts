@@ -36,6 +36,6 @@ export const handleInboundExcelExtract = () => {
       });
   }
 
-  console.log("🚀 ~ handleInboundExcelExtract ~ result:", result)
+  // console.log("🚀 ~ handleInboundExcelExtract ~ result:", result)
   return result;
 };

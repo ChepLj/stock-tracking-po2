@@ -8,6 +8,8 @@ export const handleOutboundExcelImportUpload = (object: any, disPatch: Function,
     if (object) {
       const uploadContainer: ITF_UploadContainer[] = [];
       const timeStamp = Date.now();
+      let index = 0;
+      const quantityStock: Record<string, any> = {};
       for (const itemKey in object) {
         const item: ITF_MaterialObject = object[itemKey];
         const key = `${item.material}-${item.sLoc}`;
@@ -15,9 +17,14 @@ export const handleOutboundExcelImportUpload = (object: any, disPatch: Function,
         if (+item?.quantity > 0) {
           const stockQuantity = Number(item.quantityInStock) || 0;
           const outboundQuantity = Number(item.quantity);
+          if (!quantityStock[key]) {
+            quantityStock[key] =  (Number(item.quantityInStock) || 0) - (Number(item.quantity) || 0) ;
+          } else {
+            quantityStock[key] = quantityStock[key] - (Number(item.quantity) || 0);
+          }
           const quantityTemp = () => {
             if (stockQuantity - outboundQuantity < 0) {
-              alert(`${item.material} Số lượng xuất kho lớn hơn số lượng tồn kho. Lỗi !`);
+              throw new Error (`${item.material} Số lượng xuất kho lớn hơn số lượng tồn kho. Lỗi !`);
             }
             return stockQuantity - outboundQuantity;
           };
@@ -53,7 +60,7 @@ export const handleOutboundExcelImportUpload = (object: any, disPatch: Function,
         });
 
         uploadContainer.push({
-          ref: `OutboundData/${key}-${timeStamp}/`,
+          ref: `OutboundData/${key}-${timeStamp}-${index}/`,
           data: {
             material: item.material,
             description: item.description,
@@ -85,6 +92,7 @@ export const handleOutboundExcelImportUpload = (object: any, disPatch: Function,
             timeStamp: timeStamp,
           },
         });
+        index++;
       }
 
       const handelRefresh = () => {

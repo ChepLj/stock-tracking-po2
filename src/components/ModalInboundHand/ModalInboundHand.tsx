@@ -171,8 +171,8 @@ function ModalInboundHand({ isModalOpen, setIsModalOpen }: { isModalOpen: any; s
       }
 
       if (descriptionElm?.value !== dataTemp?.description || dataTemp.isNew || dataTemp.isHad) {
-        if (!descriptionElm.value || descriptionElm.value.length < 10) {
-          throw new Error(`Tên vật tư >10 ký tự !`);
+        if (!descriptionElm.value || descriptionElm.value.length < 5) {
+          throw new Error(`Tên vật tư >5 ký tự !`);
         }
         uploadContainer.push({
           ref: `MainData/${key}/description/`,

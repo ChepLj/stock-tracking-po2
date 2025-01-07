@@ -68,8 +68,7 @@ const OutboundExcelImport = ({ setViewStyle }: { setViewStyle: Function }) => {
           </IonButtons>
         </IonToolbar>
       </IonHeader>
-      <section style={{ overflowX: "auto" ,display: 'flex',flexDirection: 'column',width: '100%' ,minWidth: '800px',
-          alignItems: 'center'}}>
+      <section style={{ overflowX: "auto" }}>
         {step.step == 1 && <ChooseSheet step={step} setStep={setStep} />}
         {step.step == 2 && <ChooseTable step={step} setStep={setStep} />}
         {step.step == 3 && <SelectHeader step={step} setStep={setStep} />}

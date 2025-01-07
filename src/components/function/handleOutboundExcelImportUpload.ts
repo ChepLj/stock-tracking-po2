@@ -23,8 +23,8 @@ export const handleOutboundExcelImportUpload = (object: any, disPatch: Function,
             quantityStock[key] = quantityStock[key] - (Number(item.quantity) || 0);
           }
           const quantityTemp = () => {
-            if (stockQuantity - outboundQuantity < 0) {
-              throw new Error (`${item.material} Số lượng xuất kho lớn hơn số lượng tồn kho. Lỗi !`);
+            if (quantityStock[key] < 0) {
+              throw new Error (`${item.material}-${item.sLoc} Số lượng xuất kho lớn hơn số lượng tồn kho. Lỗi !`);
             }
             return stockQuantity - outboundQuantity;
           };

@@ -13,6 +13,7 @@ import ModalEditOutbound from "../../../../components/ModalEdit/ModalEditOutboun
 import { AuthContext } from "../../../../context/loginContext";
 import { checkLevelAcc } from "../../../../components/function/checkLevelAcc";
 import { toLocalStringOfPrice } from "../../../../components/function/toLocalStringOfPrice";
+import { MainContext } from "../../../../context/mainDataContext";
 
 function OutboundView({
   data,
@@ -36,6 +37,7 @@ function OutboundView({
   const [isModalOpen, setIsModalOpen] = useState<{ isOpen: boolean; value: any; key?: string }>({ isOpen: false, value: {} });
   const [isModalEditOpen, setIsModalEditOpen] = useState<{ isOpen: boolean; value: any; key: string }>({ isOpen: false, value: {}, key: "" });
 
+  // const { disPatch } = useContext<any>(MainContext);
   const { disPatchOutboundData } = useContext<any>(OutboundDataContext);
 
   //TODO: Lấy Main Data khi load Page lần đầu
@@ -43,6 +45,11 @@ function OutboundView({
     //: lấy data từ firebase sao đó dispatch đê render lại
     const childRef = "OutboundData/";
     firebaseGetMainData(childRef, disPatchOutboundData);
+  }, []);
+  useEffect(() => {
+    //: lấy data từ firebase sao đó dispatch đê render lại
+    const childRef = "MainData/";
+    firebaseGetMainData(childRef, disPatch);
   }, []);
   //TODO_END: Lấy Main Data khi load Page lần đầu
 

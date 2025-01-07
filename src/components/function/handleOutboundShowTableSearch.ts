@@ -40,7 +40,7 @@ export const handleOutboundShowTableSearch = (input: any, header: any, data: any
           type: "error",
           descriptionRaw: description,
           unitRaw: unit,
-          color: "yellow",
+          color: "#f89807",
           isOk: false,
         };
       }

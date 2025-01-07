@@ -1,0 +1,7 @@
+.custom-popover {
+    --width: 400px; /* Set the desired width */
+    --max-width: 90%; /* Optional for responsiveness */
+    --background: white; /* Customize as needed */
+    --border-radius: 10px;
+  }
+  

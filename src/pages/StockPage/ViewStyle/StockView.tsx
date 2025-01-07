@@ -3,7 +3,7 @@ import { TableVirtuoso } from "react-virtuoso";
 // import ObjectData, { objectListRender } from "../../../components/FC_Components/initObjectData";
 
 // import { ITF_ObjectData } from "../../../interface/mainInterface";
-import { IonFab, IonFabButton, IonIcon } from "@ionic/react";
+import { IonContent, IonFab, IonFabButton, IonIcon, IonItem, IonLabel, IonPopover, IonText } from "@ionic/react";
 import { createOutline, refreshOutline } from "ionicons/icons";
 import timestampToTime from "../../../components/function/timestampToTime";
 import ModalEditStock from "../../../components/ModalEdit/ModalEditStock";
@@ -147,19 +147,12 @@ const ItemList = ({
   };
 
   //TODO_END: handle Show Edit Modal
-  const priceTemp = toLocalStringOfPrice(objectData?.price || 1)
-  const totalPriceTemp = toLocalStringOfPrice(objectData.price * objectData.quantity  || 1)
+  const priceTemp = toLocalStringOfPrice(objectData?.price || 1);
+  const totalPriceTemp = toLocalStringOfPrice(objectData.price * objectData.quantity || 1);
   return (
     <>
       <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", width: "auto", maxWidth: "50px" }}>
-        <IonIcon
-          id={`test-${index}`}
-          icon={createOutline}
-          slot="end"
-          size="small"
-          color="success"
-          onClick={handleShowEditModal}
-        />
+        <IonIcon id={`test-${index}`} icon={createOutline} slot="end" size="small" color="success" onClick={handleShowEditModal} />
       </td>
       <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", width: "auto", maxWidth: "50px" }}>{index + 1}</td>
       <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", minWidth: "60px", maxWidth: "100px" }}>
@@ -175,7 +168,16 @@ const ItemList = ({
       <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", minWidth: "100px", maxWidth: "350px", textAlign: "right" }}>{totalPriceTemp} VNĐ</td>
       <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", minWidth: "100px", maxWidth: "350px", width: "auto" }}>{objectData.note}</td>
       <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", minWidth: "30px", maxWidth: "50px" }}>{objectData.batch}</td>
-      <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", minWidth: "60px", maxWidth: "100px" }}>{timestampToTime(objectData.lastUpdate, "date only")}</td>
+      <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", minWidth: "60px", maxWidth: "100px", cursor: "pointer" }} id={`stock-log-${index}`}>
+        {timestampToTime(objectData.lastUpdate, "date only")}
+      </td>
+      <IonPopover trigger={`stock-log-${index}`} triggerAction="click" side="end" size="auto"  className="custom-popover"  >
+        <IonContent className="ion-padding">
+          {Object.values(objectData?.logs || {})?.map((value: any, indexPopover: number) => {
+            return <PopoverItem value={value} indexPopover={indexPopover} key={`${indexPopover}-popoverList`} />;
+          })}
+        </IonContent>
+      </IonPopover>
     </>
   );
 };
@@ -183,3 +185,22 @@ const ItemList = ({
 
 //! export
 export default StockView;
+
+//JSX: Popover
+
+const PopoverItem = ({ value, indexPopover }: { value: any; indexPopover: number }) => {
+  return (
+    <IonItem key={`${indexPopover}-popoverItem`}>
+      <div style={{ marginRight: "10px" }}>
+        <IonLabel style={{ fontSize: "10px" }} color="warning">
+          {value?.behavior}
+        </IonLabel>
+        <IonLabel style={{ fontSize: "10px" }} color="gray"> {timestampToTime(+value?.timeStamp)}</IonLabel>
+      </div>
+      <IonText>{value?.detail}</IonText>
+      <IonLabel className="fontSize-normal no-margin-top-bottom"></IonLabel>
+    
+    </IonItem>
+  );
+};
+//JSX_END: Popover

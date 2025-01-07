@@ -24,13 +24,13 @@ export default function ShowTable({ step, setStep }: { step: any; setStep: Funct
         <div>Chú giải: </div>&nbsp;&nbsp;&nbsp;
         <div>
           <div style={{ fontSize: "10px", color: "red" }}>
-            <i>Vật tư bị sai , thiếu thông tin , không thể thêm vật tư này !</i>
+            <i>Vật tư bị sai , thiếu thông tin , không thể xuất vật tư này !</i>
           </div>
           <div style={{ fontSize: "10px", color: "violet" }}>
-            <i>Không thấy vật tư cùng Kho trong Stock !, không thể thêm vật tư này !</i>
+            <i>Không thấy vật tư cùng Kho trong Stock !, không thể xuất vật tư này !</i>
           </div>
-          <div style={{ fontSize: "10px", color: "yellow" }}>
-            <i>Số lượng xuất nhiều hơn số lượng trong Stock !, không thể thêm vật tư này !</i>
+          <div style={{ fontSize: "10px", color: "#f89807" }}>
+            <i>Số lượng xuất nhiều hơn số lượng trong Stock !, không thể xuất vật tư này !</i>
           </div>
           <div style={{ fontSize: "10px", color: "" }}>
             <i>Tìm thấy vật tư cùng Kho trong Stock !</i>

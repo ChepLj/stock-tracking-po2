@@ -2,7 +2,7 @@ import { IonBackButton, IonButtons, IonContent, IonHeader, IonItem, IonLabel, Io
 import { memo, useEffect, useState } from "react";
 import timestampToTime from "../../components/function/timestampToTime";
 import firebaseGetMainData from "../../firebase/api/getData";
-
+import "./LogsPage.css";
 const LogsPage: React.FC = () => {
   //* Check Render and Unmount
   console.log("%cLogs Page Render", "color:green");
@@ -43,7 +43,7 @@ const LogsPage: React.FC = () => {
               .reverse()
               .map((crr, index) => {
                 return (
-                  <IonItem key={index}  id={`log-detail-${crr}`}>
+                  <IonItem key={index} id={`log-detail-${crr}`}>
                     <div style={{ marginRight: "10px" }}>
                       <IonLabel className="fontSize-normal" color="primary">
                         {state[+crr]?.key}
@@ -52,16 +52,14 @@ const LogsPage: React.FC = () => {
                         {state[+crr]?.behavior}
                       </IonLabel>
                     </div>
-                    <IonText >{state[+crr]?.description}</IonText>
-                    <IonLabel  className="fontSize-normal no-margin-top-bottom">
-                     
-                    </IonLabel>
+                    <IonText>{state[+crr]?.description}</IonText>
+                    <IonLabel className="fontSize-normal no-margin-top-bottom"></IonLabel>
                     <div className="fontStyle-italic fontSize-small alight-right" style={{ fontSize: "10px" }}>
                       <IonText>{state[+crr]?.author}</IonText>
                       <IonLabel>{timestampToTime(+crr)}</IonLabel>
                     </div>
-                    <IonPopover trigger={`log-detail-${crr}`} triggerAction="click" side="end">
-                      <IonText class="ion-padding">{state[+crr]?.detail}</IonText>
+                    <IonPopover trigger={`log-detail-${crr}`} triggerAction="click" side="end" size="auto" className="custom-popover">
+                      <IonContent className="ion-padding">{state[+crr]?.detail} </IonContent>
                     </IonPopover>
                   </IonItem>
                 );

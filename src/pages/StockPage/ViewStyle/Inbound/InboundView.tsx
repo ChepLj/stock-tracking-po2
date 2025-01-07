@@ -41,6 +41,11 @@ function InboundView({
     const childRef = "InboundData/";
     firebaseGetMainData(childRef, disPatchInboundData);
   }, []);
+  useEffect(() => {
+    //: lấy data từ firebase sao đó dispatch đê render lại
+    const childRef = "MainData/";
+    firebaseGetMainData(childRef, disPatch);
+  }, []);
   //TODO_END: Lấy Main Data khi load Page lần đầu
 
   // Sort the keyOfInboundDataRaw array by month and year

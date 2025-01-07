@@ -38,7 +38,7 @@ export default function SelectHeader({ step, setStep }: { step: any; setStep: Fu
     };
   
     return (
-      <IonList style={{width:  '1000px'}}>
+      <IonList style={{}}>
         <h4 style={{ width: "100%", textAlign: "center", color: "red" }}>Assign corresponding column headers</h4>
         <IonItem>
           <IonLabel>Material* <i>(Mã vật tư)</i></IonLabel>

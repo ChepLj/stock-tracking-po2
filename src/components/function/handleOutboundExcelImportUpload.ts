@@ -14,50 +14,52 @@ export const handleOutboundExcelImportUpload = (object: any, disPatch: Function,
         const item: ITF_MaterialObject = object[itemKey];
         const key = `${item.material}-${item.sLoc}`;
 
-        if (+item?.quantity > 0) {
-          const stockQuantity = Number(item.quantityInStock) || 0;
-          const outboundQuantity = Number(item.quantity);
-          if (!quantityStock[key]) {
-            quantityStock[key] =  (Number(item.quantityInStock) || 0) - (Number(item.quantity) || 0) ;
-          } else {
-            quantityStock[key] = quantityStock[key] - (Number(item.quantity) || 0);
-          }
-          const quantityTemp = () => {
-            if (quantityStock[key] < 0) {
-              throw new Error (`${item.material}-${item.sLoc} Số lượng xuất kho lớn hơn số lượng tồn kho. Lỗi !`);
+        if (!item?.forceOutbound) {
+          if (+item?.quantity > 0) {
+            const stockQuantity = Number(item.quantityInStock) || 0;
+            const outboundQuantity = Number(item.quantity);
+            if (!quantityStock[key]) {
+              quantityStock[key] = (Number(item.quantityInStock) || 0) - (Number(item.quantity) || 0);
+            } else {
+              quantityStock[key] = quantityStock[key] - (Number(item.quantity) || 0);
             }
-            return stockQuantity - outboundQuantity;
-          };
+            const quantityTemp = () => {
+              if (quantityStock[key] < 0) {
+                throw new Error(`${item.material}-${item.sLoc} Số lượng xuất kho lớn hơn số lượng tồn kho. Lỗi !`);
+              }
+              return stockQuantity - outboundQuantity;
+            };
+            uploadContainer.push({
+              ref: `MainData/${key}/quantity/`,
+              data: quantityTemp(),
+            });
+          }
+
           uploadContainer.push({
-            ref: `MainData/${key}/quantity/`,
-            data: quantityTemp(),
+            ref: `MainData/${key}/unit/`,
+            data: item.unit,
+          });
+          if (Number(item.price) > 1) {
+            uploadContainer.push({
+              ref: `MainData/${key}/price/`,
+              data: item.price,
+            });
+          }
+
+          uploadContainer.push({
+            ref: `MainData/${key}/lastUpdate/`,
+            data: timeStamp,
+          });
+
+          uploadContainer.push({
+            ref: `MainData/${key}/logs/${timeStamp}/`,
+            data: {
+              behavior: "Outbound Excel",
+              detail: item.searchType,
+              timeStamp: timeStamp,
+            },
           });
         }
-
-        uploadContainer.push({
-          ref: `MainData/${key}/unit/`,
-          data: item.unit,
-        });
-        if (Number(item.price) > 1) {
-          uploadContainer.push({
-            ref: `MainData/${key}/price/`,
-            data: item.price,
-          });
-        }
-
-        uploadContainer.push({
-          ref: `MainData/${key}/lastUpdate/`,
-          data: timeStamp,
-        });
-
-        uploadContainer.push({
-          ref: `MainData/${key}/logs/${timeStamp}/`,
-          data: {
-            behavior: "Outbound Excel",
-            detail: item.searchType,
-            timeStamp: timeStamp,
-          },
-        });
 
         uploadContainer.push({
           ref: `OutboundData/${key}-${timeStamp}-${index}/`,

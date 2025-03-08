@@ -1,4 +1,4 @@
-import { IonIcon, IonPopover } from "@ionic/react";
+import { IonButton, IonChip, IonIcon, IonPopover } from "@ionic/react";
 import { warning } from "ionicons/icons";
 import { useContext, useState } from "react";
 import excelDateToMonthYear from "../../../../../components/function/excelDateToMonthYear";
@@ -6,17 +6,27 @@ import { handleInboundShowTableSearch } from "../../../../../components/function
 import { MainContext } from "../../../../../context/mainDataContext";
 import { handleOutboundShowTableSearch } from "../../../../../components/function/handleOutboundShowTableSearch";
 
-
 export default function ShowTable({ step, setStep }: { step: any; setStep: Function }) {
   // console.log("🚀 ~ ShowTable ~ step:", step);
   const { data, keyOfDataShow, disPatch } = useContext<any>(MainContext);
 
   const [materialList, setMaterialList] = useState<any>({});
+  const [chipStates, setChipStates] = useState<Record<number, boolean>>({});
 
   const header = step.value.headerKey;
   const commonsStyle = { padding: "2px 5px", border: "1px solid gray", fontSize: "12px", width: "auto" };
   const commonsStyleTd = { padding: "5px 10px", border: "2px solid #ccc", fontSize: "12px" };
- 
+
+
+  const handleChipClick = (index: number) => {
+    const checkBoxElm = document.getElementById(`checkbox-${index}`) as HTMLIonCheckboxElement
+    checkBoxElm.checked = !chipStates[index]
+    setChipStates((prev) => ({
+      ...prev,
+      [index]: !prev[index], // Toggle the state
+    }));
+  };
+
 
   return (
     <>
@@ -37,9 +47,10 @@ export default function ShowTable({ step, setStep }: { step: any; setStep: Funct
           </div>
         </div>
       </div>
-      <table >
+      <table>
         <thead>
           <tr style={{ background: "red", color: "white", overflowX: "scroll" }}>
+            <th style={{ ...commonsStyleTd }}>OK</th>
             <th style={{ ...commonsStyleTd }}>Act</th>
             <th style={{ ...commonsStyleTd }}>No.</th>
             <th style={{ ...commonsStyleTd }}>Year</th>
@@ -70,6 +81,19 @@ export default function ShowTable({ step, setStep }: { step: any; setStep: Funct
                 <td className="check" style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", width: "auto", maxWidth: "50px", textAlign: "center", verticalAlign: "middle" }}>
                   <input className="checkInput" type="checkbox" id={`checkbox-${index}`} defaultChecked={checkAvailableInStock.isOk} disabled={!checkAvailableInStock.isOk} />
                 </td>
+                <td className="forceOutboundTd" style={{ ...commonsStyle, maxWidth: "150px", whiteSpace: "nowrap"  ,fontSize: "12px" , color: 'red'}}>
+                  {!checkAvailableInStock.isOk &&  <IonChip
+                    className="forceOutbound"
+                    style={{
+                      backgroundColor: chipStates[index] ? "red" : "",
+                      color: chipStates[index] ? "white" : "",
+                      userSelect: 'none'
+                    }}
+                    onClick={() => handleChipClick(index)}
+                  >
+                    Ép Xuất
+                  </IonChip>}
+                </td>
                 <td className="index" style={{ ...commonsStyle, maxWidth: "50px" }}>
                   {index + 1}
                 </td>
@@ -95,7 +119,9 @@ export default function ShowTable({ step, setStep }: { step: any; setStep: Funct
                   }}
                 >
                   <span style={{ display: "inline-flex", alignItems: "center" }}>
-                    <p className="description" style={{ color: checkAvailableInStock.color}}>{checkAvailableInStock.descriptionRaw}</p>
+                    <p className="description" style={{ color: checkAvailableInStock.color }}>
+                      {checkAvailableInStock.descriptionRaw}
+                    </p>
                     {checkAvailableInStock.isDescriptionDiff && (
                       <>
                         <IonIcon
@@ -119,7 +145,6 @@ export default function ShowTable({ step, setStep }: { step: any; setStep: Funct
                 <td className="quantity" style={{ ...commonsStyle, minWidth: "30px", maxWidth: "150px", fontWeight: 600 }}>
                   {quantityTemp}
                 </td>
-
                 <td
                   className="unit"
                   style={{
@@ -129,7 +154,7 @@ export default function ShowTable({ step, setStep }: { step: any; setStep: Funct
                     whiteSpace: "nowrap", // Prevent line breaks
                   }}
                 >
-                  <span style={{ display: "inline-flex", alignItems: "center", gap: "5px" ,color: checkAvailableInStock.color}}>
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: "5px", color: checkAvailableInStock.color }}>
                     <strong>{checkAvailableInStock.unitRaw}</strong>
                     {checkAvailableInStock.isUnitDiff && (
                       <>
@@ -163,10 +188,10 @@ export default function ShowTable({ step, setStep }: { step: any; setStep: Funct
                 <td className="batch" style={{ ...commonsStyle, minWidth: "30px", maxWidth: "50px" }}>
                   {crr?.[header.batch]}
                 </td>
-                <td className="quantityInStock" style={{display: 'none'}}>
+                <td className="quantityInStock" style={{ display: "none" }}>
                   {checkAvailableInStock.quantityInStock}
                 </td>
-                <td className="searchType" style={{display: 'none'}}>
+                <td className="searchType" style={{ display: "none" }}>
                   {checkAvailableInStock.type}
                 </td>
               </tr>

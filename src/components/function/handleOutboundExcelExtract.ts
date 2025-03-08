@@ -1,7 +1,6 @@
 export const handleOutboundExcelExtract = () => {
   const tableElm = document.getElementById("outboundExcelImportShowTable");
 
-
   // Create the object
   const result: any = {};
 
@@ -14,11 +13,15 @@ export const handleOutboundExcelExtract = () => {
         const checkedTempElm = trElm.querySelector(".checkInput") as HTMLInputElement;
         if (checkedTempElm.checked) {
           trElm.querySelectorAll("td").forEach((tdElm, indexTd) => {
-            if (tdElm.className == "check") {
-            }
             let key = ""; // Key is the class name
             let value: any = ""; // Value is the text content
-            if (tdElm.className == "description") {
+            if (tdElm.className == "forceOutboundTd") {
+              const chipElm = tdElm.querySelector(".forceOutbound") as HTMLElement;
+              if (chipElm) {
+                key = "forceOutbound";
+                value = getComputedStyle(chipElm).backgroundColor == "rgb(255, 0, 0)" ? true : false; // Get background color
+              }
+            } else if (tdElm.className == "description") {
               const descriptionElm = tdElm.querySelector(".description");
               if (descriptionElm) {
                 key = descriptionElm.className;
@@ -36,6 +39,6 @@ export const handleOutboundExcelExtract = () => {
       });
   }
 
-  console.log("🚀 ~ handleIOutboundExcelExtract ~ result:", result)
+  console.log("🚀 ~ handleIOutboundExcelExtract ~ result:", result);
   return result;
 };

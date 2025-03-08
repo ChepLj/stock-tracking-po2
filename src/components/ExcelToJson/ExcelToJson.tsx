@@ -56,13 +56,13 @@ const ExcelToJson = () => {
       const key = `${currentValue.Material}-${currentValue.SLoc}`;
       object[key] = {
         material: currentValue.Material,
-        description: currentValue.Description,
+        description: currentValue['Material Description'],
         sLoc: currentValue.SLoc,
-        quantity: currentValue.PominaQuantity,
+        quantity: currentValue["Tồn kho\r\nCty"],
         unit: "",
-        price: Math.floor(+currentValue.TotalPrice / +currentValue.SAPQuantity) || 1,
+        price: Math.floor(+currentValue[" Value Unrestricted "] / +currentValue["Số lượng\r\nSAP"]) || 1,
         note: currentValue.Note || "",
-        batch: currentValue.Batch,
+        batch: currentValue[" Batch "],
       };
     }
 
@@ -70,7 +70,7 @@ const ExcelToJson = () => {
   };
 
   return (
-    <div style={{ margin: "30px" }}>
+    <div style={{ margin: "30px" , }}>
       <h1>Excel to JSON Converter</h1>
       <input type="file" accept=".xlsx,.xls" onChange={handleFileChange} />
       <div style={{ margin: "30px",  color:'red' }}>
@@ -78,6 +78,9 @@ const ExcelToJson = () => {
           Export to JSON
         </IonButton>
       </div>
+      <p><i>Tạo file theo định dạng như hình,tên tiêu đề buộc phải giống, lưu ý bỏ tất cả các dòng và cột thừa</i></p>
+      <img src="https://firebasestorage.googleapis.com/v0/b/stock-tracking-3d5f0.firebasestorage.app/o/Auxiliary%2FScreenshot%202025-03-08%20100636.png?alt=media&token=8469d78f-d6c8-47ea-bf38-01eec195c93d"/>
+      <img src='https://firebasestorage.googleapis.com/v0/b/stock-tracking-3d5f0.firebasestorage.app/o/Auxiliary%2FScreenshot%202025-03-08%20103109.png?alt=media&token=88335836-65e9-4e10-a34c-ae238193406b' />
     </div>
   );
 };

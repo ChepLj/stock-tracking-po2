@@ -79,6 +79,7 @@ export interface ITF_MaterialObject {
   year?: string | number;
   searchType?: string;
   quantityInStock: string|number;
+  forceOutbound: boolean;
 
 }
 

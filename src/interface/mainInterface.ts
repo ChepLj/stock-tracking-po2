@@ -67,6 +67,7 @@ export interface ITF_ActionDisPatch {
 }
 
 export interface ITF_MaterialObject {
+  action: string;
   material: string;
   sLoc: string | number;
   description: string;
@@ -79,6 +80,7 @@ export interface ITF_MaterialObject {
   year?: string | number;
   searchType?: string;
   quantityInStock: string|number;
+  quantityInStockForce: string|number;
   forceOutbound: boolean;
 
 }

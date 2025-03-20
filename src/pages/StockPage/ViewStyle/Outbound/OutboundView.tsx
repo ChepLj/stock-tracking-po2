@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { TableVirtuoso } from "react-virtuoso";
-import { IonFab, IonFabButton, IonFabList, IonIcon } from "@ionic/react";
+import { IonContent, IonFab, IonFabButton, IonFabList, IonIcon, IonItem, IonLabel, IonPopover, IonText } from "@ionic/react";
 import { chevronUpCircle, codeDownloadOutline, createOutline, handRightOutline } from "ionicons/icons";
 import timestampToTime from "../../../../components/function/timestampToTime";
 import ModalEditInbound from "../../../../components/ModalEdit/ModalEditInbound";
@@ -109,6 +109,7 @@ function OutboundView({
               <th style={{ padding: "5px 10px", border: "2px solid #ccc", fontSize: "12px" }}>Price</th>
               <th style={{ padding: "5px 10px", border: "2px solid #ccc", fontSize: "12px" }}>Total Price</th>
               <th style={{ padding: "5px 10px", border: "2px solid #ccc", fontSize: "12px" }}>Note</th>
+              <th style={{ padding: "5px 10px", border: "2px solid #ccc", fontSize: "12px" }}>Action</th>
               <th style={{ padding: "5px 10px", border: "2px solid #ccc", fontSize: "12px" }}>Batch</th>
               <th style={{ padding: "5px 10px", border: "2px solid #ccc", fontSize: "12px" }}>LastUpdate</th>
             </tr>
@@ -196,8 +197,8 @@ const ItemList = ({
   };
 
   //TODO_END: handle Show Edit Modal
-const priceTemp = toLocalStringOfPrice(objectData?.price || 1)
-  const totalPriceTemp = toLocalStringOfPrice((objectData.price * objectData.quantity)  || 1)
+  const priceTemp = toLocalStringOfPrice(objectData?.price || 1);
+  const totalPriceTemp = toLocalStringOfPrice(objectData.price * objectData.quantity || 1);
   return (
     <>
       <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", width: "auto", maxWidth: "50px" }}>
@@ -218,8 +219,20 @@ const priceTemp = toLocalStringOfPrice(objectData?.price || 1)
       <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", minWidth: "100px", maxWidth: "250px", textAlign: "right" }}>{priceTemp} VNĐ</td>
       <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", minWidth: "100px", maxWidth: "250px", textAlign: "right" }}>{totalPriceTemp} VNĐ</td>
       <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", minWidth: "100px", maxWidth: "350px", width: "auto" }}>{objectData.note}</td>
+      <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", minWidth: "100px", maxWidth: "350px", width: "auto" }}>{objectData.action}</td>
       <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", minWidth: "30px", maxWidth: "50px" }}>{objectData.batch}</td>
-      <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", minWidth: "60px", maxWidth: "100px" }}>{timestampToTime(objectData.lastUpdate, "date only")}</td>
+      <td style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", minWidth: "60px", maxWidth: "100px" , cursor: "pointer"}} id={`outbound-log-${index}`}>
+        {timestampToTime(objectData.lastUpdate, "date only")}
+      </td>
+      <IonPopover trigger={`outbound-log-${index}`} triggerAction="click" side="end" size="auto" className="custom-popover">
+        <IonContent className="ion-padding">
+          {Object.values(objectData?.logs || { 1: { detail: "Không có thông tin !" } })
+            ?.reverse()
+            .map((value: any, indexPopover: number) => {
+              return <PopoverItem value={value} indexPopover={indexPopover} key={`${indexPopover}-popoverList`} />;
+            })}
+        </IonContent>
+      </IonPopover>
     </>
   );
 };
@@ -227,3 +240,24 @@ const priceTemp = toLocalStringOfPrice(objectData?.price || 1)
 
 //! export
 export default OutboundView;
+
+//JSX: Popover
+
+const PopoverItem = ({ value, indexPopover }: { value: any; indexPopover: number }) => {
+  return (
+    <IonItem key={`${indexPopover}-popoverItem`}>
+      <div style={{ marginRight: "10px" }}>
+        <IonLabel style={{ fontSize: "10px" }} color="warning">
+          {value?.behavior}
+        </IonLabel>
+        <IonLabel style={{ fontSize: "10px" }} color="gray">
+          {" "}
+          {timestampToTime(+value?.timeStamp)}
+        </IonLabel>
+      </div>
+      <IonText style={{ fontSize: "12px" }}>{value?.detail}</IonText>
+      <IonLabel className="fontSize-normal no-margin-top-bottom"></IonLabel>
+    </IonItem>
+  );
+};
+//JSX_END: Popover

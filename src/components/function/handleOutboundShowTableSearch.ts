@@ -1,6 +1,7 @@
 //TODO: Search Stock
 
 export const handleOutboundShowTableSearch = (input: any, header: any, data: any, materialList: any) => {
+  // console.log("🚀 ~ handleOutboundShowTableSearch ~ data:", data)
   const material = input[header.material];
   const description = input[header.description];
   const unit = input[header.unit];
@@ -57,12 +58,14 @@ export const handleOutboundShowTableSearch = (input: any, header: any, data: any
         quantityInStock: data[key].quantity,
       };
     } else { //! Không tìm thấy
+      const foundItems = Object.values(data).filter((item:any) => item.material === material);
       return {
         type: "error",
         descriptionRaw: description,
         unitRaw: unit,
         color: "violet",
         isOk: false,
+        foundItems: foundItems
       };
     }
   } else { //! Thiếu thông tin
@@ -71,6 +74,7 @@ export const handleOutboundShowTableSearch = (input: any, header: any, data: any
       type: "error",
       color: "red",
       isOk: false,
+      lostInfo: true,
       descriptionRaw: description,
     };
   }

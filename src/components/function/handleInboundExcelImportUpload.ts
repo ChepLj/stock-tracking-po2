@@ -14,10 +14,12 @@ export const handleInboundExcelImportUpload = (object: any, disPatch: Function, 
       for (const itemKey in object) {
         const item: ITF_MaterialObject = object[itemKey];
         const key = `${item.material}-${item.sLoc}`;
-
+        let rawQuantity = 0;
         if (!quantityStock[key]) {
           quantityStock[key] = (Number(item.quantity) || 0) + (Number(item.quantityInStock) || 0);
+          rawQuantity = Number(item.quantityInStock);
         } else {
+          rawQuantity = quantityStock[key];
           quantityStock[key] = quantityStock[key] + (Number(item.quantity) || 0);
         }
         uploadContainer.push({
@@ -62,7 +64,7 @@ export const handleInboundExcelImportUpload = (object: any, disPatch: Function, 
           ref: `MainData/${key}/logs/${timeStamp}/`,
           data: {
             behavior: "Inbound Excel",
-            detail: item.searchType,
+            detail: `Raw Quantity : ${rawQuantity} - Inbound Quantity: ${item.quantity} - Type: ${item.searchType}`,
             timeStamp: timeStamp,
           },
         });
@@ -82,7 +84,7 @@ export const handleInboundExcelImportUpload = (object: any, disPatch: Function, 
             logs: {
               [timeStamp]: {
                 behavior: "Inbound Excel",
-                detail: item.searchType,
+                detail: `Raw Quantity : ${rawQuantity} - Inbound Quantity: ${item.quantity} - Type: ${item.searchType}`,
                 timeStamp: timeStamp,
               },
             },
@@ -90,20 +92,29 @@ export const handleInboundExcelImportUpload = (object: any, disPatch: Function, 
             month: item.month,
           },
         });
-        uploadContainer.push({
-          ref: `Logs/${timeStamp}`,
-          data: {
-            key: key,
-            behavior: "Inbound Excel",
-            description: `${Object.keys(object).length} vật tư được nhập tự động bằng Excel`,
-            detail: "nhập kho bằng file Excel",
-            timeStamp: timeStamp,
-          },
-        });
+        // uploadContainer.push({
+        //   ref: `Logs/${timeStamp}`,
+        //   data: {
+        //     key: key,
+        //     behavior: "Inbound Excel",
+        //     description: `${Object.keys(object).length} vật tư được nhập tự động bằng Excel`,
+        //     detail: "nhập kho bằng file Excel",
+        //     timeStamp: timeStamp,
+        //   },
+        // });
 
         index++;
       }
-
+      uploadContainer.push({
+        ref: `Logs/${timeStamp}`,
+        data: {
+          key: "...",
+          behavior: "Inbound Excel",
+          description: `${Object.keys(object).length} vật tư được nhập tự động bằng Excel`,
+          detail: JSON.stringify(object),
+          timeStamp: timeStamp,
+        },
+      });
       const handelRefresh = () => {
         //: lấy data từ firebase sao đó dispatch đê render lại
         const childRef = "MainData/";

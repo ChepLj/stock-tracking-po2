@@ -10,24 +10,32 @@ export const handleOutboundExcelImportUpload = (object: any, disPatch: Function,
       const timeStamp = Date.now();
       let index = 0;
       const quantityStock: Record<string, any> = {};
+     
       for (const itemKey in object) {
         const item: ITF_MaterialObject = object[itemKey];
-        const key = `${item.material}-${item.sLoc}`;
 
-        if (!item?.forceOutbound) {
+        const temp = item.action? item.action.split("-") : 'false';
+        const stockChangeCheck = Number.isFinite(+temp[0])
+        const key =  stockChangeCheck ?  `${item.material}-${temp[0]}` : `${item.material}-${item.sLoc}`;
+        let rawQuantity = 0
+        if (item.action != 'Ép Xuất') {
           if (+item?.quantity > 0) {
-            const stockQuantity = Number(item.quantityInStock) || 0;
+            
             const outboundQuantity = Number(item.quantity);
             if (!quantityStock[key]) {
-              quantityStock[key] = (Number(item.quantityInStock) || 0) - (Number(item.quantity) || 0);
+              quantityStock[key] = stockChangeCheck? (Number(item.quantityInStockForce) || 0) - (outboundQuantity || 0): (Number(item.quantityInStock) || 0) - (outboundQuantity || 0);
+              rawQuantity = stockChangeCheck? (Number(item.quantityInStockForce) || 0): (Number(item.quantityInStock) || 0) ;
             } else {
-              quantityStock[key] = quantityStock[key] - (Number(item.quantity) || 0);
+              rawQuantity = quantityStock[key]
+              quantityStock[key] = quantityStock[key] - (outboundQuantity || 0);
             }
             const quantityTemp = () => {
               if (quantityStock[key] < 0) {
-                throw new Error(`${item.material}-${item.sLoc} Số lượng xuất kho lớn hơn số lượng tồn kho. Lỗi !`);
+                throw new Error(`${item.material}-${item.sLoc} - index ${index+2}: Số lượng xuất kho lớn hơn số lượng tồn kho. Lỗi !`);
               }
-              return stockQuantity - outboundQuantity;
+              // console.log(`key: ${key} -quantityStock ${quantityStock[key]} - stockQuantity: ${stockQuantity} - outboundQuantity: ${outboundQuantity}--- ${stockChangeCheck}`)
+              // return stockQuantity - outboundQuantity;
+              return quantityStock[key];
             };
             uploadContainer.push({
               ref: `MainData/${key}/quantity/`,
@@ -52,18 +60,27 @@ export const handleOutboundExcelImportUpload = (object: any, disPatch: Function,
           });
 
           uploadContainer.push({
-            ref: `MainData/${key}/logs/${timeStamp}/`,
+            ref: `MainData/${key}/logs/${timeStamp}-${index}/`,
             data: {
               behavior: "Outbound Excel",
-              detail: item.searchType,
+              detail:  item.action ? `Raw Quantity : ${rawQuantity} -  Outbound Quantity: ${item.quantity} - Outbound Stock: ${item.sLoc} ${stockChangeCheck ? ` - Raw Stock:${temp[0]}` : ''} - Action: ${stockChangeCheck ? 'Chuyển Kho': 'Ép Xuất'}` : `Raw Quantity : ${rawQuantity} - Outbound Quantity: ${item.quantity} - Type: ${item.searchType}`,
               timeStamp: timeStamp,
             },
           });
+
+          if(Number.isFinite(item.action)){
+            uploadContainer.push({
+              ref: `MainData/${key}/action/`,
+              data: item.action,
+            });
+          }
         }
 
         uploadContainer.push({
-          ref: `OutboundData/${key}-${timeStamp}-${index}/`,
+          ref: `OutboundData/${item.material}-${item.sLoc}-${timeStamp}-${index}/`,
+          
           data: {
+            action: item.action || '.',
             material: item.material,
             description: item.description,
             sLoc: item.sLoc,
@@ -76,27 +93,37 @@ export const handleOutboundExcelImportUpload = (object: any, disPatch: Function,
             logs: {
               [timeStamp]: {
                 behavior: "Outbound Excel",
-                detail: item.searchType,
+                detail:  item.action ? `Raw Quantity : ${rawQuantity} - Outbound Quantity: ${item.quantity} - Outbound Stock: ${item.sLoc}  ${stockChangeCheck ? ` - Raw Stock:${temp[0]}` : ''}  - Action: ${stockChangeCheck ? 'Chuyển Kho': 'Ép Xuất'}` : `Raw Quantity : ${rawQuantity} - Outbound Quantity: ${item.quantity} - Type: ${item.searchType}`,
                 timeStamp: timeStamp,
+                action: item.action || '.',
               },
             },
             year: item.year,
             month: item.month,
           },
-        });
-        uploadContainer.push({
-          ref: `Logs/${timeStamp}`,
-          data: {
-            key: key,
-            behavior: "Outbound Excel",
-            description: `${Object.keys(object).length} vật tư được xuất tự động bằng Excel`,
-            detail: "xuất kho bằng file Excel",
-            timeStamp: timeStamp,
-          },
-        });
+        })
+        // uploadContainer.push({
+        //   ref: `Logs/${timeStamp}`,
+        //   data: {
+        //     key: key,
+        //     behavior: "Outbound Excel",
+        //     description: `${Object.keys(object).length} vật tư được xuất tự động bằng Excel`,
+        //     detail: `SLoc Outbound ${item.sLoc} --- Action ${item?.action}`,
+        //     timeStamp: timeStamp,
+        //   },
+        // });
         index++;
       }
-
+      uploadContainer.push({
+        ref: `Logs/${timeStamp}`,
+        data: {
+          key: '...',
+          behavior: "Outbound Excel",
+          description: `${Object.keys(object).length} vật tư được xuất tự động bằng Excel`,
+          detail: JSON.stringify(object),
+          timeStamp: timeStamp,
+        },
+      });
       const handelRefresh = () => {
         //: lấy data từ firebase sao đó dispatch đê render lại
         const childRef = "MainData/";

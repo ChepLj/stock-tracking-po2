@@ -29,6 +29,7 @@ function StockView({
   virtuoso: any;
   isFilter: any;
 }) {
+  console.log("🚀 ~ data:", data)
   const [isModalOpen, setIsModalOpen] = useState<{ isOpen: boolean; value: any; key: string }>({ isOpen: false, value: {}, key: "" });
 
   //TODO: refresh Data
@@ -173,7 +174,7 @@ const ItemList = ({
       </td>
       <IonPopover trigger={`stock-log-${index}`} triggerAction="click" side="end" size="auto"  className="custom-popover"  >
         <IonContent className="ion-padding">
-          {Object.values(objectData?.logs || {})?.map((value: any, indexPopover: number) => {
+          {Object.values(objectData?.logs || {1:{detail: 'Không có thông tin !'}})?.reverse().map((value: any, indexPopover: number) => {
             return <PopoverItem value={value} indexPopover={indexPopover} key={`${indexPopover}-popoverList`} />;
           })}
         </IonContent>
@@ -197,7 +198,7 @@ const PopoverItem = ({ value, indexPopover }: { value: any; indexPopover: number
         </IonLabel>
         <IonLabel style={{ fontSize: "10px" }} color="gray"> {timestampToTime(+value?.timeStamp)}</IonLabel>
       </div>
-      <IonText>{value?.detail}</IonText>
+      <IonText style={{ fontSize: "12px" }}>{value?.detail}</IonText>
       <IonLabel className="fontSize-normal no-margin-top-bottom"></IonLabel>
     
     </IonItem>

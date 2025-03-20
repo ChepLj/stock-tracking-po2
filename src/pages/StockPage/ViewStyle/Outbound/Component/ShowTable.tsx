@@ -1,4 +1,4 @@
-import { IonButton, IonChip, IonIcon, IonPopover } from "@ionic/react";
+import { IonButton, IonChip, IonIcon, IonPopover, IonSelect, IonSelectOption } from "@ionic/react";
 import { warning } from "ionicons/icons";
 import { useContext, useState } from "react";
 import excelDateToMonthYear from "../../../../../components/function/excelDateToMonthYear";
@@ -17,16 +17,15 @@ export default function ShowTable({ step, setStep }: { step: any; setStep: Funct
   const commonsStyle = { padding: "2px 5px", border: "1px solid gray", fontSize: "12px", width: "auto" };
   const commonsStyleTd = { padding: "5px 10px", border: "2px solid #ccc", fontSize: "12px" };
 
-
-  const handleChipClick = (index: number) => {
-    const checkBoxElm = document.getElementById(`checkbox-${index}`) as HTMLIonCheckboxElement
-    checkBoxElm.checked = !chipStates[index]
+  const handleChipClick = (index: number, active: boolean) => {
+    const checkBoxElm = document.getElementById(`checkbox-${index}`) as HTMLIonCheckboxElement;
+    // checkBoxElm.checked = !chipStates[index];
+    checkBoxElm.checked = active;
     setChipStates((prev) => ({
       ...prev,
-      [index]: !prev[index], // Toggle the state
+      [index]: active, // Toggle the state
     }));
   };
-
 
   return (
     <>
@@ -81,18 +80,27 @@ export default function ShowTable({ step, setStep }: { step: any; setStep: Funct
                 <td className="check" style={{ padding: "2px 5px", border: "1px solid gray", fontSize: "12px", width: "auto", maxWidth: "50px", textAlign: "center", verticalAlign: "middle" }}>
                   <input className="checkInput" type="checkbox" id={`checkbox-${index}`} defaultChecked={checkAvailableInStock.isOk} disabled={!checkAvailableInStock.isOk} />
                 </td>
-                <td className="forceOutboundTd" style={{ ...commonsStyle, maxWidth: "150px", whiteSpace: "nowrap"  ,fontSize: "12px" , color: 'red'}}>
-                  {!checkAvailableInStock.isOk &&  <IonChip
-                    className="forceOutbound"
-                    style={{
-                      backgroundColor: chipStates[index] ? "red" : "",
-                      color: chipStates[index] ? "white" : "",
-                      userSelect: 'none'
-                    }}
-                    onClick={() => handleChipClick(index)}
-                  >
-                    Ép Xuất
-                  </IonChip>}
+                <td className="forceOutboundTd" style={{ ...commonsStyle, maxWidth: "150px", whiteSpace: "nowrap", fontSize: "12px", color: "red" }}>
+                
+                  {!checkAvailableInStock.isOk && !checkAvailableInStock.lostInfo &&(
+                    <IonSelect
+                      aria-label="action"
+                      placeholder="Action"
+                      onIonChange={(e) => {
+                        if (e.detail.value === "Hủy bỏ" || e.detail.value === undefined) {
+                          handleChipClick(index, false);
+                        } else {
+                          handleChipClick(index, true);
+                        }
+                      }}
+                    >
+                      <IonSelectOption value="Ép Xuất">Ép Xuất</IonSelectOption>
+                      {checkAvailableInStock?.foundItems?.map((crr: any, foundItemIndex) => (
+                        <IonSelectOption key={`act-${foundItemIndex}`} value={`${crr.sLoc}-${crr.quantity}`} disabled={crr.quantity < quantityTemp}>{`CK ${crr.sLoc} (${crr.quantity})`}</IonSelectOption>
+                      ))}
+                      <IonSelectOption value="Hủy bỏ">Hủy bỏ</IonSelectOption>
+                    </IonSelect>
+                  )}
                 </td>
                 <td className="index" style={{ ...commonsStyle, maxWidth: "50px" }}>
                   {index + 1}

@@ -13,14 +13,21 @@ export const handleOutboundExcelExtract = () => {
         const checkedTempElm = trElm.querySelector(".checkInput") as HTMLInputElement;
         if (checkedTempElm.checked) {
           trElm.querySelectorAll("td").forEach((tdElm, indexTd) => {
+            // console.log("🚀 ~ trElm.querySelectorAll ~ tdElm:", tdElm)
             let key = ""; // Key is the class name
             let value: any = ""; // Value is the text content
             if (tdElm.className == "forceOutboundTd") {
-              const chipElm = tdElm.querySelector(".forceOutbound") as HTMLElement;
-              if (chipElm) {
-                key = "forceOutbound";
-                value = getComputedStyle(chipElm).backgroundColor == "rgb(255, 0, 0)" ? true : false; // Get background color
+              const ionSelect = tdElm.querySelector("ion-select");
+    
+              if (ionSelect) {
+                  key = 'action';
+                  value = ionSelect.value;
+                  //! ghi chu
+                  const temp = value? value.split("-") : 'false';
+                  object.quantityInStockForce = temp[1] 
+                  //!
               }
+        
             } else if (tdElm.className == "description") {
               const descriptionElm = tdElm.querySelector(".description");
               if (descriptionElm) {

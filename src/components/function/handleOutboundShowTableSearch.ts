@@ -58,7 +58,8 @@ export const handleOutboundShowTableSearch = (input: any, header: any, data: any
         quantityInStock: data[key].quantity,
       };
     } else { //! Không tìm thấy
-      const foundItems = Object.values(data).filter((item:any) => item.material === material);
+      const foundItems = Object.values(data).filter((item:any) => {return item.material == material});
+
       return {
         type: "error",
         descriptionRaw: description,
